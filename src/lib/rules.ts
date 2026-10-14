@@ -15,7 +15,7 @@ export const emptySettings = (): Settings => ({ defaultVolume: null, boostEnable
 const WILDCARD = /^\*\.([a-z0-9-]+\.)*[a-z0-9-]+$/;
 
 export const isWildcard = (p: string) => WILDCARD.test(p);
-export const isValidPattern = (p: string) => isWildcard(p) || originOf(p) === p;
+export const isValidPattern = (p: string) => isWildcard(p) || (originOf(p) === p && /^https?:\/\/[a-z0-9.-]+(:\d+)?$/.test(p));
 export const maxVolume = (boostEnabled: boolean) => (boostEnabled ? 200 : 100);
 
 export function isValidVolume(v: unknown, boostEnabled: boolean): v is number {
