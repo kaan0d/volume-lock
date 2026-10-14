@@ -2,6 +2,7 @@ import { originOf } from '../lib/origin';
 import { clampVolume, emptySettings, isValidPattern, maxVolume, resolveVolume, type Settings } from '../lib/rules';
 import type { GetState, SetVolume, StateReply } from '../lib/messages';
 import * as storage from '../lib/storage';
+import { exportSettings, parseImport } from '../lib/transfer';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -242,6 +243,7 @@ function renderSites() {
   );
   $('emptyState').textContent = all.length ? 'No matching sites.' : 'No sites saved yet. Set a level on the Volume tab and hit Save site.';
   $('emptyState').classList.toggle('hidden', shown.length > 0);
+  ($('deleteAllBtn') as HTMLButtonElement).disabled = all.length === 0;
 
   $('excludeCount').textContent = String(settings.excluded.length);
   $('excludeList').replaceChildren(
@@ -288,6 +290,55 @@ const saveDefault = () => {
 input('defaultOn').addEventListener('change', saveDefault);
 input('defaultLevel').addEventListener('change', saveDefault);
 input('boostOn').addEventListener('change', () => storage.setBoostEnabled(input('boostOn').checked));
+
+// ---------- delete all, export, import ----------
+
+/** Swaps a trigger for an inline confirm row; `yes` runs on confirm. */
+function inlineConfirm(trigger: string, row: string, yes: string, no: string, onYes: () => Promise<void> | void) {
+  const toggle = (asking: boolean) => {
+    $(trigger).classList.toggle('hidden', asking);
+    $(row).classList.toggle('hidden', !asking);
+    if (asking) $(no).focus();
+  };
+  $(no).addEventListener('click', () => toggle(false));
+  $(yes).addEventListener('click', async () => {
+    toggle(false);
+    await onYes();
+  });
+  return toggle;
+}
+
+const askDeleteAll = inlineConfirm('deleteAllBtn', 'deleteAllConfirm', 'deleteAllYes', 'deleteAllNo', () => storage.clearSites());
+$('deleteAllBtn').addEventListener('click', () => askDeleteAll(true));
+
+$('exportBtn').addEventListener('click', () => {
+  const url = URL.createObjectURL(new Blob([exportSettings(settings)], { type: 'application/json' }));
+  const a = el('a', { href: url, download: 'simple-volume-saver-settings.json' });
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+let imported: Settings | null = null;
+const showImport = inlineConfirm('importBtn', 'importConfirm', 'importYes', 'importNo', async () => {
+  if (imported) await storage.replaceSettings(imported);
+  imported = null;
+});
+// the confirm row only appears once a valid file was picked
+$('importBtn').addEventListener('click', () => input('importFile').click());
+input('importFile').addEventListener('change', async () => {
+  const file = input('importFile').files?.[0];
+  input('importFile').value = '';
+  if (!file) return;
+  showImport(false);
+  try {
+    imported = parseImport(await file.text());
+    show('backupError', '');
+    showImport(true);
+  } catch (e) {
+    imported = null;
+    show('backupError', `Import failed: ${(e as Error).message}`);
+  }
+});
 
 // ---------- boot ----------
 

@@ -73,7 +73,14 @@
           <button class="btn btn-primary" type="submit">Add</button>
         </form>
         <p id="addError" class="notice warn hidden" role="alert"></p>
-        <div id="deleteAllRow" class="delete-all-row"></div>
+        <div class="delete-all-row">
+          <button id="deleteAllBtn" class="btn btn-ghost" type="button">Delete all saved sites</button>
+          <div id="deleteAllConfirm" class="confirm-row hidden">
+            <span class="confirm-text">Delete every saved site?</span>
+            <button id="deleteAllYes" class="btn btn-danger" type="button">Delete all</button>
+            <button id="deleteAllNo" class="btn btn-ghost" type="button">Cancel</button>
+          </div>
+        </div>
       </section>
 
       <section class="card sites-card">
@@ -96,6 +103,21 @@
           <label class="check"><input id="boostOn" type="checkbox"> Allow boost up to 200%</label>
         </div>
         <p id="boostNote" class="notice hidden"></p>
+      </section>
+
+      <section class="card sites-card">
+        <div class="sites-header"><h2>Backup</h2></div>
+        <div class="row">
+          <button id="exportBtn" class="btn btn-ghost grow" type="button">Export settings</button>
+          <button id="importBtn" class="btn btn-ghost grow" type="button">Import settings</button>
+          <input id="importFile" type="file" accept=".json,application/json" hidden aria-label="Settings file to import">
+        </div>
+        <p id="backupError" class="notice warn hidden" role="alert"></p>
+        <div id="importConfirm" class="confirm-row hidden">
+          <span class="confirm-text">Replace all current settings with this file?</span>
+          <button id="importYes" class="btn btn-danger" type="button">Replace</button>
+          <button id="importNo" class="btn btn-ghost" type="button">Cancel</button>
+        </div>
       </section>
     </section>
 

@@ -29,6 +29,14 @@ export const setDefaultVolume = (v: number | null) =>
 export const setBoostEnabled = (b: boolean) => sync().set({ boostEnabled: b });
 export const setExcluded = (list: string[]) => sync().set({ excluded: list });
 
+/** Replaces every setting with `s` (import). */
+export async function replaceSettings(s: Settings): Promise<void> {
+  await clearSites();
+  const sites = Object.fromEntries(Object.entries(s.sites).map(([p, v]) => [SITE + p, v]));
+  await sync().set({ ...sites, boostEnabled: s.boostEnabled, excluded: s.excluded });
+  await setDefaultVolume(s.defaultVolume);
+}
+
 /** Calls cb with fresh settings whenever any sync setting changes. Returns an unsubscribe function. */
 export function onSettingsChanged(cb: (s: Settings) => void): () => void {
   const listener = (_: unknown, area: string) => area === 'sync' && void loadSettings().then(cb);
