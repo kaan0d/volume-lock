@@ -8,7 +8,7 @@ import type { Message, StateReply } from './lib/messages';
 const ancestors = location.ancestorOrigins;
 const siteOrigin = originOf(ancestors?.length ? ancestors[ancestors.length - 1] : location.href);
 
-const EVENTS = ['play', 'loadedmetadata', 'volumechange'];
+const EVENTS = ['play', 'loadedmetadata', 'volumechange', 'encrypted'];
 
 let settings = emptySettings();
 let preview: number | null = null; // set-volume override until reload or settings change
@@ -21,7 +21,42 @@ const observer = new MutationObserver((records) => {
 const watched = new WeakSet<Node>();
 const fights = new WeakMap<HTMLMediaElement, { n: number; since: number }>();
 
+// Boost: element.volume tops out at 1, so above 100% the element goes through a GainNode.
+// Routing is permanent and allowed once per element, so it only happens when boost is needed.
+let audio: AudioContext | undefined;
+const gains = new WeakMap<HTMLMediaElement, GainNode>();
+const encrypted = new WeakSet<HTMLMediaElement>();
+
+/** Web Audio outputs silence for DRM and for cross-origin media fetched without CORS. */
+function canBoost(el: HTMLMediaElement): boolean {
+  if (el.mediaKeys || encrypted.has(el) || !el.currentSrc) return false;
+  if (el.crossOrigin !== null) return true; // CORS request: if it loaded, it's readable
+  const url = new URL(el.currentSrc, location.href);
+  return url.protocol === 'data:' || url.origin === location.origin; // blob: carries its creator's origin
+}
+
+function route(el: HTMLMediaElement) {
+  if (gains.has(el) || !canBoost(el)) return;
+  try {
+    audio ??= new AudioContext();
+    const gain = audio.createGain();
+    audio.createMediaElementSource(el).connect(gain).connect(audio.destination);
+    gains.set(el, gain);
+  } catch {
+    // already routed by the page's own AudioContext: stay capped at 100
+  }
+}
+
+/** Element volume carries up to 100%, the gain the rest; elements stay routed once boosted. */
 function apply(el: HTMLMediaElement) {
+  if (level !== null && level > 100) route(el); // level only exceeds 100 when boost is enabled
+  const gain = gains.get(el);
+  if (gain) {
+    const g = Math.max(level ?? 100, 100) / 100;
+    gain.gain.value = g;
+    el.dataset.svsGain = String(g); // debug signal, read by tests
+    if (audio!.state === 'suspended') void audio!.resume();
+  }
   if (level === null) return;
   const v = Math.min(level, 100) / 100;
   if (el.volume !== v) el.volume = v;
@@ -57,7 +92,9 @@ function mayRestore(el: HTMLMediaElement): boolean {
 
 function onMediaEvent(e: Event) {
   const el = e.target;
-  if (!(el instanceof HTMLMediaElement) || level === null) return;
+  if (!(el instanceof HTMLMediaElement)) return;
+  if (e.type === 'encrypted') encrypted.add(el);
+  if (level === null) return;
   // our own writes echo back with the value we set, so only a different value is the page's doing
   if (e.type === 'volumechange' && (el.volume === Math.min(level, 100) / 100 || !mayRestore(el))) return;
   apply(el);
