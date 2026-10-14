@@ -176,7 +176,13 @@ line.addEventListener('keydown', (e) => {
 });
 
 $('saveBtn').addEventListener('click', async () => {
-  if (origin) await storage.saveSite(origin, volume);
+  if (!origin) return;
+  try {
+    await storage.saveSite(origin, volume);
+    notice('');
+  } catch (e) {
+    notice(`Save failed: ${(e as Error).message}`, true);
+  }
 });
 $('resetBtn').addEventListener('click', async () => {
   if (!origin) return;
@@ -299,8 +305,12 @@ $('addForm').addEventListener('submit', async (e) => {
   if (!isValidPattern(pattern)) return show('addError', 'Enter an origin like https://example.com or a wildcard like *.example.com.');
   if (!Number.isInteger(level) || level < 0 || level > max()) return show('addError', `Level must be a whole number from 0 to ${max()}.`);
   show('addError', '');
-  await storage.saveSite(pattern, level);
-  input('addPattern').value = '';
+  try {
+    await storage.saveSite(pattern, level);
+    input('addPattern').value = '';
+  } catch (err) {
+    show('addError', `Save failed: ${(err as Error).message}`);
+  }
 });
 
 $('excludeForm').addEventListener('submit', async (e) => {
