@@ -1,5 +1,5 @@
 import { originOf } from '../lib/origin';
-import { clampVolume, emptySettings, isValidPattern, maxVolume, resolveVolume, type Settings } from '../lib/rules';
+import { clampVolume, emptySettings, isExcluded, isValidPattern, maxVolume, resolveVolume, type Settings } from '../lib/rules';
 import { VIZ_PORT, type GetState, type SetVolume, type StateReply, type VizCapture, type VizLevels, type VizStart, type VizStopped } from '../lib/messages';
 import * as storage from '../lib/storage';
 import { exportSettings, parseImport } from '../lib/transfer';
@@ -116,7 +116,7 @@ function paintSource() {
   let tag = '';
   if (reachable && origin) {
     const r = resolveVolume(settings, origin);
-    tag = settings.excluded.includes(origin) ? 'excluded' : r ? r.source === 'exact' ? 'saved' : r.source : 'not saved';
+    tag = isExcluded(settings, origin) ? 'excluded' : r ? r.source === 'exact' ? 'saved' : r.source : 'not saved';
     if (!hasMedia) tag += ' · no media yet';
   }
   $('siteSource').textContent = tag;

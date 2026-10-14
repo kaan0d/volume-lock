@@ -34,8 +34,10 @@ function wildcardMatch(pattern: string, origin: string): number {
   return host === base || host.endsWith('.' + base) ? base.length : -1;
 }
 
+export const isExcluded = (s: Settings, origin: string) => s.excluded.some((p) => p === origin || wildcardMatch(p, origin) >= 0);
+
 export function resolveVolume(s: Settings, origin: string): Resolved | null {
-  if (s.excluded.some((p) => p === origin || wildcardMatch(p, origin) >= 0)) return null;
+  if (isExcluded(s, origin)) return null;
   const done = (volume: number, source: Resolved['source']): Resolved => ({ volume: clampVolume(volume, s.boostEnabled), source });
   if (origin in s.sites) return done(s.sites[origin], 'exact');
   let best: string | null = null;
