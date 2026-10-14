@@ -349,8 +349,9 @@ $('exportBtn').addEventListener('click', () => {
 
 let imported: Settings | null = null;
 const showImport = inlineConfirm('importBtn', 'importConfirm', 'importYes', 'importNo', async () => {
-  if (imported) await storage.replaceSettings(imported);
+  const s = imported;
   imported = null;
+  if (s) await storage.replaceSettings(s).catch((e: Error) => show('backupError', `Import failed: ${e.message}`));
 });
 // the confirm row only appears once a valid file was picked
 $('importBtn').addEventListener('click', () => input('importFile').click());

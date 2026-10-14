@@ -29,12 +29,18 @@ export const setDefaultVolume = (v: number | null) =>
 export const setBoostEnabled = (b: boolean) => sync().set({ boostEnabled: b });
 export const setExcluded = (list: string[]) => sync().set({ excluded: list });
 
-/** Replaces every setting with `s` (import). */
+/** Replaces every setting with `s` (import). On a quota error the old settings are put back. */
 export async function replaceSettings(s: Settings): Promise<void> {
-  await clearSites();
+  const before = await sync().get(null);
   const sites = Object.fromEntries(Object.entries(s.sites).map(([p, v]) => [SITE + p, v]));
-  await sync().set({ ...sites, boostEnabled: s.boostEnabled, excluded: s.excluded });
-  await setDefaultVolume(s.defaultVolume);
+  const rest: Record<string, number> = s.defaultVolume === null ? {} : { defaultVolume: s.defaultVolume };
+  await sync().clear();
+  try {
+    await sync().set({ ...sites, ...rest, boostEnabled: s.boostEnabled, excluded: s.excluded });
+  } catch (e) {
+    await sync().set(before); // they fit before, so they fit again
+    throw e;
+  }
 }
 
 /** Calls cb with fresh settings whenever any sync setting changes. Returns an unsubscribe function. */
