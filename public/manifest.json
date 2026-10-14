@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "Simple Volume Saver",
+  "version": "1.0.0",
+  "description": "Remembers a volume level per site and applies it automatically, with an optional boost up to 200%.",
+  "permissions": ["storage", "tabs", "scripting", "tabCapture", "offscreen"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": "icons/low-volume-16.png"
+  },
+  "icons": {
+    "16": "icons/low-volume-16.png",
+    "48": "icons/low-volume-48.png",
+    "128": "icons/low-volume-128.png"
+  },
+  "commands": {
+    "volume-up": {
+      "suggested_key": { "default": "Alt+Shift+Up" },
+      "description": "Volume up"
+    },
+    "volume-down": {
+      "suggested_key": { "default": "Alt+Shift+Down" },
+      "description": "Volume down"
+    },
+    "toggle-mute": {
+      "suggested_key": { "default": "Alt+Shift+M" },
+      "description": "Mute or unmute this tab"
+    },
+    "save-site": {
+      "suggested_key": { "default": "Alt+Shift+S" },
+      "description": "Save volume for the current site"
+    }
+  }
+}
