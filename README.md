@@ -1,6 +1,6 @@
 # Simple Volume Saver
 
-Chrome extension (Manifest V3) that sets and remembers the audio volume for each site, with a live visualizer of the tab's real audio output.
+Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the volume of each site, with a live visualizer of the tab's audio. Chrome only.
 
 <table>
   <tr>
@@ -10,29 +10,82 @@ Chrome extension (Manifest V3) that sets and remembers the audio volume for each
   </tr>
 </table>
 
-## How it works
+## Features
 
-- Sets the volume of `<video>`/`<audio>` elements on the page directly, independent of the site's own player.
-- Saves a level per origin (`https://example.com`) in `chrome.storage.sync`. The level is applied again on later visits, including to media added after the page loads.
-- The visualizer uses `chrome.tabCapture` to analyze the tab's final mixed output, so it works on sites with their own audio pipeline (YouTube, Spotify).
-- UI: a draggable fader (also arrow keys, Home and End), a saved sites list, dark and light themes.
+- **Volume:** sets the volume of `<video>` and `<audio>` elements on the page, independent of the site's own player. Draggable fader with arrow, Home and End keys, per-tab mute, mute other tabs, dark and light theme.
+- **Rules:** levels saved per origin (`https://example.com`) or per wildcard (`*.example.com`), a default level for unsaved sites, and a "Never touch" list. Exact origin beats wildcard, wildcard beats default, excluded beats all. Saved sites are searchable and editable on the Saved Sites tab.
+- **Boost:** optional, off by default. Raises the limit to 200% through a Web Audio gain node.
+- **Shortcuts:** `Alt+Shift+Up` and `Alt+Shift+Down` change the volume by 5%, `Alt+Shift+M` mutes the tab, `Alt+Shift+S` saves the current site. Chrome lets you change them at `chrome://extensions/shortcuts`.
+- **Badge:** the saved level is shown on the toolbar icon for saved and wildcard sites.
+- **Visualizer:** live level bars from the tab's final audio output, captured with `tabCapture` in an offscreen document. Audio is played back unchanged; nothing is recorded or sent.
+- **Import/export:** all settings as one JSON file. Import is validated and replaces current settings only after confirmation.
+
+## Install
+
+Build from source (Node 22 or later):
+
+1. `npm install`
+2. `npm run build`
+3. Open `chrome://extensions`, enable Developer mode, click **Load unpacked**, and select `dist/`.
+
+## Commands
+
+```bash
+npm run build       # bundle src/ into dist/
+npm run dev         # rebuild on change
+npm run typecheck   # tsc --noEmit
+npm test            # build, then Playwright (Chromium)
+npm run zip         # build, then release/simple-volume-saver-<version>.zip
+```
 
 ## Permissions
 
 | Permission | Why |
 |---|---|
-| `storage` | Saved levels and theme |
-| `scripting`, `activeTab`, `<all_urls>` | Reads and sets media volume, applies saved levels after navigation |
-| `tabs` | Detects when a tab starts playing audio |
-| `tabCapture` | Visualizer only. Audio is analyzed in memory and sent back to the speakers; nothing is recorded or sent |
+| `storage` | Saved levels, rules and settings in `chrome.storage.sync`; theme in `storage.local` |
+| `tabs` | Reads the active tab's URL, mutes tabs, finds audible tabs for "mute other tabs", updates the badge |
+| `scripting` | Injects the content script into tabs already open when the extension is installed or updated |
+| `tabCapture` | Visualizer only. Audio is analyzed in memory and played back; nothing is recorded |
+| `offscreen` | Hosts the visualizer's capture and analysis page, so audio is not cut when the popup closes |
+| `<all_urls>` | The content script runs on every page at `document_start`, so a saved level applies before media plays. Any site can have a level, so access cannot be limited to a list |
 
-## Install
+## Verification
 
-1. Open `chrome://extensions` and enable Developer mode.
-2. Click **Load unpacked** and select this folder.
+50 Playwright tests run the built extension in Chromium against local pages with media. No network access is needed.
+
+| Spec | Tests | Covers |
+|---|---|---|
+| `lib` | 4 | Origin parsing, rule precedence, clamping, import validation and round trip |
+| `content` | 10 | Apply at `document_start`, media added later, shadow DOM, iframes, boost, cross-origin cap, page resets |
+| `background` | 6 | Badge, shortcuts, tab mute, content script injection at install |
+| `popup` | 18 | Fader, save and reset, rules, import/export, sync quota errors, theme, boost |
+| `visualizer` | 4 | Bars from offscreen levels, failed capture, offscreen document lifecycle |
+| `flows` | 6 | End-to-end: popup and shortcuts, badge, import, boost, default volume |
+| `smoke`, `storage` | 2 | Worker starts without errors, storage wrapper and legacy migration |
 
 ## Limits
 
-- Heavily customized players may not respond.
-- The visualizer does not work on internal pages (`chrome://`).
-- Volume above 100% is not supported, because it breaks fullscreen video.
+- Boost is skipped for cross-origin media without CORS and for DRM-protected media. Web Audio cannot read them, so they stay at 100%.
+- Media that is never attached to the page (for example a `new Audio()` that is never inserted) is not covered.
+- Volume controls and the visualizer do not work on browser-internal pages such as `chrome://` and the Chrome Web Store.
+- A level applies to the exact origin only. `https://example.com` does not cover `https://www.example.com` unless a wildcard is saved.
+- Saved sites sync through `chrome.storage.sync`, which holds 512 items and 100 KB in total. Saves and imports over that quota show an error, and a failed import keeps the old settings.
+
+## Layout
+
+```
+src/
+  lib/          origin, rules, storage, transfer, messages (shared pure logic)
+  background.ts service worker: badge, shortcuts, tab mute, offscreen lifecycle
+  content.ts    applies volume and boost in each frame
+  popup/        popup.html, popup.ts, popup.css
+  offscreen/    visualizer capture and analysis
+public/         manifest.json, icons
+tests/          Playwright specs and fixtures
+dist/           build output (generated)
+release/        store zip (generated by npm run zip)
+```
+
+## License
+
+MIT. See [LICENSE.md](LICENSE.md).
