@@ -7,7 +7,7 @@ import { loadSettings, onSettingsChanged } from './lib/storage';
 const ancestors = location.ancestorOrigins;
 const siteOrigin = originOf(ancestors?.length ? ancestors[ancestors.length - 1] : location.href);
 
-const EVENTS = ['play', 'loadedmetadata'];
+const EVENTS = ['play', 'loadedmetadata', 'volumechange'];
 
 let settings = emptySettings();
 let level: number | null = null; // percent; null = leave media alone
@@ -17,6 +17,7 @@ const observer = new MutationObserver((records) => {
   for (const r of records) for (const n of r.addedNodes) if (n instanceof Element) scan(n);
 });
 const watched = new WeakSet<Node>();
+const fights = new WeakMap<HTMLMediaElement, { n: number; since: number }>();
 
 function apply(el: HTMLMediaElement) {
   if (level === null) return;
@@ -44,8 +45,20 @@ function scan(root: Element | Document | ShadowRoot) {
   }
 }
 
+// At most 5 restores per element per second, so a page that keeps resetting can't spin us.
+function mayRestore(el: HTMLMediaElement): boolean {
+  const now = performance.now();
+  let f = fights.get(el);
+  if (!f || now - f.since > 1000) fights.set(el, (f = { n: 0, since: now }));
+  return ++f.n <= 5;
+}
+
 function onMediaEvent(e: Event) {
-  if (e.target instanceof HTMLMediaElement) apply(e.target);
+  const el = e.target;
+  if (!(el instanceof HTMLMediaElement) || level === null) return;
+  // our own writes echo back with the value we set, so only a different value is the page's doing
+  if (e.type === 'volumechange' && (el.volume === Math.min(level, 100) / 100 || !mayRestore(el))) return;
+  apply(el);
 }
 
 function start() {
