@@ -1,7 +1,8 @@
 // Applies the resolved volume to every media element in this frame and keeps it there.
 import { originOf } from './lib/origin';
-import { emptySettings, resolveVolume } from './lib/rules';
+import { clampVolume, emptySettings, resolveVolume } from './lib/rules';
 import { loadSettings, onSettingsChanged } from './lib/storage';
+import type { Message, StateReply } from './lib/messages';
 
 // Iframes follow the tab's site, so an embedded player matches the page around it.
 const ancestors = location.ancestorOrigins;
@@ -10,6 +11,7 @@ const siteOrigin = originOf(ancestors?.length ? ancestors[ancestors.length - 1] 
 const EVENTS = ['play', 'loadedmetadata', 'volumechange'];
 
 let settings = emptySettings();
+let preview: number | null = null; // set-volume override until reload or settings change
 let level: number | null = null; // percent; null = leave media alone
 let started = false;
 
@@ -69,13 +71,28 @@ function start() {
 }
 
 function update() {
-  level = siteOrigin ? (resolveVolume(settings, siteOrigin)?.volume ?? null) : null;
+  level = preview ?? (siteOrigin ? (resolveVolume(settings, siteOrigin)?.volume ?? null) : null);
   if (level !== null) start();
   if (started) scan(document);
 }
 
+function state(): StateReply {
+  const first = document.querySelector<HTMLMediaElement>('video, audio');
+  return { volume: level ?? Math.round((first?.volume ?? 1) * 100), hasMedia: first !== null };
+}
+
+chrome.runtime.onMessage.addListener((msg: Message, _sender, reply) => {
+  if (msg.type === 'set-volume') {
+    preview = clampVolume(msg.volume, settings.boostEnabled);
+    update();
+  } else if (msg.type === 'get-state' && window === window.top) {
+    reply(state()); // only the top frame answers, so the reply is the page's
+  }
+});
+
 onSettingsChanged((s) => {
   settings = s;
+  preview = null;
   update();
 });
 void loadSettings().then((s) => {
