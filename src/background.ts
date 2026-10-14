@@ -22,7 +22,15 @@ async function refreshBadge(tab: chrome.tabs.Tab) {
 
 const refreshAll = async () => (await chrome.tabs.query({})).forEach(refreshBadge);
 
-chrome.runtime.onInstalled.addListener(() => void storage.migrateLegacy());
+/** Chrome only injects content scripts on navigation, so tabs already open at install or update get them here. */
+async function injectOpenTabs() {
+  for (const tab of await chrome.tabs.query({ url: ['http://*/*', 'https://*/*'] })) {
+    if (tab.id === undefined) continue;
+    void chrome.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, files: ['content.js'] }).catch(() => {});
+  }
+}
+
+chrome.runtime.onInstalled.addListener(() => void storage.migrateLegacy().then(() => Promise.all([injectOpenTabs(), refreshAll()])));
 chrome.runtime.onStartup.addListener(() => void storage.migrateLegacy().then(refreshAll));
 chrome.action.setBadgeBackgroundColor({ color: '#5f6368' });
 storage.onSettingsChanged(() => void refreshAll());
