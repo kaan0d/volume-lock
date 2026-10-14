@@ -1,6 +1,6 @@
 import { originOf } from './lib/origin';
 import { clampVolume, resolveVolume } from './lib/rules';
-import type { SetVolume, StateReply } from './lib/messages';
+import type { SetVolume, StateReply, VizStart, VizStopped } from './lib/messages';
 import * as storage from './lib/storage';
 
 // exposed so Playwright can call storage functions inside the real extension
@@ -57,3 +57,34 @@ chrome.commands.onCommand.addListener((name) => void run(name));
 
 // exposed so Playwright can trigger commands (it cannot press extension shortcuts)
 (globalThis as unknown as { svsCommands: { run: typeof run } }).svsCommands = { run };
+
+// ---------- visualizer offscreen document ----------
+
+const OFFSCREEN = 'offscreen/offscreen.html';
+
+const closeOffscreen = async () => {
+  const docs = await chrome.runtime.getContexts({ contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT] });
+  if (docs.length) await chrome.offscreen.closeDocument().catch(() => {});
+};
+
+/** Fresh document per popup: closing the old one ends any capture still running, so getMediaStreamId cannot fail on it. */
+const startOffscreen = async () => {
+  await closeOffscreen();
+  await chrome.offscreen.createDocument({
+    url: OFFSCREEN,
+    reasons: [chrome.offscreen.Reason.USER_MEDIA],
+    justification: 'Plays captured tab audio back unchanged and measures its levels for the popup visualizer.',
+  });
+};
+
+// one document at a time: run opens and closes in order
+let queue: Promise<unknown> = Promise.resolve();
+const serial = (job: () => Promise<void>) => (queue = queue.then(job, job));
+
+chrome.runtime.onMessage.addListener((msg: VizStart | VizStopped, _sender, reply) => {
+  if (msg?.type === 'viz-start') {
+    serial(startOffscreen).then(() => reply(true), () => reply(false));
+    return true;
+  }
+  if (msg?.type === 'viz-stopped') void serial(closeOffscreen);
+});

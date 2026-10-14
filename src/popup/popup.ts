@@ -1,6 +1,6 @@
 import { originOf } from '../lib/origin';
 import { clampVolume, emptySettings, isValidPattern, maxVolume, resolveVolume, type Settings } from '../lib/rules';
-import type { GetState, SetVolume, StateReply } from '../lib/messages';
+import { VIZ_PORT, type GetState, type SetVolume, type StateReply, type VizCapture, type VizLevels, type VizStart, type VizStopped } from '../lib/messages';
 import * as storage from '../lib/storage';
 import { exportSettings, parseImport } from '../lib/transfer';
 
@@ -47,11 +47,40 @@ for (const sel of pages) {
   });
 }
 
-// ---------- visualizer (step 6 fills this in) ----------
+// ---------- visualizer ----------
 
-/** Live level bars for the tab's audio. No-op until the offscreen capture lands; bars stay idle. */
-export function startVisualizer(container: HTMLElement, tabId: number): void {
-  void container, tabId;
+const BAR_MIN = 3;
+const REDUCED_MS = 500; // reduced motion: a calm update every half second
+
+/**
+ * Live level bars for the tab's audio. Capture and analysis run in the offscreen document so the
+ * tab's audio is untouched when the popup closes: closing drops the port, which ends the capture.
+ * Any failure (chrome:// page, no permission, tab closed) leaves the bars idle.
+ */
+export async function startVisualizer(container: HTMLElement, tabId: number): Promise<void> {
+  const bars = [...container.children] as HTMLElement[];
+  const idle = () => bars.forEach((b) => (b.style.height = ''));
+  try {
+    // test-only seam: a synthetic tone instead of tab capture, which needs a real toolbar click
+    const synthetic = new URLSearchParams(location.search).has('vizTest');
+    const start: VizStart = { type: 'viz-start' };
+    if (!(await chrome.runtime.sendMessage(start))) return;
+    const msg: VizCapture = synthetic ? { oscillator: true } : { streamId: await chrome.tabCapture.getMediaStreamId({ targetTabId: tabId }) };
+    const port = chrome.runtime.connect({ name: VIZ_PORT });
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    let last = 0;
+    port.onMessage.addListener((levels: VizLevels) => {
+      if (reduced.matches && performance.now() - last < REDUCED_MS) return;
+      last = performance.now();
+      levels.forEach((l, i) => bars[i] && (bars[i].style.height = `${BAR_MIN + (l / 255) * (BAR_AREA - BAR_MIN)}px`));
+    });
+    port.onDisconnect.addListener(idle);
+    port.postMessage(msg);
+  } catch {
+    idle();
+    const stopped: VizStopped = { type: 'viz-stopped' }; // no port was opened, so close the document here
+    void chrome.runtime.sendMessage(stopped).catch(() => {});
+  }
 }
 
 // ---------- volume tab ----------
@@ -198,7 +227,7 @@ async function initVolumeTab() {
   for (let i = 0; i < BARS; i++) bars.appendChild(document.createElement('span'));
   paintReachable();
   render();
-  if (reachable) startVisualizer(bars, tabId!);
+  if (reachable) void startVisualizer(bars, tabId!);
 }
 
 // ---------- saved sites tab ----------

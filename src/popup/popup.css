@@ -298,6 +298,12 @@ html[data-theme="light"] .icon-moon {
   transition: height 0.09s ease-out, background 0.35s ease;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .wave-bars span {
+    transition: none;
+  }
+}
+
 .wave-bars.is-quiet span {
   background: linear-gradient(to top, var(--text-muted), var(--border));
   transition-duration: 0.3s;
