@@ -13,7 +13,8 @@ export function parseImport(json: string): Settings {
   if (!d || typeof d !== 'object' || Array.isArray(d)) throw new Error('Expected a JSON object');
   if (d.version !== 1) throw new Error(`Unsupported version: ${d.version}`);
   if (typeof d.boostEnabled !== 'boolean') throw new Error('boostEnabled must be true or false');
-  const boost = d.boostEnabled;
+  // levels above 100 are kept while boost is off (they play at 100), so an export can hold them
+  const boost = true; // validate against the 200 cap whatever boostEnabled says
   if (d.defaultVolume !== null && !isValidVolume(d.defaultVolume, boost)) {
     throw new Error(`Invalid defaultVolume: ${d.defaultVolume}`);
   }
@@ -26,5 +27,5 @@ export function parseImport(json: string): Settings {
   for (const p of d.excluded) {
     if (typeof p !== 'string' || !isValidPattern(p)) throw new Error(`Invalid excluded entry: ${p}`);
   }
-  return { defaultVolume: d.defaultVolume, boostEnabled: boost, sites: d.sites, excluded: d.excluded };
+  return { defaultVolume: d.defaultVolume, boostEnabled: d.boostEnabled, sites: d.sites, excluded: d.excluded };
 }
