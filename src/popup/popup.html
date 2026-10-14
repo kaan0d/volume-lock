@@ -58,7 +58,46 @@
       </section>
     </section>
 
-    <section class="tab-page hidden" id="pageSites" role="tabpanel" aria-labelledby="tabBtnSites"></section>
+    <section class="tab-page hidden" id="pageSites" role="tabpanel" aria-labelledby="tabBtnSites">
+      <section class="card sites-card">
+        <div class="sites-header">
+          <h2>Saved sites</h2>
+          <span id="siteCount" class="badge">0</span>
+        </div>
+        <input id="search" class="field" type="search" placeholder="Search saved sites" aria-label="Search saved sites">
+        <ul id="siteList" class="site-list"></ul>
+        <p id="emptyState" class="empty-state">No sites saved yet. Set a level on the Volume tab and hit <strong>Save site</strong>.</p>
+        <form id="addForm" class="row" autocomplete="off">
+          <input id="addPattern" class="field grow" type="text" placeholder="https://example.com or *.example.com" aria-label="Site or wildcard pattern" spellcheck="false">
+          <input id="addLevel" class="field level" type="number" min="0" max="100" value="100" aria-label="Level for new site">
+          <button class="btn btn-primary" type="submit">Add</button>
+        </form>
+        <p id="addError" class="notice warn hidden" role="alert"></p>
+        <div id="deleteAllRow" class="delete-all-row"></div>
+      </section>
+
+      <section class="card sites-card">
+        <div class="sites-header"><h2>Never touch</h2><span id="excludeCount" class="badge">0</span></div>
+        <ul id="excludeList" class="site-list"></ul>
+        <form id="excludeForm" class="row" autocomplete="off">
+          <input id="excludePattern" class="field grow" type="text" placeholder="https://example.com or *.example.com" aria-label="Origin or wildcard to exclude" spellcheck="false">
+          <button class="btn btn-ghost" type="submit">Exclude</button>
+        </form>
+        <p id="excludeError" class="notice warn hidden" role="alert"></p>
+      </section>
+
+      <section class="card sites-card">
+        <div class="sites-header"><h2>Options</h2></div>
+        <div class="row opt">
+          <label class="check"><input id="defaultOn" type="checkbox"> Default volume for unsaved sites</label>
+          <input id="defaultLevel" class="field level" type="number" min="0" max="100" value="100" aria-label="Default volume level">
+        </div>
+        <div class="row opt">
+          <label class="check"><input id="boostOn" type="checkbox"> Allow boost up to 200%</label>
+        </div>
+        <p id="boostNote" class="notice hidden"></p>
+      </section>
+    </section>
 
     <footer class="app-footer">
       <p class="footer-note">Mind adding a star? It helps this reach more people.</p>

@@ -1,5 +1,5 @@
 import { originOf } from '../lib/origin';
-import { clampVolume, emptySettings, maxVolume, resolveVolume, type Settings } from '../lib/rules';
+import { clampVolume, emptySettings, isValidPattern, maxVolume, resolveVolume, type Settings } from '../lib/rules';
 import type { GetState, SetVolume, StateReply } from '../lib/messages';
 import * as storage from '../lib/storage';
 
@@ -200,11 +200,101 @@ async function initVolumeTab() {
   if (reachable) startVisualizer(bars, tabId!);
 }
 
+// ---------- saved sites tab ----------
+
+const input = (id: string) => $<HTMLInputElement>(id);
+const show = (id: string, text: string) => {
+  $(id).textContent = text;
+  $(id).classList.toggle('hidden', !text);
+};
+
+function el(tag: string, props: Record<string, unknown> = {}, ...kids: Node[]): HTMLElement {
+  const e = Object.assign(document.createElement(tag), props) as HTMLElement;
+  e.append(...kids);
+  return e;
+}
+
+/** A pattern/value row with a delete button; `middle` is an extra element between them. */
+function row(pattern: string, onDelete: () => void, middle?: HTMLElement) {
+  const del = el('button', { type: 'button', className: 'icon-btn-remove', title: 'Remove', textContent: '×' });
+  del.setAttribute('aria-label', `Remove ${pattern}`);
+  del.addEventListener('click', onDelete);
+  return el('li', { className: 'site-row' }, el('span', { className: 'site-host', textContent: pattern, title: pattern }), ...(middle ? [middle] : []), del);
+}
+
+function levelInput(label: string, value: number, onCommit: (v: number) => void) {
+  const f = el('input', { type: 'number', className: 'field', min: '0', max: String(max()), value: String(value) }) as unknown as HTMLInputElement;
+  f.setAttribute('aria-label', label);
+  f.addEventListener('change', () => {
+    if (f.value.trim() === '' || Number.isNaN(f.valueAsNumber)) return void (f.value = String(value));
+    onCommit(clampVolume(f.valueAsNumber, settings.boostEnabled));
+  });
+  return el('span', { className: 'site-level' }, f, document.createTextNode('%'));
+}
+
+function renderSites() {
+  const q = input('search').value.trim().toLowerCase();
+  const all = Object.entries(settings.sites).sort(([a], [b]) => a.localeCompare(b));
+  const shown = all.filter(([p]) => p.toLowerCase().includes(q));
+  $('siteCount').textContent = String(all.length);
+  $('siteList').replaceChildren(
+    ...shown.map(([p, v]) => row(p, () => storage.removeSite(p), levelInput(`Level for ${p}`, v, (n) => storage.saveSite(p, n)))),
+  );
+  $('emptyState').textContent = all.length ? 'No matching sites.' : 'No sites saved yet. Set a level on the Volume tab and hit Save site.';
+  $('emptyState').classList.toggle('hidden', shown.length > 0);
+
+  $('excludeCount').textContent = String(settings.excluded.length);
+  $('excludeList').replaceChildren(
+    ...settings.excluded.map((p) => row(p, () => storage.setExcluded(settings.excluded.filter((x) => x !== p)))),
+  );
+
+  const m = String(max());
+  for (const id of ['addLevel', 'defaultLevel']) input(id).max = m;
+  input('boostOn').checked = settings.boostEnabled;
+  input('defaultOn').checked = settings.defaultVolume !== null;
+  input('defaultLevel').disabled = settings.defaultVolume === null;
+  if (document.activeElement !== input('defaultLevel') && settings.defaultVolume !== null) input('defaultLevel').value = String(settings.defaultVolume);
+  const over = all.filter(([, v]) => v > 100).length + ((settings.defaultVolume ?? 0) > 100 ? 1 : 0);
+  show('boostNote', !settings.boostEnabled && over ? `${over} stored level${over > 1 ? 's are' : ' is'} above 100% and play at 100% while boost is off. They are kept as they are.` : '');
+}
+
+input('search').addEventListener('input', renderSites);
+
+const levelOf = (id: string) => input(id).valueAsNumber;
+$('addForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pattern = input('addPattern').value.trim().toLowerCase();
+  const level = levelOf('addLevel');
+  if (!isValidPattern(pattern)) return show('addError', 'Enter an origin like https://example.com or a wildcard like *.example.com.');
+  if (!Number.isInteger(level) || level < 0 || level > max()) return show('addError', `Level must be a whole number from 0 to ${max()}.`);
+  show('addError', '');
+  await storage.saveSite(pattern, level);
+  input('addPattern').value = '';
+});
+
+$('excludeForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pattern = input('excludePattern').value.trim().toLowerCase();
+  if (!isValidPattern(pattern)) return show('excludeError', 'Enter an origin like https://example.com or a wildcard like *.example.com.');
+  show('excludeError', '');
+  if (!settings.excluded.includes(pattern)) await storage.setExcluded([...settings.excluded, pattern]);
+  input('excludePattern').value = '';
+});
+
+const saveDefault = () => {
+  const n = levelOf('defaultLevel');
+  return storage.setDefaultVolume(input('defaultOn').checked ? clampVolume(Number.isNaN(n) ? 100 : n, settings.boostEnabled) : null);
+};
+input('defaultOn').addEventListener('change', saveDefault);
+input('defaultLevel').addEventListener('change', saveDefault);
+input('boostOn').addEventListener('change', () => storage.setBoostEnabled(input('boostOn').checked));
+
 // ---------- boot ----------
 
 function render() {
   paintSource();
   paintFader();
+  renderSites();
 }
 
 void (async () => {
