@@ -1,2 +1,71 @@
-// content script stub (bundled as IIFE)
-export {};
+// Applies the resolved volume to every media element in this frame and keeps it there.
+import { originOf } from './lib/origin';
+import { emptySettings, resolveVolume } from './lib/rules';
+import { loadSettings, onSettingsChanged } from './lib/storage';
+
+// Iframes follow the tab's site, so an embedded player matches the page around it.
+const ancestors = location.ancestorOrigins;
+const siteOrigin = originOf(ancestors?.length ? ancestors[ancestors.length - 1] : location.href);
+
+const EVENTS = ['play', 'loadedmetadata'];
+
+let settings = emptySettings();
+let level: number | null = null; // percent; null = leave media alone
+let started = false;
+
+const observer = new MutationObserver((records) => {
+  for (const r of records) for (const n of r.addedNodes) if (n instanceof Element) scan(n);
+});
+const watched = new WeakSet<Node>();
+
+function apply(el: HTMLMediaElement) {
+  if (level === null) return;
+  const v = Math.min(level, 100) / 100;
+  if (el.volume !== v) el.volume = v;
+}
+
+function watch(root: Document | ShadowRoot) {
+  if (watched.has(root)) return;
+  watched.add(root);
+  observer.observe(root, { childList: true, subtree: true });
+  // media events don't cross shadow boundaries, so the window listener can't see these
+  if (root instanceof ShadowRoot) for (const t of EVENTS) root.addEventListener(t, onMediaEvent, true);
+}
+
+/** Applies to all media under root, descending into open shadow roots. */
+function scan(root: Element | Document | ShadowRoot) {
+  const els = root instanceof Element ? [root, ...root.querySelectorAll('*')] : root.querySelectorAll('*');
+  for (const el of els) {
+    if (el instanceof HTMLMediaElement) apply(el);
+    if (el.shadowRoot) {
+      watch(el.shadowRoot);
+      scan(el.shadowRoot);
+    }
+  }
+}
+
+function onMediaEvent(e: Event) {
+  if (e.target instanceof HTMLMediaElement) apply(e.target);
+}
+
+function start() {
+  if (started) return;
+  started = true;
+  for (const t of EVENTS) window.addEventListener(t, onMediaEvent, true);
+  watch(document);
+}
+
+function update() {
+  level = siteOrigin ? (resolveVolume(settings, siteOrigin)?.volume ?? null) : null;
+  if (level !== null) start();
+  if (started) scan(document);
+}
+
+onSettingsChanged((s) => {
+  settings = s;
+  update();
+});
+void loadSettings().then((s) => {
+  settings = s;
+  update();
+});
