@@ -1,12 +1,78 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <title>Simple Volume Saver</title>
   <link rel="stylesheet" href="./popup.css">
 </head>
 <body>
-  <main id="app">Simple Volume Saver</main>
+  <div class="app">
+    <header class="app-header">
+      <div class="brand">
+        <img src="/icons/low-volume-48.png" alt="" class="brand-icon">
+        <h1>Volume Saver</h1>
+      </div>
+      <button id="themeToggle" class="icon-btn" type="button" title="Toggle theme" aria-label="Toggle theme">
+        <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+        </svg>
+        <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn" id="tabBtnMain" type="button" role="tab" aria-selected="true" aria-controls="pageMain">Volume</button>
+      <button class="tab-btn" id="tabBtnSites" type="button" role="tab" aria-selected="false" aria-controls="pageSites">Saved Sites</button>
+    </nav>
+
+    <section class="tab-page" id="pageMain" role="tabpanel" aria-labelledby="tabBtnMain">
+      <section class="card volume-card">
+        <div class="site-label-row">
+          <span class="site-label" id="siteOrigin">&nbsp;</span>
+          <span class="source-tag" id="siteSource"></span>
+        </div>
+
+        <div class="wave-control" id="waveControl">
+          <span id="volumeDisplay" class="volume-value-bg" aria-hidden="true">100%</span>
+          <span id="waveBars" class="wave-bars" aria-hidden="true"></span>
+          <span id="boostMark" class="boost-mark hidden" aria-hidden="true">100%</span>
+          <div id="waveLine" class="wave-line" role="slider" tabindex="0" aria-label="Volume" aria-orientation="vertical"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+            <span class="wave-line-arrow wave-line-arrow-up" aria-hidden="true"></span>
+            <span class="wave-line-arrow wave-line-arrow-down" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div class="volume-actions">
+          <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
+          <button id="saveBtn" class="btn btn-primary" type="button">Save site</button>
+        </div>
+        <div class="volume-actions">
+          <button id="muteBtn" class="btn btn-ghost" type="button" aria-pressed="false">Mute tab</button>
+          <button id="muteOthersBtn" class="btn btn-ghost" type="button">Mute other tabs</button>
+        </div>
+        <p id="notice" class="notice hidden" role="status"></p>
+      </section>
+    </section>
+
+    <section class="tab-page hidden" id="pageSites" role="tabpanel" aria-labelledby="tabBtnSites"></section>
+
+    <footer class="app-footer">
+      <p class="footer-note">Mind adding a star? It helps this reach more people.</p>
+      <div class="github-actions">
+        <a class="btn btn-star btn-link" href="https://github.com/kaan0d/simple-volume-saver" target="_blank" rel="noopener noreferrer">
+          <svg class="icon icon-star" viewBox="0 0 24 24" fill="#ffc632" stroke="#e0a300" stroke-width="1" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="12 2 14.9 8.6 22 9.3 16.5 14 18.2 21 12 17.3 5.8 21 7.5 14 2 9.3 9.1 8.6"></polygon>
+          </svg>
+          Star on GitHub
+        </a>
+        <a class="btn btn-follow btn-link" href="https://github.com/kaan0d" target="_blank" rel="noopener noreferrer">Follow</a>
+      </div>
+    </footer>
+  </div>
   <script type="module" src="./popup.ts"></script>
 </body>
 </html>
