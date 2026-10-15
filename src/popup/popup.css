@@ -6,8 +6,9 @@ body {
     var(--backdrop), var(--bg);
 }
 [hidden] { display: none !important; }
+body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for */
 
-.app { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-4); animation: rise var(--dur-slow) var(--ease-spring) both; }
+.app { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-4); animation: rise var(--dur-slow) var(--ease-spring) backwards; /* not "both": a held transform/opacity breaks the menu's backdrop blur */ }
 @keyframes rise { from { opacity: 0; transform: translateY(8px) scale(.98); } }
 
 /* header */
@@ -30,6 +31,7 @@ body {
 .controls { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
 .controls.is-off { opacity: .6; }
 .knob-host { display: grid; place-items: center; min-height: 240px; width: 100%; --knob-size: 240px; }
+.app:has(#hint:not([hidden])) .knob-host { --knob-size: 200px; min-height: 200px; } /* keeps the first run under Chrome's 600px popup limit */
 .row { display: flex; align-items: center; gap: var(--space-2); width: 100%; }
 .chips { justify-content: center; }
 .chip { min-width: 56px; }
