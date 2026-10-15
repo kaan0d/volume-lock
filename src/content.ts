@@ -1,129 +1,90 @@
-// Applies the resolved volume to every media element in this frame and keeps it there.
+// Isolated-world half of the override: resolves this frame's level from storage and pushes it to
+// the MAIN-world script (inject.ts), which applies it. Also answers the popup and reports media
+// only tab capture can boost.
 import { originOf } from './lib/origin';
 import { clampVolume, emptySettings, resolveVolume } from './lib/rules';
 import { loadSettings, onSettingsChanged } from './lib/storage';
-import type { Message, StateReply } from './lib/messages';
+import type { CaptureState, LevelChanged, LevelReply, Message, NeedsCapture, StateReply } from './lib/messages';
 
 // Iframes follow the tab's site, so an embedded player matches the page around it.
 const ancestors = location.ancestorOrigins;
 const siteOrigin = originOf(ancestors?.length ? ancestors[ancestors.length - 1] : location.href);
 
-const EVENTS = ['play', 'loadedmetadata', 'volumechange', 'encrypted'];
-
 let settings = emptySettings();
 let preview: number | null = null; // set-volume override until reload or settings change
 let level: number | null = null; // percent; null = leave media alone
-let started = false;
+let captured = false; // tab capture applies the boost, so in-page stays at 100 or below
 
-const observer = new MutationObserver((records) => {
-  for (const r of records) for (const n of r.addedNodes) if (n instanceof Element) scan(n);
+// ---------- private channel to the MAIN world ----------
+// Both scripts run at document_start before any page script, in either order: each side announces
+// itself and the key is handed over once. Events on the key's name are invisible to a page that
+// doesn't know it, and MAIN stops listening for keys after the first.
+
+const key = crypto.randomUUID();
+const toMain = (data: unknown) => window.dispatchEvent(new CustomEvent(key, { detail: JSON.stringify(data) }));
+const sendKey = () => window.dispatchEvent(new CustomEvent('svs:key', { detail: key }));
+let probeReply: unknown;
+let resolved = false; // nothing is sent until storage answered, so MAIN keeps holding instead of passing through
+const push = () => resolved && toMain({ level: level === null || !captured ? level : Math.min(level, 100) });
+
+window.addEventListener('svs:hello', sendKey);
+window.addEventListener(key + ':up', (e) => {
+  const msg = JSON.parse((e as CustomEvent<string>).detail);
+  if (msg.ready) {
+    window.removeEventListener('svs:hello', sendKey);
+    push();
+  }
+  if (msg.needsCapture) void chrome.runtime.sendMessage({ type: 'needs-capture' } satisfies NeedsCapture).catch(() => {});
+  if (msg.probe) probeReply = msg.probe;
 });
-const watched = new WeakSet<Node>();
-const fights = new WeakMap<HTMLMediaElement, { n: number; since: number }>();
+// After an extension update this copy is orphaned (no runtime) and the new copy's key arrives here:
+// the MAIN script, which can't be replaced in a running page, switches to it. A page can't trigger this.
+window.addEventListener('svs:key', (e) => {
+  if (!chrome.runtime?.id) toMain({ rekey: (e as CustomEvent<string>).detail });
+});
+sendKey();
 
-// Boost: element.volume tops out at 1, so above 100% the element goes through a GainNode.
-// Routing is permanent and allowed once per element, so it only happens when boost is needed.
-let audio: AudioContext | undefined;
-const gains = new WeakMap<HTMLMediaElement, GainNode>();
-const encrypted = new WeakSet<HTMLMediaElement>();
+/** Test seam: MAIN's view of every tracked element and master gain (only reachable from the extension). */
+(globalThis as unknown as { svsProbe: () => unknown }).svsProbe = () => {
+  toMain({ probe: true }); // MAIN answers synchronously
+  return probeReply;
+};
 
-/** Web Audio outputs silence for DRM and for cross-origin media fetched without CORS. */
-function canBoost(el: HTMLMediaElement): boolean {
-  if (el.mediaKeys || encrypted.has(el) || !el.currentSrc) return false;
-  if (el.crossOrigin !== null) return true; // CORS request: if it loaded, it's readable
-  const url = new URL(el.currentSrc, location.href);
-  return url.protocol === 'data:' || url.origin === location.origin; // blob: carries its creator's origin
-}
+// ---------- level ----------
 
-function route(el: HTMLMediaElement) {
-  if (gains.has(el) || !canBoost(el)) return;
-  try {
-    audio ??= new AudioContext();
-    const gain = audio.createGain();
-    audio.createMediaElementSource(el).connect(gain).connect(audio.destination);
-    gains.set(el, gain);
-  } catch {
-    // already routed by the page's own AudioContext: stay capped at 100
+async function reportLevel() {
+  // The background only cares while capture boosts this tab, or might start to.
+  if (!captured && (level === null || level <= 100)) return;
+  const msg: LevelChanged = { type: 'level', volume: level };
+  const reply = await chrome.runtime.sendMessage<LevelChanged, LevelReply>(msg).catch(() => null);
+  if (reply && reply.captured !== captured) {
+    captured = reply.captured;
+    push();
   }
-}
-
-/** Element volume carries up to 100%, the gain the rest; elements stay routed once boosted. */
-function apply(el: HTMLMediaElement) {
-  if (level !== null && level > 100) route(el); // level only exceeds 100 when boost is enabled
-  const gain = gains.get(el);
-  if (gain) {
-    const g = Math.max(level ?? 100, 100) / 100;
-    gain.gain.value = g;
-    el.dataset.svsGain = String(g); // debug signal, read by tests
-    if (audio!.state === 'suspended') void audio!.resume();
-  }
-  if (level === null) return;
-  const v = Math.min(level, 100) / 100;
-  if (el.volume !== v) el.volume = v;
-}
-
-function watch(root: Document | ShadowRoot) {
-  if (watched.has(root)) return;
-  watched.add(root);
-  observer.observe(root, { childList: true, subtree: true });
-  // media events don't cross shadow boundaries, so the window listener can't see these
-  if (root instanceof ShadowRoot) for (const t of EVENTS) root.addEventListener(t, onMediaEvent, true);
-}
-
-/** Applies to all media under root, descending into open shadow roots. */
-function scan(root: Element | Document | ShadowRoot) {
-  const els = root instanceof Element ? [root, ...root.querySelectorAll('*')] : root.querySelectorAll('*');
-  for (const el of els) {
-    if (el instanceof HTMLMediaElement) apply(el);
-    if (el.shadowRoot) {
-      watch(el.shadowRoot);
-      scan(el.shadowRoot);
-    }
-  }
-}
-
-// At most 5 restores per element per second, so a page that keeps resetting can't spin us.
-function mayRestore(el: HTMLMediaElement): boolean {
-  const now = performance.now();
-  let f = fights.get(el);
-  if (!f || now - f.since > 1000) fights.set(el, (f = { n: 0, since: now }));
-  return ++f.n <= 5;
-}
-
-function onMediaEvent(e: Event) {
-  const el = e.target;
-  if (!(el instanceof HTMLMediaElement)) return;
-  if (e.type === 'encrypted') encrypted.add(el);
-  if (level === null) return;
-  // our own writes echo back with the value we set, so only a different value is the page's doing
-  if (e.type === 'volumechange' && (el.volume === Math.min(level, 100) / 100 || !mayRestore(el))) return;
-  apply(el);
-}
-
-function start() {
-  if (started) return;
-  started = true;
-  for (const t of EVENTS) window.addEventListener(t, onMediaEvent, true);
-  watch(document);
 }
 
 function update() {
+  resolved = true;
   level = preview ?? (siteOrigin ? (resolveVolume(settings, siteOrigin)?.volume ?? null) : null);
-  if (level !== null) start();
-  if (started) scan(document);
+  push();
+  void reportLevel();
 }
 
 function state(): StateReply {
   const first = document.querySelector<HTMLMediaElement>('video, audio');
+  // this world sees the real element volume, which equals the page's own value when we leave it alone
   return { volume: level ?? Math.round((first?.volume ?? 1) * 100), hasMedia: first !== null };
 }
 
-chrome.runtime.onMessage.addListener((msg: Message, _sender, reply) => {
+chrome.runtime.onMessage.addListener((msg: Message | CaptureState, _sender, reply) => {
   if (msg.type === 'set-volume') {
     preview = clampVolume(msg.volume, settings.boostEnabled);
     update();
   } else if (msg.type === 'get-state' && window === window.top) {
     reply(state()); // only the top frame answers, so the reply is the page's
+  } else if (msg.type === 'capture-state') {
+    captured = msg.active;
+    push();
   }
 });
 

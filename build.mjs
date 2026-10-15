@@ -1,4 +1,4 @@
-// Vite can't emit IIFE for multiple inputs, so background and content are
+// Vite can't emit IIFE for multiple inputs, so background and the content scripts are
 // separate single-file IIFE builds; popup and offscreen pages build together.
 import { build } from 'vite';
 
@@ -16,6 +16,7 @@ const iife = (name, first) => ({
 
 await build(iife('background', true));
 await build(iife('content', false));
+await build(iife('inject', false));
 await build({
   ...common,
   publicDir: false,

@@ -1,0 +1,347 @@
+// MAIN-world half of the override, injected at document_start before any page script.
+// Page writes to `volume` are kept as the page's virtual value and read back unchanged; the real
+// element volume and a master gain in front of every AudioContext destination follow our level.
+// With no level for the site everything passes through (real === virtual, gain 1).
+// The isolated content script (content.ts) owns storage and messaging and pushes the level here.
+
+// Captured before page code runs, so later page patches can't intercept or break us.
+const call = Reflect.apply;
+const gopd = Reflect.getOwnPropertyDescriptor;
+const define = Reflect.defineProperty;
+const { parse, stringify } = JSON;
+const Custom = CustomEvent;
+const Ev = Event;
+const listen = EventTarget.prototype.addEventListener;
+const unlisten = EventTarget.prototype.removeEventListener;
+const dispatch = EventTarget.prototype.dispatchEvent;
+const detailOf = gopd(CustomEvent.prototype, 'detail')!.get!;
+const Observer = MutationObserver;
+const observe = MutationObserver.prototype.observe;
+const fnToString = Function.prototype.toString;
+const Media = HTMLMediaElement;
+const vol = gopd(Media.prototype, 'volume')!;
+const play = Media.prototype.play;
+const attachShadow = Element.prototype.attachShadow;
+const Ctx = AudioContext;
+const Offline = OfflineAudioContext;
+const Dest = AudioDestinationNode;
+const connect = AudioNode.prototype.connect as (this: AudioNode, ...a: unknown[]) => unknown;
+const disconnect = AudioNode.prototype.disconnect as (this: AudioNode, ...a: unknown[]) => unknown;
+const contextOf = gopd(AudioNode.prototype, 'context')!.get!;
+const destinationOf = gopd(BaseAudioContext.prototype, 'destination')!.get!;
+const createGain = BaseAudioContext.prototype.createGain;
+const createSource = AudioContext.prototype.createMediaElementSource;
+const gainOf = gopd(GainNode.prototype, 'gain')!.get!;
+const setParam = gopd(AudioParam.prototype, 'value')!.set!;
+const scratch = document.createElement('audio'); // validates page writes exactly like the real setter
+
+const realGet = (el: HTMLMediaElement): number => call(vol.get!, el, []);
+const realSet = (el: HTMLMediaElement, v: number) => call(vol.set!, el, [v]);
+
+let pending = true; // no level yet: hold real output silent instead of risking a blast
+let level: number | null = null; // percent; null = pass through
+const controlled = () => pending || level !== null;
+
+const seen = new WeakSet<HTMLMediaElement>();
+const tracked = new Set<WeakRef<HTMLMediaElement>>();
+const virtual = new WeakMap<HTMLMediaElement, number>();
+const routed = new WeakSet<HTMLMediaElement>(); // goes through an AudioContext, so the master gain carries the level
+const encrypted = new WeakSet<HTMLMediaElement>();
+const masters = new WeakMap<BaseAudioContext, GainNode>();
+const masterList: WeakRef<GainNode>[] = [];
+let ours: AudioContext | undefined; // private context for boosting plain elements
+let reported = false;
+
+// ---------- level channel ----------
+
+let key = '';
+const up = (data: unknown) => key && call(dispatch, window, [new Custom(key + ':up', { detail: stringify(data) })]);
+
+function onKey(e: Event) {
+  const k = call(detailOf, e, []);
+  if (typeof k !== 'string' || key) return;
+  key = k;
+  call(unlisten, window, ['svs:key', onKey]); // first key wins; later page spoofs are ignored
+  call(listen, window, [key, onMessage]);
+  up({ ready: true });
+}
+
+/** After an extension update this copy can't be replaced; the orphaned isolated script hands it the new key. */
+function rekey(k: string) {
+  call(unlisten, window, [key, onMessage]);
+  key = k;
+  call(listen, window, [key, onMessage]);
+  up({ ready: true });
+}
+
+function onMessage(e: Event) {
+  const msg = parse(call(detailOf, e, []));
+  if ('level' in msg) setLevel(msg.level);
+  if (msg.probe) up({ probe: probe() });
+  if (typeof msg.rekey === 'string') rekey(msg.rekey);
+}
+
+function setLevel(l: number | null) {
+  pending = false;
+  level = l;
+  reported = false;
+  for (const ref of tracked) {
+    const el = ref.deref();
+    if (el) apply(el);
+    else tracked.delete(ref);
+  }
+  for (const ref of masterList) {
+    const g = ref.deref();
+    if (g) setGain(g);
+  }
+}
+
+/** Test seam, reachable only through the secret channel. */
+const probe = () => ({
+  els: [...tracked].flatMap((r) => {
+    const el = r.deref();
+    return el ? [{ id: el.id, real: realGet(el), virtual: virtual.get(el), routed: routed.has(el) }] : [];
+  }),
+  gains: masterList.flatMap((r) => {
+    const g = r.deref();
+    return g ? [Math.round(g.gain.value * 1000) / 1000] : []; // float32 param
+  }),
+});
+
+// ---------- media elements ----------
+
+/** Web Audio outputs silence for DRM and for cross-origin media fetched without CORS; undefined = not loaded yet. */
+function boostable(el: HTMLMediaElement): boolean | undefined {
+  if (el.mediaKeys || encrypted.has(el)) return false;
+  if (!el.currentSrc) return undefined;
+  if (el.crossOrigin !== null) return true; // CORS request: if it loaded, it's readable
+  const url = new URL(el.currentSrc, location.href);
+  return url.protocol === 'data:' || url.origin === location.origin; // blob: carries its creator's origin
+}
+
+/** Element volume tops out at 1, so above 100% the element goes through our context's master gain. Permanent. */
+function route(el: HTMLMediaElement) {
+  const ok = boostable(el);
+  if (ok === undefined) return;
+  if (!ok) {
+    if (!reported) up({ needsCapture: true }); // only tab capture can boost this one
+    reported = true;
+    return;
+  }
+  try {
+    ours ??= new Ctx();
+    call(connect, call(createSource, ours, [el]), [master(ours)]);
+    if (ours.state === 'suspended') void ours.resume();
+  } catch {
+    // InvalidStateError: the page already routed it (e.g. `new MediaElementAudioSourceNode`)
+  }
+  routed.add(el);
+}
+
+const target = (el: HTMLMediaElement) =>
+  pending ? 0 : level === null ? virtual.get(el)! : routed.has(el) ? 1 : Math.min(level, 100) / 100;
+
+function apply(el: HTMLMediaElement) {
+  if (!pending && level !== null && level > 100 && !routed.has(el)) route(el);
+  const v = target(el);
+  if (realGet(el) !== v) realSet(el, v);
+}
+
+// Backstop for writes that bypass our setter (another realm's native setter, an older copy of the
+// extension still running after an update): put the real volume back, at most 5 times a second.
+const restores = new WeakMap<HTMLMediaElement, { n: number; since: number }>();
+function mayRestore(el: HTMLMediaElement): boolean {
+  const now = performance.now();
+  let r = restores.get(el);
+  if (!r || now - r.since > 1000) restores.set(el, (r = { n: 0, since: now }));
+  return ++r.n <= 5;
+}
+
+function onMediaEvent(this: HTMLMediaElement, e: Event) {
+  if (e.type === 'encrypted') encrypted.add(this);
+  if (e.type === 'volumechange' && (realGet(this) === target(this) || !mayRestore(this))) return;
+  apply(this);
+}
+
+function track(el: HTMLMediaElement) {
+  if (seen.has(el)) return;
+  seen.add(el);
+  virtual.set(el, realGet(el));
+  tracked.add(new WeakRef(el));
+  for (const t of ['play', 'loadedmetadata', 'encrypted', 'volumechange']) call(listen, el, [t, onMediaEvent]);
+  apply(el);
+}
+
+// ---------- discovery: DOM, open and closed shadow roots ----------
+
+const observer = new Observer((records) => {
+  for (const r of records) for (const n of r.addedNodes) if (n instanceof Element) scan(n);
+});
+
+function watch(root: Document | ShadowRoot) {
+  call(observe, observer, [root, { childList: true, subtree: true }]);
+  call(listen, root, ['play', (e: Event) => e.target instanceof Media && track(e.target), true]);
+}
+
+/** Tracks media under root, descending into open shadow roots made by the parser. */
+function scan(root: Element | Document | ShadowRoot) {
+  const els = root instanceof Element ? [root, ...root.querySelectorAll('*')] : root.querySelectorAll('*');
+  for (const el of els) {
+    if (el instanceof Media) track(el);
+    if (el.shadowRoot && !seenRoots.has(el.shadowRoot)) {
+      seenRoots.add(el.shadowRoot);
+      watch(el.shadowRoot);
+      scan(el.shadowRoot);
+    }
+  }
+}
+const seenRoots = new WeakSet<ShadowRoot>();
+
+// ---------- Web Audio ----------
+
+const gainValue = () => (pending ? 0 : level === null ? 1 : level / 100);
+const setGain = (g: GainNode) => call(setParam, call(gainOf, g, []), [gainValue()]);
+
+/** Master gain per realtime context, wired to the real destination with the original connect. */
+function master(ctx: BaseAudioContext): GainNode {
+  let g = masters.get(ctx);
+  if (!g) {
+    g = call(createGain, ctx, []) as GainNode;
+    call(connect, g, [call(destinationOf, ctx, [])]);
+    setGain(g);
+    masters.set(ctx, g);
+    masterList.push(new WeakRef(g));
+  }
+  return g;
+}
+
+/** Page connections to a realtime destination go to that context's master gain instead. */
+function mapDest(node: unknown): unknown {
+  if (!(node instanceof Dest)) return node;
+  const ctx = call(contextOf, node, []) as BaseAudioContext;
+  return ctx instanceof Offline ? node : master(ctx);
+}
+
+// ---------- patches ----------
+
+const fakes = new WeakMap<object, unknown>(); // our function -> the native it replaces, for toString
+
+function patch(proto: object, name: string, impl: PropertyDescriptor) {
+  const native = gopd(proto, name)!;
+  for (const k of ['get', 'set', 'value'] as const) if (impl[k]) fakes.set(impl[k], native[k]);
+  define(proto, name, { ...native, ...impl });
+}
+
+function install() {
+  const volumeImpl = {
+    get volume() {
+      const el = this as unknown as HTMLMediaElement;
+      const real = realGet(el); // throws Illegal invocation like the native getter
+      track(el);
+      return controlled() ? virtual.get(el)! : real;
+    },
+    set volume(v: number) {
+      const el = this as unknown as HTMLMediaElement;
+      if (controlled()) {
+        realGet(el); // brand check
+        call(vol.set!, scratch, [v]); // throws IndexSizeError/TypeError like the native setter
+        v = realGet(scratch);
+      } else {
+        realSet(el, v);
+        v = realGet(el);
+      }
+      track(el);
+      const old = virtual.get(el);
+      virtual.set(el, v);
+      apply(el);
+      if (controlled() && old !== v) call(dispatch, el, [new Ev('volumechange')]); // what the page would see natively
+    },
+  };
+  const volumeDesc = gopd(volumeImpl, 'volume')!;
+  patch(Media.prototype, 'volume', { get: volumeDesc.get, set: volumeDesc.set });
+
+  patch(Media.prototype, 'play', {
+    value: {
+      play(this: HTMLMediaElement) {
+        if (this instanceof Media) track(this); // catches detached media like `new Audio()`
+        return call(play, this, []);
+      },
+    }.play,
+  });
+
+  patch(Element.prototype, 'attachShadow', {
+    value: {
+      attachShadow(this: Element, init: ShadowRootInit) {
+        const root = call(attachShadow, this, [init]) as ShadowRoot;
+        seenRoots.add(root);
+        watch(root); // closed roots are only reachable here
+        return root;
+      },
+    }.attachShadow,
+  });
+
+  patch(AudioContext.prototype, 'createMediaElementSource', {
+    value: {
+      createMediaElementSource(this: AudioContext, el: HTMLMediaElement) {
+        const node = call(createSource, this, [el]);
+        routed.add(el);
+        track(el);
+        apply(el);
+        return node;
+      },
+    }.createMediaElementSource,
+  });
+
+  patch(AudioNode.prototype, 'connect', {
+    value: {
+      connect(this: AudioNode, dest: unknown, ...rest: unknown[]) {
+        const mapped = mapDest(dest);
+        const args = [mapped];
+        for (let i = 0; i < rest.length; i++) args[i + 1] = rest[i];
+        const r = call(connect, this, args);
+        return r === mapped ? dest : r; // the page gets back the node it passed
+      },
+    }.connect,
+  });
+
+  patch(AudioNode.prototype, 'disconnect', {
+    value: {
+      disconnect(this: AudioNode, ...args: unknown[]) {
+        if (args.length) args[0] = mapDest(args[0]);
+        return call(disconnect, this, args);
+      },
+    }.disconnect,
+  });
+
+  patch(Function.prototype, 'toString', {
+    value: {
+      toString(this: unknown) {
+        return call(fnToString, fakes.get(this as object) ?? this, []);
+      },
+    }.toString,
+  });
+  fakes.set(Function.prototype.toString, fnToString);
+
+  call(listen, window, ['svs:key', onKey]);
+  call(dispatch, window, [new Custom('svs:hello')]); // covers the isolated script having run first
+  watch(document);
+  scan(document); // media already there when injected into an open tab
+  // Isolated script never answered (it failed to load): stop holding, pass through.
+  setTimeout(() => {
+    call(unlisten, window, ['svs:key', onKey]);
+    if (pending) setLevel(null);
+  }, 1500);
+}
+
+// ---------- start ----------
+
+// A copy from before an extension update may still be running in this page; it keeps the job.
+// Only late injection into open tabs can meet one, and only then could a page fake the answer.
+const existing = new Custom('svs:main', { cancelable: true });
+call(dispatch, window, [existing]);
+if (!existing.defaultPrevented) {
+  call(listen, window, ['svs:main', (e: Event) => e.preventDefault()]);
+  install();
+}
+
+export {}; // module scope, nothing leaks into the page's globals
