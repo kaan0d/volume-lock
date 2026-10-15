@@ -4,7 +4,6 @@ import type { GetState, SetVolume, StateReply } from '../lib/messages';
 import * as storage from '../lib/storage';
 import '../ui/tokens.css';
 import '../ui/base.css';
-import '../ui/knob.css';
 import './popup.css';
 import { initTheme } from '../ui/theme';
 import { createKnob } from '../ui/knob';
