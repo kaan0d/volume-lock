@@ -1,0 +1,167 @@
+/* Rotary knob (src/ui/knob.ts). Size it with --knob-size on the host or any ancestor. */
+
+.knob {
+  --k-accent: var(--accent, #3b82f6);
+  --k-glow: var(--accent-glow, rgba(59, 130, 246, 0.55));
+  --k-hot: color-mix(in oklab, var(--k-accent), white 45%);
+  position: relative;
+  width: var(--knob-size, 220px);
+  aspect-ratio: 1;
+  container-type: inline-size;
+  border-radius: 50%;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+  outline: none;
+  font-family: var(--font, Inter, system-ui, sans-serif);
+  color: var(--text, #f2f2f4);
+}
+
+/* boost past 100: brighter on dark, deeper on light, always with a stronger glow */
+[data-theme="light"] .knob {
+  --k-hot: color-mix(in oklab, var(--k-accent), #1a0dab 45%);
+}
+
+.knob.is-pressed {
+  cursor: grabbing;
+}
+
+.knob:focus-visible::after {
+  content: "";
+  position: absolute;
+  inset: 21%;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--bg, transparent), 0 0 0 4px var(--k-accent);
+  pointer-events: none;
+}
+
+.knob-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.knob-bars line {
+  stroke: var(--k-accent);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+
+.knob-track,
+.knob-fill,
+.knob-hot {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.knob-track {
+  stroke: var(--glass-border, rgba(127, 127, 127, 0.22));
+  stroke-width: 6;
+}
+
+.knob-fill {
+  stroke: var(--k-accent);
+  stroke-width: 6;
+  filter: drop-shadow(0 0 4px var(--k-glow));
+}
+
+.knob-hot {
+  stroke: var(--k-hot);
+  stroke-width: 8;
+  opacity: 0;
+  filter: drop-shadow(0 0 3px var(--k-accent)) drop-shadow(0 0 9px var(--k-glow));
+}
+
+.knob.is-hot .knob-hot {
+  opacity: 1;
+}
+
+.knob-mark {
+  stroke: var(--text-muted, #9a9ba3);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.knob-mark.is-on {
+  opacity: 0.9;
+}
+
+.knob-press {
+  position: absolute;
+  inset: 24%;
+  transition: transform var(--dur-med, 260ms) var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+.knob.is-pressed .knob-press {
+  transform: scale(0.96);
+}
+
+.knob-body {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.28), transparent 60%),
+    var(--glass-strong, rgba(127, 127, 127, 0.16));
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.14));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.18),
+    0 10px 28px -8px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(var(--blur, 16px));
+}
+
+.knob-dial {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.knob-dot {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 7%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--k-accent);
+  box-shadow: 0 0 8px var(--k-glow);
+}
+
+.knob-num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  pointer-events: none;
+}
+
+.knob-n {
+  font-size: 15cqi;
+  line-height: 1;
+}
+
+.knob-pct {
+  font-size: 6.5cqi;
+  margin-left: 0.15em;
+  color: var(--text-muted, #9a9ba3);
+}
+
+.knob.is-hot .knob-n {
+  color: var(--k-hot);
+}
+
+.knob.is-disabled {
+  cursor: default;
+  opacity: 0.45;
+  filter: saturate(0.3);
+}
