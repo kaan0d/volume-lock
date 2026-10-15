@@ -1,7 +1,7 @@
 // Rotary volume knob with a 24-bar visualizer ring.
 import './knob.css';
 
-export type KnobOptions = {
+type KnobOptions = {
   value: number;
   max: number;
   step?: number;
