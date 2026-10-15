@@ -4,9 +4,9 @@ Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the vol
 
 <table>
   <tr>
-    <td><img src="screenshots/volume.png" width="200" alt="Volume tab"></td>
-    <td><img src="screenshots/saved-sites.png" width="200" alt="Saved Sites tab"></td>
-    <td><img src="screenshots/light-mode.png" width="200" alt="Light mode"></td>
+    <td><img src="screenshots/popup-dark.png" width="200" alt="Popup, dark theme"></td>
+    <td><img src="screenshots/popup-light.png" width="200" alt="Popup, light theme with boost"></td>
+    <td><img src="screenshots/options.png" width="320" alt="Options page, Sites"></td>
   </tr>
 </table>
 
