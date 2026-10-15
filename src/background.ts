@@ -1,5 +1,5 @@
 import { originOf } from './lib/origin';
-import { clampVolume, resolveVolume } from './lib/rules';
+import { clampVolume, resolveVolume, type Resolved } from './lib/rules';
 import type { SetVolume, StateReply, VizStart, VizStopped } from './lib/messages';
 import * as storage from './lib/storage';
 
@@ -8,16 +8,27 @@ import * as storage from './lib/storage';
 
 const STEP = 5;
 
-async function setBadge(tabId: number, text: string) {
+async function setBadge(tabId: number, text: string, color?: string) {
   await chrome.action.setBadgeText({ tabId, text }).catch(() => {}); // tab may be gone
+  if (color) await chrome.action.setBadgeBackgroundColor({ tabId, color }).catch(() => {});
 }
 
-/** Badge from storage: the level for saved (exact or wildcard) sites, empty otherwise. */
+/** Badge background by state: blue saved, violet wildcard, gray default, red while the tab is muted. */
+function badgeColor(source: Resolved['source'] | null, muted: boolean): string {
+  if (muted) return '#dc2626';
+  if (source === 'exact') return '#3b82f6';
+  if (source === 'wildcard') return '#8b5cf6';
+  return '#5f6368';
+}
+
+/** Badge from storage: the level for saved (exact or wildcard) sites, empty otherwise. A muted tab with no level shows "×". */
 async function refreshBadge(tab: chrome.tabs.Tab) {
   if (tab.id === undefined) return;
   const origin = originOf(tab.url);
   const r = origin && resolveVolume(await storage.loadSettings(), origin);
-  await setBadge(tab.id, r && r.source !== 'default' ? String(r.volume) : '');
+  const muted = !!tab.mutedInfo?.muted;
+  const level = r && r.source !== 'default' ? String(r.volume) : '';
+  await setBadge(tab.id, level || (muted ? '×' : ''), badgeColor(r ? r.source : null, muted));
 }
 
 const refreshAll = async () => (await chrome.tabs.query({})).forEach(refreshBadge);
@@ -33,10 +44,11 @@ async function injectOpenTabs() {
 chrome.runtime.onInstalled.addListener(() => void storage.migrateLegacy().then(() => Promise.all([injectOpenTabs(), refreshAll()])));
 chrome.runtime.onStartup.addListener(() => void storage.migrateLegacy().then(refreshAll));
 chrome.action.setBadgeBackgroundColor({ color: '#5f6368' });
+chrome.action.setBadgeTextColor({ color: '#ffffff' });
 storage.onSettingsChanged(() => void refreshAll());
 chrome.tabs.onActivated.addListener(({ tabId }) => void chrome.tabs.get(tabId).then(refreshBadge));
 chrome.tabs.onUpdated.addListener((_id, info, tab) => {
-  if (info.url || info.status) void refreshBadge(tab);
+  if (info.url || info.status || info.mutedInfo) void refreshBadge(tab);
 });
 
 /** Current level of the tab's top frame, or null when the content script is unreachable. */

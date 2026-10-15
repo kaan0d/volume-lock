@@ -2,6 +2,10 @@ import { originOf } from '../lib/origin';
 import { clampVolume, emptySettings, isExcluded, maxVolume, resolveVolume, type Settings } from '../lib/rules';
 import type { GetState, SetVolume, StateReply } from '../lib/messages';
 import * as storage from '../lib/storage';
+import '../ui/tokens.css';
+import '../ui/base.css';
+import '../ui/knob.css';
+import './popup.css';
 import { initTheme } from '../ui/theme';
 import { createKnob } from '../ui/knob';
 import { connectAudio } from './capture';
@@ -54,6 +58,7 @@ const knob = createKnob($('knobHost'), {
 function setVolume(v: number) {
   volume = clampVolume(v, settings.boostEnabled);
   knob.setValue(volume, true);
+  paintSave();
   if (reachable) sendLive(volume);
 }
 
@@ -70,7 +75,12 @@ $<HTMLInputElement>('boost').addEventListener('change', (e) => {
 const saved = () => origin !== null && origin in settings.sites;
 const excluded = () => origin !== null && isExcluded(settings, origin);
 
+function paintChips() {
+  for (const b of document.querySelectorAll<HTMLElement>('[data-preset]')) b.setAttribute('aria-pressed', String(Number(b.dataset.preset) === volume));
+}
+
 function paintSave() {
+  paintChips();
   const s = saved();
   const btn = $<HTMLButtonElement>('saveBtn');
   btn.textContent = s ? 'Saved' : 'Save';

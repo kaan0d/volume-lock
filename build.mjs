@@ -22,6 +22,6 @@ await build({
   base: './',
   build: {
     ...out(false),
-    rollupOptions: { input: { popup: 'src/popup/popup.html', offscreen: 'src/offscreen/offscreen.html' } },
+    rollupOptions: { input: { popup: 'src/popup/popup.html', offscreen: 'src/offscreen/offscreen.html', options: 'src/options/options.html' } },
   },
 });

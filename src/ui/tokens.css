@@ -1,13 +1,51 @@
-:root, [data-theme="dark"] {
-  --bg: #0e1116; --glass: rgba(255,255,255,.06); --glass-strong: rgba(255,255,255,.12); --glass-border: rgba(255,255,255,.14);
-  --text: #f1f4f9; --text-muted: #9aa4b2; --accent: #3b82ff; --accent-glow: rgba(59,130,255,.45); --danger: #ff5d5d;
-  --radius-s: 8px; --radius-m: 12px; --radius-l: 20px;
-  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px;
-  --font: Inter, system-ui, sans-serif; --blur: 16px;
-  --ease-spring: cubic-bezier(.34,1.56,.64,1); --ease-out: cubic-bezier(.2,.8,.2,1);
-  --dur-fast: 120ms; --dur-med: 220ms; --dur-slow: 420ms;
+/* Design tokens. theme.ts sets data-theme="light"|"dark" on <html>; dark is the fallback. */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c0d10;
+  --glass: rgb(255 255 255 / 0.06);
+  --glass-strong: rgb(255 255 255 / 0.11);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --text: #f2f3f5;
+  --text-muted: #9a9ea8;
+  --accent: #3d8bff;
+  --accent-glow: rgb(61 139 255 / 0.55);
+  --danger: #ff5c6c;
+  --shadow: 0 8px 28px rgb(0 0 0 / 0.45), 0 1px 0 rgb(255 255 255 / 0.05) inset;
+  --backdrop: radial-gradient(120% 80% at 0% 0%, #1a1e2b 0%, transparent 60%), radial-gradient(100% 70% at 100% 100%, #14182a 0%, transparent 60%);
 }
-[data-theme="light"] {
-  --bg: #eef1f6; --glass: rgba(255,255,255,.65); --glass-strong: rgba(255,255,255,.9); --glass-border: rgba(0,0,0,.1);
-  --text: #11151c; --text-muted: #5b6574; --accent: #1f5fff; --accent-glow: rgba(31,95,255,.35); --danger: #d93636;
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #eef0f4;
+  --glass: rgb(255 255 255 / 0.62);
+  --glass-strong: rgb(255 255 255 / 0.86);
+  --glass-border: rgb(15 20 30 / 0.1);
+  --text: #14161a;
+  --text-muted: #5f6572;
+  --accent: #1a6dff;
+  --accent-glow: rgb(26 109 255 / 0.4);
+  --danger: #d92d3f;
+  --shadow: 0 8px 24px rgb(20 30 60 / 0.12), 0 1px 0 rgb(255 255 255 / 0.8) inset;
+  --backdrop: radial-gradient(120% 80% at 0% 0%, #dfe6f5 0%, transparent 60%), radial-gradient(100% 70% at 100% 100%, #e6e9f2 0%, transparent 60%);
+}
+
+:root {
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 20px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --font: "Inter Variable", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --blur: blur(20px) saturate(160%);
+  --dur-fast: 120ms;
+  --dur-med: 240ms;
+  --dur-slow: 480ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Underdamped spring: overshoots about 15% and settles. */
+  --ease-spring: linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%, 0.938 16.7%, 1.017 19.1%, 1.077 21.7%, 1.121 24.5%, 1.149 27.5%, 1.159 30.7%, 1.154 34.1%, 1.13 40.4%, 1.057 52.9%, 1.019 60.8%, 1.003 68.5%, 0.998 77%, 1);
 }

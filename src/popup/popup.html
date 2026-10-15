@@ -4,9 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=420">
   <title>Simple Volume Saver</title>
-  <link rel="stylesheet" href="../ui/tokens.css">
-  <link rel="stylesheet" href="../ui/base.css">
-  <link rel="stylesheet" href="../ui/knob.css">
   <link rel="stylesheet" href="./popup.css">
 </head>
 <body>
@@ -22,8 +19,8 @@
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
         </button>
         <div id="menu" class="menu" role="menu" hidden>
-          <button id="menuExclude" class="menu-item" type="button" role="menuitem" data-testid="menu-exclude"></button>
-          <button id="menuWildcard" class="menu-item" type="button" role="menuitem" data-testid="menu-wildcard"></button>
+          <button id="menuExclude" type="button" role="menuitem" data-testid="menu-exclude"></button>
+          <button id="menuWildcard" type="button" role="menuitem" data-testid="menu-wildcard"></button>
         </div>
       </div>
       <button id="gearBtn" class="icon-btn" type="button" aria-label="Open settings" data-testid="gear">
@@ -43,10 +40,10 @@
         <button class="chip" type="button" data-preset="25" data-testid="preset-25">25</button>
         <button class="chip" type="button" data-preset="50" data-testid="preset-50">50</button>
         <button class="chip" type="button" data-preset="100" data-testid="preset-100">100</button>
-        <label class="boost">
-          <span>Boost</span>
-          <input id="boost" class="switch-input" type="checkbox" role="switch" data-testid="boost-switch" aria-label="Boost up to 200%">
-          <span class="switch-track" aria-hidden="true"></span>
+        <span class="boost">Boost</span>
+        <label class="switch">
+          <input id="boost" type="checkbox" role="switch" data-testid="boost-switch" aria-label="Boost up to 200%">
+          <span class="track" aria-hidden="true"></span>
         </label>
       </div>
 

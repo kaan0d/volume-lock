@@ -1,12 +1,9 @@
-html { color-scheme: dark; }
-html[data-theme="light"] { color-scheme: light; }
 body {
   width: 420px;
   min-height: 560px;
   background:
     radial-gradient(420px 260px at 50% 150px, var(--accent-glow), transparent 70%),
-    var(--bg);
-  font-family: var(--font);
+    var(--backdrop), var(--bg);
 }
 [hidden] { display: none !important; }
 
@@ -26,40 +23,25 @@ body {
 .pill[data-source="saved"], .pill[data-source="wildcard"] { color: var(--accent); border-color: var(--accent); }
 .pill[data-source="excluded"] { color: var(--danger); border-color: var(--danger); }
 .menu-wrap { position: relative; }
-.menu { right: 0; top: 44px; z-index: 10; min-width: 220px; display: flex; flex-direction: column; backdrop-filter: blur(var(--blur)); animation: pop var(--dur-med) var(--ease-spring) both; transform-origin: top right; }
+.menu { position: absolute; right: 0; top: 44px; z-index: 10; min-width: 220px; }
 @keyframes pop { from { opacity: 0; transform: scale(.92); } }
-.menu-item { min-height: 40px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-s); background: transparent; text-align: left; }
-.menu-item:hover:not(:disabled), .menu-item:focus-visible { background: var(--glass-strong); outline: none; }
-.menu-item:disabled { opacity: .45; cursor: default; }
 
 /* controls */
 .controls { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
 .controls.is-off { opacity: .6; }
-.knob-host { display: grid; place-items: center; min-height: 240px; width: 100%; }
+.knob-host { display: grid; place-items: center; min-height: 240px; width: 100%; --knob-size: 240px; }
 .row { display: flex; align-items: center; gap: var(--space-2); width: 100%; }
 .chips { justify-content: center; }
-.chip { min-width: 56px; min-height: 40px; transition: transform var(--dur-fast) var(--ease-spring), background var(--dur-fast); }
-.chip:hover:not(:disabled) { background: var(--glass-strong); }
-.chip:active:not(:disabled) { transform: scale(.94); }
-.chip:disabled { opacity: .5; cursor: default; }
+.chip { min-width: 56px; }
 .two > .btn { flex: 1; }
 .two .btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 
-/* boost switch */
-.boost { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; font-size: 13px; color: var(--text-muted); cursor: pointer; position: relative; min-height: 40px; }
-.switch-input { position: absolute; inset: 0; z-index: 1; opacity: 0; margin: 0; cursor: pointer; }
-.switch-track { width: 40px; height: 24px; border-radius: 999px; background: var(--glass-strong); border: 1px solid var(--glass-border); position: relative; transition: background var(--dur-med) var(--ease-out), box-shadow var(--dur-med); }
-.switch-track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--text); transition: transform var(--dur-med) var(--ease-spring); }
-.switch-input:checked + .switch-track { background: var(--accent); box-shadow: 0 0 14px var(--accent-glow); }
-.switch-input:checked + .switch-track::after { transform: translateX(16px); background: #fff; }
-.switch-input:focus-visible + .switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
-.switch-input:disabled + .switch-track { opacity: .5; }
+.boost { margin-left: auto; font-size: 13px; color: var(--text-muted); }
 
 /* buttons */
 .save { width: 100%; min-height: 48px; font-weight: 600; font-size: 15px; box-shadow: 0 6px 22px var(--accent-glow); transition: transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-med), background var(--dur-med); }
 .save:active:not(:disabled) { transform: scale(.97); }
 .save.is-saved { background: var(--glass-strong); color: var(--accent); border: 1px solid var(--accent); box-shadow: 0 0 18px var(--accent-glow); }
-.btn:focus-visible, .chip:focus-visible, .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* states */
 .hint { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-l); animation: pop var(--dur-slow) var(--ease-spring) both; }
