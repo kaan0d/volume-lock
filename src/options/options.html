@@ -14,10 +14,7 @@
       <div class="brand"><img src="/icons/low-volume-48.png" alt="" width="28" height="28"><h1>Volume Saver</h1></div>
       <nav id="nav" aria-label="Settings sections">
         <a href="#sites" data-s="sites">Sites</a>
-        <a href="#rules" data-s="rules">Rules</a>
-        <a href="#audio" data-s="audio">Audio</a>
-        <a href="#backup" data-s="backup">Backup</a>
-        <a href="#appearance" data-s="appearance">Appearance</a>
+        <a href="#general" data-s="general">General</a>
       </nav>
     </aside>
 
@@ -48,13 +45,11 @@
           <button class="btn btn-primary" type="submit">Add</button>
         </form>
         <p id="addError" class="error hidden" role="alert"></p>
-      </section>
 
-      <section id="rules" class="panel" aria-labelledby="h-rules">
         <h2 id="h-rules">Rules</h2>
         <p class="hint">Precedence: never touch &gt; exact site &gt; wildcard &gt; default volume.</p>
         <h3>Wildcards <span id="wildCount" class="count">0</span></h3>
-        <p class="hint">A wildcard like <code>*.example.com</code> covers the domain and all its subdomains. Add one on the Sites section; an exact site always beats it.</p>
+        <p class="hint">A wildcard like <code>*.example.com</code> covers the domain and all its subdomains. Add one in the Sites table above; an exact site always beats it.</p>
         <ul id="wildList" class="list glass"></ul>
         <h3>Never touch <span id="excludeCount" class="count">0</span></h3>
         <p class="hint">The extension leaves these sites alone, whatever else is saved.</p>
@@ -66,7 +61,7 @@
         <p id="excludeError" class="error hidden" role="alert"></p>
       </section>
 
-      <section id="audio" class="panel" aria-labelledby="h-audio">
+      <section id="general" class="panel" aria-labelledby="h-audio">
         <h2 id="h-audio">Audio</h2>
         <div class="card glass">
           <label class="line"><input id="defaultOn" type="checkbox" aria-label="Default volume for unsaved sites"> Default volume for unsaved sites</label>
@@ -77,9 +72,7 @@
           <p class="hint">Boost raises the limit from 100% to 200%. Turning it off keeps levels above 100% stored, but they play at 100%.</p>
           <p id="boostNote" class="hint warn hidden"></p>
         </div>
-      </section>
 
-      <section id="backup" class="panel" aria-labelledby="h-backup">
         <h2 id="h-backup">Backup</h2>
         <div class="card glass">
           <div class="actions">
@@ -102,9 +95,7 @@
             <button id="deleteAllNo" class="btn" type="button">Cancel</button>
           </div>
         </div>
-      </section>
 
-      <section id="appearance" class="panel" aria-labelledby="h-appearance">
         <h2 id="h-appearance">Appearance</h2>
         <div class="card glass">
           <label for="themeSel">Theme</label>

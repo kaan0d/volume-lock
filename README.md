@@ -13,11 +13,11 @@ Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the vol
 ## Features
 
 - **Popup:** rotary knob with drag, mouse wheel and keyboard control, presets at 25, 50 and 100, and a boost switch. The knob ring shows the tab's live audio levels.
-- **Saving:** a Save/Saved toggle per site. The site menu excludes a site ("Never touch") or saves a wildcard such as `*.example.com`. Exact origin beats wildcard, wildcard beats default, excluded beats all.
-- **Mute:** mute the current tab or all other audible tabs.
-- **Override:** page writes to `volume` are virtualized, so the page reads back its own value while the real level is ours. Web Audio output follows the level through a master gain. Covers `new Audio()` and closed shadow roots.
+- **Saving:** a Save/Unsave toggle per site. The site menu excludes a site ("Never touch") or saves a wildcard such as `*.example.com`. Exact origin beats wildcard, wildcard beats default, excluded beats all.
+- **Mute:** mute the current tab or all other audible tabs. Muted tabs are listed in the popup with an Unmute button each.
+- **Override:** page writes to `volume` are virtualized, so the page reads back its own value while the real level is ours. Moving the level from the extension also updates the page's own volume (YouTube's slider follows). Web Audio output follows the level through a master gain. Covers `new Audio()` and closed shadow roots.
 - **Tab capture fallback:** media that in-page code cannot reach (another origin without CORS, DRM) is boosted through `tabCapture`. It starts when the popup is opened on that tab.
-- **Options page:** Sites table with sort, filter and inline level edit; wildcard and never-touch rules; default level; boost; export, import and delete all, each with confirmation; theme.
+- **Options page:** two tabs. Sites: table with sort, filter and inline level edit, wildcard and never-touch rules. General: default level, boost, export, import and delete all (each with confirmation), theme.
 - **Theme:** System, Light or Dark.
 - **Shortcuts:** `Alt+Shift+Up` and `Alt+Shift+Down` change the volume by 5%, `Alt+Shift+M` mutes the tab, `Alt+Shift+S` saves the site. Rebind at `chrome://extensions/shortcuts`.
 - **Badge:** the level for saved and wildcard sites, empty otherwise. Blue for saved, violet for wildcards, red while the tab is muted.

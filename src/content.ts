@@ -25,7 +25,7 @@ const toMain = (data: unknown) => window.dispatchEvent(new CustomEvent(key, { de
 const sendKey = () => window.dispatchEvent(new CustomEvent('svs:key', { detail: key }));
 let probeReply: unknown;
 let resolved = false; // nothing is sent until storage answered, so MAIN keeps holding instead of passing through
-const push = () => resolved && toMain({ level: level === null || !captured ? level : Math.min(level, 100) });
+const push = (sync = false) => resolved && toMain({ level: level === null || !captured ? level : Math.min(level, 100), sync });
 
 window.addEventListener('svs:hello', sendKey);
 window.addEventListener(key + ':up', (e) => {
@@ -63,10 +63,10 @@ async function reportLevel() {
   }
 }
 
-function update() {
+function update(sync = false) {
   resolved = true;
   level = preview ?? (siteOrigin ? (resolveVolume(settings, siteOrigin)?.volume ?? null) : null);
-  push();
+  push(sync);
   void reportLevel();
 }
 
@@ -79,7 +79,7 @@ function state(): StateReply {
 chrome.runtime.onMessage.addListener((msg: Message | CaptureState, _sender, reply) => {
   if (msg.type === 'set-volume') {
     preview = clampVolume(msg.volume, settings.boostEnabled);
-    update();
+    update(true);
   } else if (msg.type === 'get-state' && window === window.top) {
     reply(state()); // only the top frame answers, so the reply is the page's
   } else if (msg.type === 'capture-state') {

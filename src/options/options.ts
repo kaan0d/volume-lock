@@ -21,7 +21,7 @@ const BAD_PATTERN = 'Enter an origin like https://example.com or a wildcard like
 
 // ---------- nav ----------
 
-const SECTIONS = ['sites', 'rules', 'audio', 'backup', 'appearance'];
+const SECTIONS = ['sites', 'general'];
 function route() {
   const s = SECTIONS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'sites';
   for (const id of SECTIONS) {

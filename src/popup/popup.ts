@@ -82,7 +82,7 @@ function paintSave() {
   paintChips();
   const s = saved();
   const btn = $<HTMLButtonElement>('saveBtn');
-  btn.textContent = s ? 'Saved' : 'Save';
+  btn.textContent = s ? 'Unsave' : 'Save';
   btn.setAttribute('aria-pressed', String(s));
   btn.classList.toggle('is-saved', s);
   btn.disabled = !reachable || excluded();
@@ -166,6 +166,35 @@ $('muteOthersBtn').addEventListener('click', async () => {
   await Promise.all(others.map((t) => chrome.tabs.update(t.id!, { muted: true })));
   notice(others.length ? `Muted ${others.length} other tab${others.length > 1 ? 's' : ''}.` : 'No other tab is playing audio.');
 });
+
+// muted tabs: listed with an unmute button each, hidden when none
+const mutedList = $('mutedList');
+async function paintMuted() {
+  const tabs = (await chrome.tabs.query({ muted: true })).filter((t) => t.id !== undefined);
+  mutedList.hidden = !tabs.length;
+  mutedList.replaceChildren(
+    ...tabs.map((t) => {
+      const name = document.createElement('span');
+      name.textContent = t.title || t.url || 'Tab';
+      name.title = name.textContent;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn';
+      btn.textContent = 'Unmute';
+      btn.addEventListener('click', () => void chrome.tabs.update(t.id!, { muted: false }));
+      const li = document.createElement('li');
+      li.append(name, btn);
+      return li;
+    }),
+  );
+}
+chrome.tabs.onUpdated.addListener((id, info) => {
+  if (!info.mutedInfo) return;
+  void paintMuted();
+  if (id === tabId) paintMute(info.mutedInfo.muted);
+});
+chrome.tabs.onRemoved.addListener(() => void paintMuted());
+void paintMuted();
 
 $('gearBtn').addEventListener('click', () => void chrome.runtime.openOptionsPage());
 $('reloadBtn').addEventListener('click', () => tabId !== undefined && void chrome.tabs.reload(tabId).then(() => window.close()));

@@ -76,17 +76,24 @@ function rekey(k: string) {
 
 function onMessage(e: Event) {
   const msg = parse(call(detailOf, e, []));
-  if ('level' in msg) setLevel(msg.level);
+  if ('level' in msg) setLevel(msg.level, msg.sync === true);
   if (msg.probe) up({ probe: probe() });
   if (typeof msg.rekey === 'string') rekey(msg.rekey);
 }
 
-function setLevel(l: number | null) {
+/** `sync`: the user moved the level from the extension, so the page's own volume (YouTube's slider) follows it. */
+function setLevel(l: number | null, sync = false) {
   pending = false;
   level = l;
   reported = false;
   for (const ref of tracked) {
     const el = ref.deref();
+    if (el && sync && l !== null) {
+      const v = Math.min(l, 100) / 100;
+      const old = virtual.get(el);
+      virtual.set(el, v);
+      if (old !== v) call(dispatch, el, [new Ev('volumechange')]);
+    }
     if (el) apply(el);
     else tracked.delete(ref);
   }

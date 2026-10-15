@@ -17,6 +17,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 @keyframes in { from { opacity: 0; transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) { .panel { animation: none; } * { transition: none !important; } }
 h2 { margin: 0; font-size: 24px; }
+.panel > h2:not(:first-child) { margin-top: var(--space-4); }
 h3 { margin: var(--space-3) 0 0; font-size: 15px; }
 .count { color: var(--text-muted); font-weight: 400; margin-left: var(--space-1); }
 .hint { margin: 0; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
