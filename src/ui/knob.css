@@ -1,0 +1,3 @@
+.knob { position: relative; width: 220px; height: 220px; display: grid; place-items: center; border-radius: 50%; outline: none; }
+.knob:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
+.knob-value { font-size: 44px; font-weight: 600; }
