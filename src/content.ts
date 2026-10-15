@@ -73,7 +73,7 @@ function update(sync = false) {
 function state(): StateReply {
   const first = document.querySelector<HTMLMediaElement>('video, audio');
   // this world sees the real element volume, which equals the page's own value when we leave it alone
-  return { volume: level ?? Math.round((first?.volume ?? 1) * 100), hasMedia: first !== null };
+  return { volume: level ?? Math.round((first?.volume ?? 1) * 100) };
 }
 
 chrome.runtime.onMessage.addListener((msg: Message | CaptureState, _sender, reply) => {

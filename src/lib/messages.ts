@@ -2,7 +2,7 @@
 export type SetVolume = { type: 'set-volume'; volume: number };
 /** popup -> content: ask what the page currently plays at */
 export type GetState = { type: 'get-state' };
-export type StateReply = { volume: number; hasMedia: boolean };
+export type StateReply = { volume: number };
 
 export type Message = SetVolume | GetState;
 

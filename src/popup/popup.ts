@@ -1,5 +1,5 @@
 import { originOf } from '../lib/origin';
-import { clampVolume, emptySettings, isExcluded, maxVolume, resolveVolume, type Settings } from '../lib/rules';
+import { clampVolume, coveringKey, emptySettings, isExcluded, maxVolume, resolveVolume, type Settings } from '../lib/rules';
 import type { GetState, SetVolume, StateReply } from '../lib/messages';
 import * as storage from '../lib/storage';
 import '../ui/tokens.css';
@@ -15,7 +15,6 @@ let settings: Settings = emptySettings();
 let tabId: number | undefined;
 let origin: string | null = null;
 let reachable = false;
-let hasMedia = true;
 let volume = 100;
 
 void initTheme();
@@ -71,15 +70,21 @@ $<HTMLInputElement>('boost').addEventListener('change', (e) => {
 
 // ---------- paint ----------
 
-// ponytail: only strips a leading "www."; no public-suffix list, so on co.uk style hosts the wildcard is too narrow or too wide. Add the PSL if that bites.
+// ponytail: no public-suffix list. Keeps the last two labels, three when the second-to-last is a common
+// second-level word under a 2-letter TLD (bbc.co.uk). Odd suffixes (e.g. github.io) come out too wide; add the PSL if that bites.
+const SECOND_LEVEL = /^(co|com|org|net|gov|edu|ac)$/;
 const wildcardFor = (o: string) => {
-  const host = new URL(o).hostname.replace(/^www\./, '');
-  return /^[\d.]+$/.test(host) || host.includes(':') ? null : `*.${host}`;
+  const host = new URL(o).hostname;
+  if (/^[\d.]+$/.test(host) || host.includes(':')) return null;
+  const labels = host.split('.');
+  const keep = labels.length >= 3 && labels.at(-1)!.length === 2 && SECOND_LEVEL.test(labels.at(-2)!) ? 3 : 2;
+  return `*.${labels.slice(-keep).join('.')}`;
 };
 /** Key the main Save button writes: the whole domain, or the exact origin where no wildcard is possible (IPs). */
 const domainKey = () => (origin === null ? null : (wildcardFor(origin) ?? origin));
 const urlSaved = () => origin !== null && origin in settings.sites;
-const saved = () => urlSaved() || (domainKey() !== null && domainKey()! in settings.sites);
+const covering = () => (origin === null || excluded() ? null : coveringKey(settings, origin));
+const saved = () => covering() !== null;
 const excluded = () => origin !== null && isExcluded(settings, origin);
 
 function paintChips() {
@@ -125,7 +130,6 @@ function paint() {
   for (const el of $('controls').querySelectorAll<HTMLButtonElement | HTMLInputElement>('[data-preset], #boost')) el.disabled = !reachable || excluded();
   paintSave();
   paintMenu();
-  if (reachable && !hasMedia && !excluded()) notice('No media on this page yet. The level applies once something plays.');
 }
 
 function showBlocked() {
@@ -144,7 +148,7 @@ $('saveBtn').addEventListener('click', async () => {
   const key = domainKey();
   if (!key) return;
   try {
-    if (saved()) await storage.removeSite(key in settings.sites ? key : origin!);
+    if (saved()) await storage.removeSite(covering()!);
     else await storage.saveSite(key, volume);
     notice('');
   } catch (e) {
@@ -273,7 +277,6 @@ void (async () => {
     if (state) {
       reachable = true;
       volume = state.volume;
-      hasMedia = state.hasMedia;
     }
   }
   paint();

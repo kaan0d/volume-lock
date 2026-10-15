@@ -36,16 +36,22 @@ function wildcardMatch(pattern: string, origin: string): number {
 
 export const isExcluded = (s: Settings, origin: string) => s.excluded.some((p) => p === origin || wildcardMatch(p, origin) >= 0);
 
-export function resolveVolume(s: Settings, origin: string): Resolved | null {
-  if (isExcluded(s, origin)) return null;
-  const done = (volume: number, source: Resolved['source']): Resolved => ({ volume: clampVolume(volume, s.boostEnabled), source });
-  if (origin in s.sites) return done(s.sites[origin], 'exact');
+/** The saved key that sets the level for `origin`: the exact origin, else the longest matching wildcard. Ignores excludes and the default. */
+export function coveringKey(s: Settings, origin: string): string | null {
+  if (origin in s.sites) return origin;
   let best: string | null = null;
   let bestLen = -1;
   for (const p of Object.keys(s.sites)) {
     const len = wildcardMatch(p, origin);
     if (len > bestLen) [best, bestLen] = [p, len];
   }
-  if (best !== null) return done(s.sites[best], 'wildcard');
+  return best;
+}
+
+export function resolveVolume(s: Settings, origin: string): Resolved | null {
+  if (isExcluded(s, origin)) return null;
+  const done = (volume: number, source: Resolved['source']): Resolved => ({ volume: clampVolume(volume, s.boostEnabled), source });
+  const key = coveringKey(s, origin);
+  if (key !== null) return done(s.sites[key], key === origin ? 'exact' : 'wildcard');
   return s.defaultVolume === null ? null : done(s.defaultVolume, 'default');
 }
