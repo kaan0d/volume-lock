@@ -30,16 +30,17 @@ export type VizStart = { type: 'viz-start'; tabId?: number };
 /**
  * false: no offscreen document. `attach`: the tab is already captured, join it instead of capturing.
  * `gain`: start the capture as an override (tab output replaced by the stream at this gain, survives the popup).
+ * `gen`: counts viz-starts; a stop from an older one can't close the document a newer one uses.
  */
-export type VizStartReply = false | { attach: boolean; gain?: number };
+export type VizStartReply = false | { attach: boolean; gain?: number; gen: number };
 /** offscreen -> background: a capture ended; `remaining` 0 closes the document. Also popup -> background when no port was opened. */
-export type VizStopped = { type: 'viz-stopped'; tabId?: number; remaining?: number };
+export type VizStopped = { type: 'viz-stopped'; tabId?: number; remaining?: number; gen?: number };
 /** Port name for popup <-> offscreen. */
 export const VIZ_PORT = 'viz';
 /**
  * popup -> offscreen, first port message: capture this stream id, `oscillator` (test-only synthetic
  * source), or `attach` to a running capture of `tabId`. With `gain` the capture is an override.
  */
-export type VizCapture = ({ streamId: string } | { oscillator: true } | { attach: true }) & { tabId?: number; gain?: number };
+export type VizCapture = ({ streamId: string } | { oscillator: true } | { attach: true }) & { tabId?: number; gain?: number; gen?: number };
 /** offscreen -> popup, ~30 fps: one level per bar, 0..255. */
 export type VizLevels = number[];

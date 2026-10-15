@@ -12,7 +12,7 @@ import {
 const BARS = 24;
 const FPS = 30;
 
-type Capture = { stream: MediaStream; ctx: AudioContext; gain: GainNode; analyser: AnalyserNode; override: boolean };
+type Capture = { stream: MediaStream; ctx: AudioContext; gain: GainNode; analyser: AnalyserNode; override: boolean; gen?: number };
 
 /** Keyed by tab id; -1 when the popup didn't say which tab (one viz-only capture). */
 const captures = new Map<number, Capture>();
@@ -48,7 +48,7 @@ async function start(msg: VizCapture, id: number): Promise<Capture> {
   ctx.createMediaStreamSource(stream).connect(gain).connect(ctx.destination);
   gain.connect(analyser); // bars show what is heard
   void ctx.resume().catch(() => {});
-  const c: Capture = { stream, ctx, gain, analyser, override: msg.gain !== undefined };
+  const c: Capture = { stream, ctx, gain, analyser, override: msg.gain !== undefined, gen: msg.gen };
   captures.get(id) && stop(id); // a leftover viz capture of the same tab
   captures.set(id, c);
   stream.getTracks().forEach((t) => t.addEventListener('ended', () => captures.get(id) === c && stop(id))); // tab closed
@@ -62,7 +62,7 @@ function stop(id: number) {
   captures.delete(id);
   c.stream.getTracks().forEach((t) => t.stop());
   void c.ctx.close().catch(() => {});
-  const msg: VizStopped = { type: 'viz-stopped', tabId: id < 0 ? undefined : id, remaining: captures.size };
+  const msg: VizStopped = { type: 'viz-stopped', tabId: id < 0 ? undefined : id, remaining: captures.size, gen: c.gen };
   void chrome.runtime.sendMessage(msg).catch(() => {});
 }
 
@@ -103,7 +103,7 @@ chrome.runtime.onConnect.addListener((port) => {
         c = await start(msg, id);
       } catch {
         port.disconnect(); // popup falls back to idle bars
-        if (!captures.size) void chrome.runtime.sendMessage({ type: 'viz-stopped', remaining: 0 } satisfies VizStopped).catch(() => {});
+        if (!captures.size) void chrome.runtime.sendMessage({ type: 'viz-stopped', remaining: 0, gen: msg.gen } satisfies VizStopped).catch(() => {});
         return;
       }
       if (gone) return close(); // popup closed while capture started

@@ -126,18 +126,21 @@ async function setCaptured(tabId: number, origin: string | null) {
  * so getMediaStreamId cannot fail on it, unless override captures of other tabs must keep running.
  */
 async function vizStart(tabId: number | undefined): Promise<VizStartReply> {
+  const gen = (((await chrome.storage.session.get('gen')).gen as number | undefined) ?? 0) + 1;
+  await chrome.storage.session.set({ gen });
   if (!(await hasOffscreen())) await closeOffscreen(); // forget captures of a document that is gone
-  else if (tabId !== undefined && (await getTabs('captured'))[tabId]) return { attach: true };
+  else if (tabId !== undefined && (await getTabs('captured'))[tabId]) return { attach: true, gen };
   if (!Object.keys(await getTabs('captured')).length) {
     await closeOffscreen();
     await createOffscreen();
   }
-  if (tabId === undefined || !(await getTabs('needy'))[tabId]) return { attach: false };
-  return { attach: false, gain: gainFor((await getState(tabId))?.volume ?? null) };
+  if (tabId === undefined || !(await getTabs('needy'))[tabId]) return { attach: false, gen };
+  return { attach: false, gain: gainFor((await getState(tabId))?.volume ?? null), gen };
 }
 
-async function vizStopped({ tabId, remaining }: VizStopped) {
+async function vizStopped({ tabId, remaining, gen }: VizStopped) {
   if (tabId !== undefined) await setCaptured(tabId, null);
+  if (gen !== undefined && gen !== (await chrome.storage.session.get('gen')).gen) return; // a newer start owns the document
   if (remaining === 0 || (remaining === undefined && !Object.keys(await getTabs('captured')).length)) await closeOffscreen();
 }
 
