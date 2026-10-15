@@ -71,7 +71,15 @@ $<HTMLInputElement>('boost').addEventListener('change', (e) => {
 
 // ---------- paint ----------
 
-const saved = () => origin !== null && origin in settings.sites;
+// ponytail: only strips a leading "www."; no public-suffix list, so on co.uk style hosts the wildcard is too narrow or too wide. Add the PSL if that bites.
+const wildcardFor = (o: string) => {
+  const host = new URL(o).hostname.replace(/^www\./, '');
+  return /^[\d.]+$/.test(host) || host.includes(':') ? null : `*.${host}`;
+};
+/** Key the main Save button writes: the whole domain, or the exact origin where no wildcard is possible (IPs). */
+const domainKey = () => (origin === null ? null : (wildcardFor(origin) ?? origin));
+const urlSaved = () => origin !== null && origin in settings.sites;
+const saved = () => urlSaved() || (domainKey() !== null && domainKey()! in settings.sites);
 const excluded = () => origin !== null && isExcluded(settings, origin);
 
 function paintChips() {
@@ -88,16 +96,9 @@ function paintSave() {
   btn.disabled = !reachable || excluded();
 }
 
-// ponytail: only strips a leading "www."; no public-suffix list, so on co.uk style hosts the wildcard is too narrow or too wide. Add the PSL if that bites.
-const wildcardFor = (o: string) => {
-  const host = new URL(o).hostname.replace(/^www\./, '');
-  return /^[\d.]+$/.test(host) || host.includes(':') ? null : `*.${host}`;
-};
-
 function paintMenu() {
-  const wc = origin && wildcardFor(origin);
-  $('menuWildcard').textContent = wc ? `Save for ${wc}` : 'Save for domain';
-  ($('menuWildcard') as HTMLButtonElement).disabled = !wc || !reachable;
+  $('menuUrl').textContent = urlSaved() ? 'Unsave this URL' : 'Save for this URL';
+  ($('menuUrl') as HTMLButtonElement).disabled = !origin || !reachable || origin === domainKey(); // same key as the main button
   const ex = origin !== null && settings.excluded.includes(origin);
   $('menuExclude').textContent = ex ? 'Stop ignoring this site' : 'Never touch this site';
   ($('menuExclude') as HTMLButtonElement).disabled = !origin;
@@ -140,10 +141,11 @@ function showBlocked() {
 // ---------- actions ----------
 
 $('saveBtn').addEventListener('click', async () => {
-  if (!origin) return;
+  const key = domainKey();
+  if (!key) return;
   try {
-    if (saved()) await storage.removeSite(origin);
-    else await storage.saveSite(origin, volume);
+    if (saved()) await storage.removeSite(key in settings.sites ? key : origin!);
+    else await storage.saveSite(key, volume);
     notice('');
   } catch (e) {
     notice(`Save failed: ${(e as Error).message}`, true);
@@ -219,10 +221,11 @@ $('menuExclude').addEventListener('click', async () => {
   const list = settings.excluded.includes(origin) ? settings.excluded.filter((x) => x !== origin) : [...settings.excluded, origin];
   await storage.setExcluded(list).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
 });
-$('menuWildcard').addEventListener('click', async () => {
+$('menuUrl').addEventListener('click', async () => {
   toggleMenu(false);
-  const wc = origin && wildcardFor(origin);
-  if (wc) await storage.saveSite(wc, volume).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+  if (!origin) return;
+  const op = urlSaved() ? storage.removeSite(origin) : storage.saveSite(origin, volume);
+  await op.catch((e: Error) => notice(`Save failed: ${e.message}`, true));
 });
 
 // first-run hint: shown once, remembered per device

@@ -13,7 +13,7 @@ Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the vol
 ## Features
 
 - **Popup:** rotary knob with drag, mouse wheel and keyboard control, presets at 25, 50 and 100, and a boost switch. The knob ring shows the tab's live audio levels.
-- **Saving:** a Save/Unsave toggle per site. The site menu excludes a site ("Never touch") or saves a wildcard such as `*.example.com`. Exact origin beats wildcard, wildcard beats default, excluded beats all.
+- **Saving:** Save/Unsave stores the level for the whole domain (a wildcard such as `*.example.com`). The site menu saves a level for this URL only or excludes the site ("Never touch"). Exact origin beats wildcard, wildcard beats default, excluded beats all.
 - **Mute:** mute the current tab or all other audible tabs. Muted tabs are listed in the popup with an Unmute button each.
 - **Override:** page writes to `volume` are virtualized, so the page reads back its own value while the real level is ours. Moving the level from the extension also updates the page's own volume (YouTube's slider follows). Web Audio output follows the level through a master gain. Covers `new Audio()` and closed shadow roots.
 - **Tab capture fallback:** media that in-page code cannot reach (another origin without CORS, DRM) is boosted through `tabCapture`. It starts when the popup is opened on that tab.
@@ -74,7 +74,7 @@ npm run zip           # build, then release/volume-lock-<version>.zip
 - A detached element that autoplays without `play()` or volume access (for example a `new Audio()` with `autoplay` that is never inserted) is not covered.
 - Web Audio contexts created before the extension script was injected (tabs open during install or update) need a reload.
 - Volume controls, the visualizer and the boost do not work on browser-internal pages such as `chrome://` and the Chrome Web Store.
-- A level applies to the exact origin only. `https://example.com` does not cover `https://www.example.com` unless a wildcard is saved.
+- An exact-origin level (menu, shortcut) covers that origin only. `https://example.com` does not cover `https://www.example.com` unless a wildcard is saved.
 - Saved sites sync through `chrome.storage.sync`, which holds 512 items and 100 KB in total. Saves and imports over that quota show an error, and a failed import keeps the old settings.
 
 ## Layout
