@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Simple Volume Saver",
+  "name": "Volume Lock",
   "version": "1.0.0",
   "description": "Remembers a volume level per site and applies it automatically, with an optional boost up to 200%.",
   "permissions": ["storage", "tabs", "scripting", "tabCapture", "offscreen"],

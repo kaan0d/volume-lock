@@ -1,4 +1,4 @@
-# Simple Volume Saver
+# Volume Lock
 
 Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the volume of each site, with an optional boost up to 200%. Chrome only.
 
@@ -41,7 +41,7 @@ npm run typecheck     # tsc --noEmit
 npm test              # build, then Playwright (Chromium)
 npm run icons         # regenerate toolbar PNGs from public/icons/icon.svg
 npm run store-images  # render store/*.png (1280x800) from screenshots/
-npm run zip           # build, then release/simple-volume-saver-<version>.zip
+npm run zip           # build, then release/volume-lock-<version>.zip
 ```
 
 ## Permissions

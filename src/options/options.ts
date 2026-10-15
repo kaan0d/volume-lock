@@ -173,7 +173,7 @@ $('deleteAllBtn').addEventListener('click', () => askDeleteAll(true));
 
 $('exportBtn').addEventListener('click', () => {
   const url = URL.createObjectURL(new Blob([exportSettings(settings)], { type: 'application/json' }));
-  el('a', { href: url, download: 'simple-volume-saver-settings.json' }).click();
+  el('a', { href: url, download: 'volume-lock-settings.json' }).click();
   URL.revokeObjectURL(url);
 });
 
