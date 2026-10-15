@@ -1,0 +1,19 @@
+/* Placeholder; the theme agent's version replaces this. */
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121317; --glass: rgba(255,255,255,.06); --glass-strong: rgba(255,255,255,.1); --glass-border: rgba(255,255,255,.14);
+  --text: #f2f3f5; --text-muted: #9a9ca5; --accent: #3b82f6; --accent-glow: rgba(59,130,246,.45); --danger: #ff6b6b;
+}
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #eef0f4; --glass: rgba(255,255,255,.6); --glass-strong: rgba(255,255,255,.85); --glass-border: rgba(0,0,0,.1);
+  --text: #1a1b20; --text-muted: #636670; --accent: #2563eb; --accent-glow: rgba(37,99,235,.35); --danger: #d93a4f;
+}
+:root {
+  --radius-s: 6px; --radius-m: 10px; --radius-l: 16px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px;
+  --font: Inter, system-ui, "Segoe UI", sans-serif;
+  --ease-spring: linear(0, .6 18%, 1.05 40%, 1 60%, 1);
+  --ease-out: cubic-bezier(.2,.8,.2,1);
+  --dur-fast: 120ms; --dur-med: 220ms; --dur-slow: 400ms; --blur: 18px;
+}

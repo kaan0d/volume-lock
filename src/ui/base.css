@@ -1,0 +1,8 @@
+/* Placeholder; the theme agent's version replaces this. */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--text); }
+.glass { background: var(--glass); border: 1px solid var(--glass-border); backdrop-filter: blur(var(--blur)); border-radius: var(--radius-l); }
+.btn { min-height: 40px; padding: 0 var(--space-4); border-radius: var(--radius-m); border: 1px solid var(--glass-border); background: var(--glass-strong); color: var(--text); font: inherit; cursor: pointer; }
+.btn-primary { background: var(--accent); border-color: transparent; color: #fff; }
+.icon-btn { min-width: 40px; min-height: 40px; border-radius: var(--radius-m); border: 0; background: transparent; color: inherit; cursor: pointer; }
+.field { min-height: 40px; padding: 0 var(--space-3); border-radius: var(--radius-m); border: 1px solid var(--glass-border); background: var(--glass); color: var(--text); font: inherit; }
