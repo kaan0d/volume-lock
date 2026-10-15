@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple Volume Saver settings</title>
+  <link rel="stylesheet" href="../ui/tokens.css">
+  <link rel="stylesheet" href="../ui/base.css">
+  <link rel="stylesheet" href="./options.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar glass">
+      <div class="brand"><img src="/icons/low-volume-48.png" alt="" width="28" height="28"><h1>Volume Saver</h1></div>
+      <nav id="nav" aria-label="Settings sections">
+        <a href="#sites" data-s="sites">Sites</a>
+        <a href="#rules" data-s="rules">Rules</a>
+        <a href="#audio" data-s="audio">Audio</a>
+        <a href="#backup" data-s="backup">Backup</a>
+        <a href="#appearance" data-s="appearance">Appearance</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <section id="sites" class="panel" aria-labelledby="h-sites">
+        <h2 id="h-sites">Sites</h2>
+        <p class="hint">Levels saved per site. <span id="siteCount">0</span> saved.</p>
+        <div class="toolbar">
+          <input id="search" type="search" class="field" placeholder="Filter sites" aria-label="Filter sites">
+        </div>
+        <div class="table-wrap glass">
+          <table>
+            <thead>
+              <tr>
+                <th aria-sort="none"><button type="button" class="sort" data-key="site">Site <span class="arrow" aria-hidden="true"></span></button></th>
+                <th>Type</th>
+                <th aria-sort="none"><button type="button" class="sort" data-key="level">Level <span class="arrow" aria-hidden="true"></span></button></th>
+                <th><span class="sr">Delete</span></th>
+              </tr>
+            </thead>
+            <tbody id="siteRows"></tbody>
+          </table>
+          <div id="emptyState" class="empty hidden"></div>
+        </div>
+        <form id="addForm" class="row-form" novalidate>
+          <input id="addPattern" class="field grow" aria-label="Site or wildcard pattern" placeholder="https://example.com or *.example.com" autocomplete="off">
+          <input id="addLevel" class="field num" type="number" min="0" max="100" value="100" aria-label="Level for new site">
+          <button class="btn btn-primary" type="submit">Add</button>
+        </form>
+        <p id="addError" class="error hidden" role="alert"></p>
+      </section>
+
+      <section id="rules" class="panel" aria-labelledby="h-rules">
+        <h2 id="h-rules">Rules</h2>
+        <p class="hint">Precedence: never touch &gt; exact site &gt; wildcard &gt; default volume.</p>
+        <h3>Wildcards <span id="wildCount" class="count">0</span></h3>
+        <p class="hint">A wildcard like <code>*.example.com</code> covers the domain and all its subdomains. Add one on the Sites section; an exact site always beats it.</p>
+        <ul id="wildList" class="list glass"></ul>
+        <h3>Never touch <span id="excludeCount" class="count">0</span></h3>
+        <p class="hint">The extension leaves these sites alone, whatever else is saved.</p>
+        <ul id="excludeList" class="list glass"></ul>
+        <form id="excludeForm" class="row-form" novalidate>
+          <input id="excludePattern" class="field grow" aria-label="Origin or wildcard to exclude" placeholder="https://example.com or *.example.com" autocomplete="off">
+          <button class="btn btn-primary" type="submit">Exclude</button>
+        </form>
+        <p id="excludeError" class="error hidden" role="alert"></p>
+      </section>
+
+      <section id="audio" class="panel" aria-labelledby="h-audio">
+        <h2 id="h-audio">Audio</h2>
+        <div class="card glass">
+          <label class="line"><input id="defaultOn" type="checkbox" aria-label="Default volume for unsaved sites"> Default volume for unsaved sites</label>
+          <div class="line"><input id="defaultLevel" class="field num" type="number" min="0" max="100" value="100" aria-label="Default volume level" disabled> %</div>
+        </div>
+        <div class="card glass">
+          <label class="line"><input id="boostOn" type="checkbox" aria-label="Allow boost up to 200%"> Allow boost up to 200%</label>
+          <p class="hint">Boost raises the limit from 100% to 200%. Turning it off keeps levels above 100% stored, but they play at 100%.</p>
+          <p id="boostNote" class="hint warn hidden"></p>
+        </div>
+      </section>
+
+      <section id="backup" class="panel" aria-labelledby="h-backup">
+        <h2 id="h-backup">Backup</h2>
+        <div class="card glass">
+          <div class="actions">
+            <button id="exportBtn" class="btn" type="button">Export settings</button>
+            <button id="importBtn" class="btn" type="button">Import settings</button>
+            <input id="importFile" type="file" accept="application/json,.json" hidden aria-label="Settings file to import">
+          </div>
+          <div id="importConfirm" class="confirm hidden">
+            <span>Replace all current settings with this file?</span>
+            <button id="importYes" class="btn btn-danger" type="button">Replace</button>
+            <button id="importNo" class="btn" type="button">Cancel</button>
+          </div>
+          <p id="backupError" class="error hidden" role="alert"></p>
+        </div>
+        <div class="card glass">
+          <button id="deleteAllBtn" class="btn btn-danger" type="button">Delete all saved sites</button>
+          <div id="deleteAllConfirm" class="confirm hidden">
+            <span>Delete every saved site? Default, boost and the never-touch list stay.</span>
+            <button id="deleteAllYes" class="btn btn-danger" type="button">Delete all</button>
+            <button id="deleteAllNo" class="btn" type="button">Cancel</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="appearance" class="panel" aria-labelledby="h-appearance">
+        <h2 id="h-appearance">Appearance</h2>
+        <div class="card glass">
+          <label for="themeSel">Theme</label>
+          <select id="themeSel" class="field">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="./options.ts"></script>
+</body>
+</html>
