@@ -20,7 +20,7 @@ Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the vol
 - **Options page:** Sites table with sort, filter and inline level edit; wildcard and never-touch rules; default level; boost; export, import and delete all, each with confirmation; theme.
 - **Theme:** System, Light or Dark.
 - **Shortcuts:** `Alt+Shift+Up` and `Alt+Shift+Down` change the volume by 5%, `Alt+Shift+M` mutes the tab, `Alt+Shift+S` saves the site. Rebind at `chrome://extensions/shortcuts`.
-- **Badge:** the saved level of the site. Blue for saved sites, violet for wildcards, gray for the default, red while the tab is muted.
+- **Badge:** the level for saved and wildcard sites, empty otherwise. Blue for saved, violet for wildcards, red while the tab is muted.
 - **Visualizer:** audio is analyzed in memory and played back unchanged. Nothing is recorded or sent; the extension makes no network requests.
 - **Import/export:** all settings as one JSON file, validated before they replace the current ones.
 
