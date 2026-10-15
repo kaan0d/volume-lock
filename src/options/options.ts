@@ -1,4 +1,4 @@
-import { clampVolume, emptySettings, isValidPattern, isWildcard, maxVolume, type Settings } from '../lib/rules';
+import { clampVolume, emptySettings, EQ_BANDS, EQ_LIMIT, EQ_PRESETS, isValidPattern, isWildcard, maxVolume, presetOf, type Settings } from '../lib/rules';
 import * as storage from '../lib/storage';
 import { exportSettings, parseImport } from '../lib/transfer';
 import { getTheme, initTheme, setTheme } from '../ui/theme';
@@ -16,7 +16,7 @@ function el(tag: string, props: Record<string, unknown> = {}, ...kids: Node[]): 
 }
 
 let settings: Settings = emptySettings();
-const max = () => maxVolume(settings.boostEnabled);
+const max = () => maxVolume(settings.boostEnabled, settings.boostMax);
 const BAD_PATTERN = 'Enter an origin like https://example.com or a wildcard like *.example.com.';
 
 // ---------- nav ----------
@@ -52,7 +52,7 @@ function levelInput(label: string, value: number, onCommit: (v: number) => void)
   f.setAttribute('aria-label', label);
   f.addEventListener('change', () => {
     if (f.value.trim() === '' || Number.isNaN(f.valueAsNumber)) return void (f.value = String(value));
-    onCommit(clampVolume(f.valueAsNumber, settings.boostEnabled));
+    onCommit(clampVolume(f.valueAsNumber, settings.boostEnabled, settings.boostMax));
   });
   return el('span', { className: 'lvl' }, f, document.createTextNode('%'));
 }
@@ -116,6 +116,10 @@ function renderRules() {
   $('wildList').replaceChildren(
     ...wild.map(([p, v]) => el('li', {}, el('span', { textContent: `${p}  ·  ${v}%` }), removeBtn(p, () => storage.removeSite(p)))),
   );
+  $('autoplayCount').textContent = String(settings.autoplayBlock.length);
+  $('autoplayList').replaceChildren(
+    ...settings.autoplayBlock.map((p) => el('li', {}, el('span', { textContent: p }), removeBtn(p, () => storage.setAutoplayBlock(settings.autoplayBlock.filter((x) => x !== p))))),
+  );
   $('excludeCount').textContent = String(settings.excluded.length);
   $('excludeList').replaceChildren(
     ...settings.excluded.map((p) => el('li', {}, el('span', { textContent: p }), removeBtn(p, () => storage.setExcluded(settings.excluded.filter((x) => x !== p))))),
@@ -131,11 +135,22 @@ $('excludeForm').addEventListener('submit', async (e) => {
   input('excludePattern').value = '';
 });
 
+$('autoplayForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pattern = input('autoplayPattern').value.trim().toLowerCase();
+  if (!isValidPattern(pattern)) return show('autoplayError', BAD_PATTERN);
+  show('autoplayError', '');
+  if (!settings.autoplayBlock.includes(pattern)) await storage.setAutoplayBlock([...settings.autoplayBlock, pattern]);
+  input('autoplayPattern').value = '';
+});
+
 // ---------- audio ----------
 
 function renderAudio() {
   input('addLevel').max = input('defaultLevel').max = String(max());
   input('boostOn').checked = settings.boostEnabled;
+  $<HTMLSelectElement>('boostMax').value = String(settings.boostMax);
+  $<HTMLSelectElement>('boostMax').disabled = !settings.boostEnabled;
   input('defaultOn').checked = settings.defaultVolume !== null;
   input('defaultLevel').disabled = settings.defaultVolume === null;
   if (document.activeElement !== input('defaultLevel') && settings.defaultVolume !== null) input('defaultLevel').value = String(settings.defaultVolume);
@@ -145,11 +160,50 @@ function renderAudio() {
 
 const saveDefault = () => {
   const n = input('defaultLevel').valueAsNumber;
-  return storage.setDefaultVolume(input('defaultOn').checked ? clampVolume(Number.isNaN(n) ? 100 : n, settings.boostEnabled) : null);
+  return storage.setDefaultVolume(input('defaultOn').checked ? clampVolume(Number.isNaN(n) ? 100 : n, settings.boostEnabled, settings.boostMax) : null);
 };
 input('defaultOn').addEventListener('change', saveDefault);
 input('defaultLevel').addEventListener('change', saveDefault);
 input('boostOn').addEventListener('change', () => storage.setBoostEnabled(input('boostOn').checked));
+$<HTMLSelectElement>('boostMax').addEventListener('change', (e) => storage.setBoostMax(Number((e.target as HTMLSelectElement).value)));
+
+// ---------- sound ----------
+
+const eqSelect = $<HTMLSelectElement>('eqPreset');
+eqSelect.replaceChildren(...[...Object.keys(EQ_PRESETS), 'Custom'].map((n) => el('option', { value: n, textContent: n })));
+const bandLabel = (f: number) => (f >= 1000 ? (f / 1000) + ' kHz' : f + ' Hz');
+const dB = (v: number) => (v > 0 ? '+' : '') + v + ' dB';
+const eqRows = EQ_BANDS.map((f) => {
+  const slider = el('input', { type: 'range', min: String(-EQ_LIMIT), max: String(EQ_LIMIT), step: '1', value: '0' }) as HTMLInputElement;
+  slider.setAttribute('aria-label', 'EQ ' + bandLabel(f));
+  const out = el('output', {});
+  slider.addEventListener('input', () => (out.textContent = dB(slider.valueAsNumber)));
+  slider.addEventListener('change', () => storage.setFx({ ...settings.fx, eq: eqRows.map((r) => r.slider.valueAsNumber) }));
+  $('eqBands').append(el('div', { className: 'fxrow' }, el('span', { textContent: bandLabel(f) }), slider, out));
+  return { slider, out };
+});
+eqSelect.addEventListener('change', () => {
+  const eq = EQ_PRESETS[eqSelect.value];
+  if (eq) void storage.setFx({ ...settings.fx, eq });
+});
+input('fxLeveler').addEventListener('change', () => storage.setFx({ ...settings.fx, leveler: input('fxLeveler').checked }));
+input('fxMono').addEventListener('change', () => storage.setFx({ ...settings.fx, mono: input('fxMono').checked }));
+const balanceText = (v: number) => (v === 0 ? 'Centre' : v < 0 ? 'L ' + -v : 'R ' + v);
+input('fxBalance').addEventListener('input', () => ($('fxBalanceOut').textContent = balanceText(input('fxBalance').valueAsNumber)));
+input('fxBalance').addEventListener('change', () => storage.setFx({ ...settings.fx, balance: input('fxBalance').valueAsNumber }));
+
+function renderSound() {
+  const f = settings.fx;
+  input('fxLeveler').checked = f.leveler;
+  input('fxMono').checked = f.mono;
+  if (document.activeElement !== input('fxBalance')) input('fxBalance').value = String(f.balance);
+  $('fxBalanceOut').textContent = balanceText(f.balance);
+  eqRows.forEach((r, i) => {
+    if (document.activeElement !== r.slider) r.slider.value = String(f.eq[i]);
+    r.out.textContent = dB(f.eq[i]);
+  });
+  eqSelect.value = presetOf(f.eq) ?? 'Custom';
+}
 
 // ---------- backup ----------
 
@@ -211,6 +265,7 @@ function render() {
   renderSites();
   renderRules();
   renderAudio();
+  renderSound();
 }
 
 void (async () => {

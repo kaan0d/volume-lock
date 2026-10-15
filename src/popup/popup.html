@@ -21,6 +21,7 @@
         <div id="menu" class="menu" role="menu" hidden>
           <button id="menuExclude" type="button" role="menuitem" data-testid="menu-exclude"></button>
           <button id="menuUrl" type="button" role="menuitem" data-testid="menu-url"></button>
+          <button id="menuAutoplay" type="button" role="menuitem" data-testid="menu-autoplay"></button>
           <button id="menuDefault" type="button" role="menuitem" data-testid="menu-default">Use level for all sites</button>
         </div>
       </div>
@@ -46,6 +47,11 @@
           <input id="boost" type="checkbox" role="switch" data-testid="boost-switch" aria-label="Boost up to 200%">
           <span class="track" aria-hidden="true"></span>
         </label>
+      </div>
+
+      <div class="row sound">
+        <select id="eqSel" class="field" aria-label="Equalizer preset" data-testid="eq-select"></select>
+        <button id="nightBtn" class="chip" type="button" aria-pressed="false" data-testid="night-btn" title="Evens out loud and quiet parts">Night</button>
       </div>
 
       <button id="saveBtn" class="btn btn-primary save" type="button" aria-pressed="false" data-testid="save-btn">Save</button>

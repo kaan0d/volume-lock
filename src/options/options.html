@@ -59,6 +59,14 @@
           <button class="btn btn-primary" type="submit">Exclude</button>
         </form>
         <p id="excludeError" class="error hidden" role="alert"></p>
+        <h3>Block autoplay <span id="autoplayCount" class="count">0</span></h3>
+        <p class="hint">On these sites, media that starts playing before you click or press a key is paused.</p>
+        <ul id="autoplayList" class="list glass"></ul>
+        <form id="autoplayForm" class="row-form" novalidate>
+          <input id="autoplayPattern" class="field grow" aria-label="Origin or wildcard to block autoplay on" placeholder="https://example.com or *.example.com" autocomplete="off">
+          <button class="btn btn-primary" type="submit">Block</button>
+        </form>
+        <p id="autoplayError" class="error hidden" role="alert"></p>
       </section>
 
       <section id="general" class="panel" aria-labelledby="h-audio">
@@ -68,9 +76,24 @@
           <div class="line"><input id="defaultLevel" class="field num" type="number" min="0" max="100" value="100" aria-label="Default volume level" disabled> %</div>
         </div>
         <div class="card glass">
-          <label class="line"><input id="boostOn" type="checkbox" aria-label="Allow boost up to 200%"> Allow boost up to 200%</label>
-          <p class="hint">Boost raises the limit from 100% to 200%. Turning it off keeps levels above 100% stored, but they play at 100%.</p>
+          <label class="line"><input id="boostOn" type="checkbox" aria-label="Allow boost"> Allow boost</label>
+          <div class="line"><label for="boostMax">Boost limit</label>
+            <select id="boostMax" class="field"><option value="200">200%</option><option value="300">300%</option><option value="400">400%</option><option value="600">600%</option></select></div>
+          <p class="hint">Boost raises the limit from 100% to the boost limit; a limiter keeps loud peaks from distorting. Turning it off keeps levels above 100% stored, but they play at 100%.</p>
           <p id="boostNote" class="hint warn hidden"></p>
+        </div>
+
+        <h2 id="h-fx">Sound</h2>
+        <div class="card glass">
+          <label class="line"><input id="fxLeveler" type="checkbox" aria-label="Leveler"> Leveler (night mode)</label>
+          <p class="hint">Evens out loud and quiet parts, so ads and explosions stop jumping out.</p>
+          <label class="line"><input id="fxMono" type="checkbox" aria-label="Mono"> Mono</label>
+          <div class="fxrow"><label for="fxBalance">Balance</label><input id="fxBalance" type="range" min="-100" max="100" step="5"><output id="fxBalanceOut" for="fxBalance"></output></div>
+        </div>
+        <div class="card glass">
+          <div class="line"><label for="eqPreset">Equalizer</label><select id="eqPreset" class="field" aria-label="Equalizer preset"></select></div>
+          <div id="eqBands" class="eq"></div>
+          <p class="hint">Sound settings apply to every site you have not excluded, and to media played through Web Audio. Protected (DRM) media and media from another site without CORS stay unchanged.</p>
         </div>
 
         <h2 id="h-backup">Backup</h2>

@@ -1,5 +1,5 @@
 import { originOf } from '../lib/origin';
-import { clampVolume, coveringKey, emptySettings, isExcluded, maxVolume, resolveVolume, type Settings } from '../lib/rules';
+import { clampVolume, coveringKey, covers, EQ_PRESETS, emptySettings, inList, isExcluded, maxVolume, presetOf, resolveVolume, type Settings } from '../lib/rules';
 import type { GetState, SetVolume, StateReply } from '../lib/messages';
 import * as storage from '../lib/storage';
 import '../ui/tokens.css';
@@ -54,7 +54,7 @@ const knob = createKnob($('knobHost'), {
 });
 
 function setVolume(v: number) {
-  volume = clampVolume(v, settings.boostEnabled);
+  volume = clampVolume(v, settings.boostEnabled, settings.boostMax);
   knob.setValue(volume, true);
   paintSave();
   if (reachable) sendLive(volume);
@@ -101,7 +101,29 @@ function paintSave() {
   btn.disabled = !reachable || excluded();
 }
 
+const eqSel = $<HTMLSelectElement>('eqSel');
+eqSel.replaceChildren(...[...Object.keys(EQ_PRESETS), 'Custom'].map((n) => Object.assign(document.createElement('option'), { value: n, textContent: n })));
+eqSel.addEventListener('change', () => {
+  const eq = EQ_PRESETS[eqSel.value];
+  if (eq) void storage.setFx({ ...settings.fx, eq }).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+});
+$('nightBtn').addEventListener('click', () => {
+  void storage.setFx({ ...settings.fx, leveler: !settings.fx.leveler }).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+});
+
+function paintSound() {
+  eqSel.value = presetOf(settings.fx.eq) ?? 'Custom';
+  $('nightBtn').setAttribute('aria-pressed', String(settings.fx.leveler));
+  const off = !reachable || excluded();
+  eqSel.disabled = off;
+  ($('nightBtn') as HTMLButtonElement).disabled = off;
+}
+
+const autoplayBlocked = () => origin !== null && inList(settings.autoplayBlock, origin);
+
 function paintMenu() {
+  $('menuAutoplay').textContent = autoplayBlocked() ? 'Allow autoplay here' : 'Block autoplay here';
+  ($('menuAutoplay') as HTMLButtonElement).disabled = !origin;
   $('menuUrl').textContent = urlSaved() ? 'Unsave this URL' : 'Save for this URL';
   ($('menuUrl') as HTMLButtonElement).disabled = !origin || !reachable || origin === domainKey(); // same key as the main button
   const ex = origin !== null && settings.excluded.includes(origin);
@@ -122,14 +144,16 @@ function paint() {
   pill.hidden = !tag;
   pill.dataset.source = tag.replace(' ', '-');
 
-  volume = clampVolume(volume, settings.boostEnabled);
-  knob.setMax(maxVolume(settings.boostEnabled));
+  volume = clampVolume(volume, settings.boostEnabled, settings.boostMax);
+  knob.setMax(maxVolume(settings.boostEnabled, settings.boostMax));
   knob.setValue(volume);
   knob.setDisabled(!reachable || excluded());
   $<HTMLInputElement>('boost').checked = settings.boostEnabled;
+  $<HTMLInputElement>('boost').setAttribute('aria-label', `Boost up to ${settings.boostMax}%`);
   $('controls').classList.toggle('is-off', !reachable || excluded());
   for (const el of $('controls').querySelectorAll<HTMLButtonElement | HTMLInputElement>('[data-preset], #boost')) el.disabled = !reachable || excluded();
   paintSave();
+  paintSound();
   paintMenu();
 }
 
@@ -225,6 +249,12 @@ $('menuExclude').addEventListener('click', async () => {
   if (!origin) return;
   const list = settings.excluded.includes(origin) ? settings.excluded.filter((x) => x !== origin) : [...settings.excluded, origin];
   await storage.setExcluded(list).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+});
+$('menuAutoplay').addEventListener('click', async () => {
+  toggleMenu(false);
+  if (!origin) return;
+  const list = autoplayBlocked() ? settings.autoplayBlock.filter((p) => !covers(p, origin!)) : [...settings.autoplayBlock, domainKey()!];
+  await storage.setAutoplayBlock(list).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
 });
 $('menuDefault').addEventListener('click', async () => {
   toggleMenu(false);

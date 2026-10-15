@@ -84,8 +84,8 @@ async function run(name: string) {
   if (name === 'save-site') return void (await storage.saveSite(origin, state.volume));
   const dir = name === 'volume-up' ? 1 : name === 'volume-down' ? -1 : 0;
   if (!dir) return;
-  const { boostEnabled } = await storage.loadSettings();
-  const volume = clampVolume(state.volume + dir * STEP, boostEnabled);
+  const { boostEnabled, boostMax } = await storage.loadSettings();
+  const volume = clampVolume(state.volume + dir * STEP, boostEnabled, boostMax);
   const msg: SetVolume = { type: 'set-volume', volume };
   await chrome.tabs.sendMessage(tabId, msg).catch(() => {});
   await setBadge(tabId, String(volume)); // preview only; next navigation or settings change recomputes

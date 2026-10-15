@@ -54,6 +54,10 @@ th:last-child, td:last-child { width: 56px; text-align: right; }
 .del:hover { background: var(--glass-strong); color: var(--danger); }
 .empty { padding: var(--space-5); text-align: center; color: var(--text-muted); }
 
+.fxrow { display: grid; grid-template-columns: 88px minmax(0, 1fr) 64px; gap: var(--space-3); align-items: center; width: 100%; }
+.fxrow input[type="range"] { accent-color: var(--accent); width: 100%; }
+.fxrow output { color: var(--text-muted); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+.eq { display: flex; flex-direction: column; gap: var(--space-1); width: 100%; }
 .list { list-style: none; margin: 0; padding: 0; }
 .list:empty::before { content: "None yet."; display: block; padding: var(--space-4); color: var(--text-muted); font-size: 13px; }
 .list li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-1) var(--space-4); border-bottom: 1px solid var(--glass-border); overflow-wrap: anywhere; }

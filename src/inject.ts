@@ -4,6 +4,8 @@
 // With no level for the site everything passes through (real === virtual, gain 1).
 // The isolated content script (content.ts) owns storage and messaging and pushes the level here.
 
+import { EQ_BANDS, type Fx } from './lib/rules';
+
 // Captured before page code runs, so later page patches can't intercept or break us.
 const call = Reflect.apply;
 const gopd = Reflect.getOwnPropertyDescriptor;
@@ -34,12 +36,33 @@ const createSource = AudioContext.prototype.createMediaElementSource;
 const gainOf = gopd(GainNode.prototype, 'gain')!.get!;
 const setParam = gopd(AudioParam.prototype, 'value')!.set!;
 const scratch = document.createElement('audio'); // validates page writes exactly like the real setter
+const pause = Media.prototype.pause;
+const createBiquad = BaseAudioContext.prototype.createBiquadFilter;
+const createComp = BaseAudioContext.prototype.createDynamicsCompressor;
+const createPanner = BaseAudioContext.prototype.createStereoPanner;
+const getter = (proto: object, name: string) => gopd(proto, name)!.get!;
+const setter = (proto: object, name: string) => gopd(proto, name)!.set!;
+const bq = { frequency: getter(BiquadFilterNode.prototype, 'frequency'), gain: getter(BiquadFilterNode.prototype, 'gain'), Q: getter(BiquadFilterNode.prototype, 'Q') };
+const bqType = setter(BiquadFilterNode.prototype, 'type');
+const dc: Record<string, (this: unknown) => AudioParam> = Object.fromEntries(
+  ['threshold', 'knee', 'ratio', 'attack', 'release'].map((n) => [n, getter(DynamicsCompressorNode.prototype, n) as () => AudioParam]),
+);
+const panOf = getter(StereoPannerNode.prototype, 'pan');
+const setCount = setter(AudioNode.prototype, 'channelCount');
+const setCountMode = setter(AudioNode.prototype, 'channelCountMode');
+const setInterp = setter(AudioNode.prototype, 'channelInterpretation');
+const userActivation = gopd(Navigator.prototype, 'userActivation')?.get;
+const hasBeenActive = gopd(UserActivation.prototype, 'hasBeenActive')?.get;
+/** True once the user has clicked or pressed a key on this page; autoplay is "unprompted" before that. */
+const activated = () => (userActivation && hasBeenActive ? !!call(hasBeenActive, call(userActivation, navigator, []), []) : true);
 
 const realGet = (el: HTMLMediaElement): number => call(vol.get!, el, []);
 const realSet = (el: HTMLMediaElement, v: number) => call(vol.set!, el, [v]);
 
 let pending = true; // no level yet: hold real output silent instead of risking a blast
 let level: number | null = null; // percent; null = pass through
+let fx: Fx | null = null; // sound effects for this site, null = none
+let block = false; // pause media that starts before any user activation
 const controlled = () => pending || level !== null;
 
 const seen = new WeakSet<HTMLMediaElement>();
@@ -47,8 +70,8 @@ const tracked = new Set<WeakRef<HTMLMediaElement>>();
 const virtual = new WeakMap<HTMLMediaElement, number>();
 const routed = new WeakSet<HTMLMediaElement>(); // goes through an AudioContext, so the master gain carries the level
 const encrypted = new WeakSet<HTMLMediaElement>();
-const masters = new WeakMap<BaseAudioContext, GainNode>();
-const masterList: WeakRef<GainNode>[] = [];
+const stages = new WeakMap<BaseAudioContext, Stage>();
+const stageList: WeakRef<Stage>[] = [];
 let ours: AudioContext | undefined; // private context for boosting plain elements
 let reported = false;
 
@@ -76,7 +99,11 @@ function rekey(k: string) {
 
 function onMessage(e: Event) {
   const msg = parse(call(detailOf, e, []));
-  if ('level' in msg) setLevel(msg.level, msg.sync === true);
+  if ('level' in msg) {
+    fx = msg.fx ?? null;
+    block = msg.block === true;
+    setLevel(msg.level, msg.sync === true);
+  }
   if (msg.probe) up({ probe: probe() });
   if (typeof msg.rekey === 'string') rekey(msg.rekey);
 }
@@ -97,9 +124,9 @@ function setLevel(l: number | null, sync = false) {
     if (el) apply(el);
     else tracked.delete(ref);
   }
-  for (const ref of masterList) {
-    const g = ref.deref();
-    if (g) setGain(g);
+  for (const ref of stageList) {
+    const st = ref.deref();
+    if (st) configure(st);
   }
 }
 
@@ -109,10 +136,11 @@ const probe = () => ({
     const el = r.deref();
     return el ? [{ id: el.id, real: realGet(el), virtual: virtual.get(el), routed: routed.has(el) }] : [];
   }),
-  gains: masterList.flatMap((r) => {
-    const g = r.deref();
-    return g ? [Math.round(g.gain.value * 1000) / 1000] : []; // float32 param
+  gains: stageList.flatMap((r) => {
+    const st = r.deref();
+    return st ? [Math.round(st.input.gain.value * 1000) / 1000] : []; // float32 param
   }),
+  chains: stageList.flatMap((r) => r.deref()?.wired ?? []),
 });
 
 // ---------- media elements ----------
@@ -127,29 +155,49 @@ function boostable(el: HTMLMediaElement): boolean | undefined {
 }
 
 /** Element volume tops out at 1, so above 100% the element goes through our context's master gain. Permanent. */
-function route(el: HTMLMediaElement) {
+function route(el: HTMLMediaElement, boosting: boolean) {
   const ok = boostable(el);
   if (ok === undefined) return;
   if (!ok) {
-    if (!reported) up({ needsCapture: true }); // only tab capture can boost this one
-    reported = true;
+    if (boosting && !reported) up({ needsCapture: true }); // only tab capture can boost this one; effects just skip it
+    reported = boosting || reported;
+    return;
+  }
+  ours ??= new Ctx();
+  if (ours.state !== 'running') {
+    // A suspended context would mute the element until the page gets a click, so wait until it runs.
+    if (!resuming) {
+      resuming = true;
+      call(listen, ours, ['statechange', () => ours!.state === 'running' && sweep()]);
+      void ours.resume();
+    }
     return;
   }
   try {
-    ours ??= new Ctx();
     call(connect, call(createSource, ours, [el]), [master(ours)]);
-    if (ours.state === 'suspended') void ours.resume();
   } catch {
     // InvalidStateError: the page already routed it (e.g. `new MediaElementAudioSourceNode`)
   }
   routed.add(el);
+}
+let resuming = false;
+/** Re-applies the level to every tracked element, e.g. once the private context is allowed to run. */
+function sweep() {
+  for (const ref of tracked) {
+    const el = ref.deref();
+    if (el) apply(el);
+    else tracked.delete(ref);
+  }
 }
 
 const target = (el: HTMLMediaElement) =>
   pending ? 0 : level === null ? virtual.get(el)! : routed.has(el) ? 1 : Math.min(level, 100) / 100;
 
 function apply(el: HTMLMediaElement) {
-  if (!pending && level !== null && level > 100 && !routed.has(el)) route(el);
+  if (!pending && !routed.has(el)) {
+    const boosting = level !== null && level > 100;
+    if (boosting || fx) route(el, boosting);
+  }
   const v = target(el);
   if (realGet(el) !== v) realSet(el, v);
 }
@@ -164,7 +212,15 @@ function mayRestore(el: HTMLMediaElement): boolean {
   return ++r.n <= 5;
 }
 
+/** Media that starts before the user did anything on this page, on a site that blocks autoplay. */
+function stopAutoplay(el: Element): boolean {
+  if (!block || !(el instanceof Media) || activated()) return false;
+  call(pause, el, []);
+  return true;
+}
+
 function onMediaEvent(this: HTMLMediaElement, e: Event) {
+  if (e.type === 'play' && stopAutoplay(this)) return;
   if (e.type === 'encrypted') encrypted.add(this);
   if (e.type === 'volumechange' && (realGet(this) === target(this) || !mayRestore(this))) return;
   apply(this);
@@ -187,7 +243,7 @@ const observer = new Observer((records) => {
 
 function watch(root: Document | ShadowRoot) {
   call(observe, observer, [root, { childList: true, subtree: true }]);
-  call(listen, root, ['play', (e: Event) => e.target instanceof Media && track(e.target), true]);
+  call(listen, root, ['play', (e: Event) => e.target instanceof Media && !stopAutoplay(e.target) && track(e.target), true]);
 }
 
 /** Tracks media under root, descending into open shadow roots made by the parser. */
@@ -207,19 +263,82 @@ const seenRoots = new WeakSet<ShadowRoot>();
 // ---------- Web Audio ----------
 
 const gainValue = () => (pending ? 0 : level === null ? 1 : level / 100);
-const setGain = (g: GainNode) => call(setParam, call(gainOf, g, []), [gainValue()]);
+const set = (param: AudioParam, v: number) => call(setParam, param, [v]);
 
-/** Master gain per realtime context, wired to the real destination with the original connect. */
-function master(ctx: BaseAudioContext): GainNode {
-  let g = masters.get(ctx);
-  if (!g) {
-    g = call(createGain, ctx, []) as GainNode;
-    call(connect, g, [call(destinationOf, ctx, [])]);
-    setGain(g);
-    masters.set(ctx, g);
-    masterList.push(new WeakRef(g));
+/**
+ * Everything the page plays through one context goes input (level) -> [EQ] -> [leveler] -> [mono] -> [balance]
+ * -> [limiter] -> destination. Nodes in brackets exist and are wired only while they have a job, so a site
+ * without effects or boost costs one gain node, as before.
+ */
+interface Stage {
+  ctx: BaseAudioContext;
+  input: GainNode;
+  eq?: BiquadFilterNode[];
+  leveler?: DynamicsCompressorNode;
+  mono?: GainNode;
+  pan?: StereoPannerNode;
+  limiter?: DynamicsCompressorNode;
+  wired: string[];
+}
+
+const EQ_TYPES = ['lowshelf', 'peaking', 'peaking', 'peaking', 'highshelf'];
+const comp = (ctx: BaseAudioContext, v: [number, number, number, number, number]) => {
+  const n = call(createComp, ctx, []) as DynamicsCompressorNode;
+  ['threshold', 'knee', 'ratio', 'attack', 'release'].forEach((name, i) => set(call(dc[name], n, []), v[i]));
+  return n;
+};
+
+function configure(st: Stage) {
+  const { ctx } = st;
+  set(call(gainOf, st.input, []), gainValue());
+  const want: [string, AudioNode][] = [];
+  if (fx && fx.eq.some((g) => g !== 0)) {
+    st.eq ??= EQ_BANDS.map((f, i) => {
+      const n = call(createBiquad, ctx, []) as BiquadFilterNode;
+      call(bqType, n, [EQ_TYPES[i]]);
+      set(call(bq.frequency, n, []), f);
+      set(call(bq.Q, n, []), 1);
+      return n;
+    });
+    st.eq.forEach((n, i) => set(call(bq.gain, n, []), fx!.eq[i]));
+    st.eq.forEach((n, i) => want.push(['eq' + i, n]));
   }
-  return g;
+  if (fx?.leveler) want.push(['leveler', (st.leveler ??= comp(ctx, [-32, 24, 8, 0.01, 0.25]))]);
+  if (fx?.mono) {
+    if (!st.mono) {
+      st.mono = call(createGain, ctx, []) as GainNode;
+      call(setCount, st.mono, [1]);
+      call(setCountMode, st.mono, ['explicit']);
+      call(setInterp, st.mono, ['speakers']);
+    }
+    want.push(['mono', st.mono]);
+  }
+  if (fx && fx.balance !== 0) {
+    st.pan ??= call(createPanner, ctx, []) as StereoPannerNode;
+    set(call(panOf, st.pan, []), fx.balance / 100);
+    want.push(['pan', st.pan]);
+  }
+  if (!pending && level !== null && level > 100) want.push(['limiter', (st.limiter ??= comp(ctx, [-2, 0, 20, 0.002, 0.08]))]);
+
+  const names = want.map((w) => w[0]);
+  if (names.join() === st.wired.join()) return;
+  const chain = [st.input, ...want.map((w) => w[1])];
+  for (const n of chain) call(disconnect, n, []);
+  chain.forEach((n, i) => call(connect, n, [i + 1 < chain.length ? chain[i + 1] : call(destinationOf, ctx, [])]));
+  st.wired = names;
+}
+
+/** The stage's input gain, which stands in for the context's destination. */
+function master(ctx: BaseAudioContext): GainNode {
+  let st = stages.get(ctx);
+  if (!st) {
+    st = { ctx, input: call(createGain, ctx, []) as GainNode, wired: [] };
+    call(connect, st.input, [call(destinationOf, ctx, [])]);
+    stages.set(ctx, st);
+    stageList.push(new WeakRef(st));
+    configure(st);
+  }
+  return st.input;
 }
 
 /** Page connections to a realtime destination go to that context's master gain instead. */

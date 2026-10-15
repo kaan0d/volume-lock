@@ -45,6 +45,9 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
 .save:active:not(:disabled) { transform: scale(.97); }
 .save.is-saved { background: var(--glass-strong); color: var(--accent); border: 1px solid var(--accent); box-shadow: 0 0 18px var(--accent-glow); }
 
+.sound { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.sound .field { flex: 1; min-height: 36px; }
+
 /* states */
 .hint { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-l); animation: pop var(--dur-slow) var(--ease-spring) both; }
 .hint p { margin: 0; font-size: 13px; line-height: 1.4; flex: 1; }

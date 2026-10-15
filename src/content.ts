@@ -2,7 +2,7 @@
 // the MAIN-world script (inject.ts), which applies it. Also answers the popup and reports media
 // only tab capture can boost.
 import { originOf } from './lib/origin';
-import { clampVolume, emptySettings, resolveVolume } from './lib/rules';
+import { clampVolume, emptySettings, fxActive, inList, isExcluded, resolveVolume } from './lib/rules';
 import { loadSettings, onSettingsChanged } from './lib/storage';
 import type { CaptureState, LevelChanged, LevelReply, Message, NeedsCapture, StateReply } from './lib/messages';
 
@@ -25,7 +25,12 @@ const toMain = (data: unknown) => window.dispatchEvent(new CustomEvent(key, { de
 const sendKey = () => window.dispatchEvent(new CustomEvent('svs:key', { detail: key }));
 let probeReply: unknown;
 let resolved = false; // nothing is sent until storage answered, so MAIN keeps holding instead of passing through
-const push = (sync = false) => resolved && toMain({ level: level === null || !captured ? level : Math.min(level, 100), sync });
+/** Effects and autoplay blocking apply to every site that is not excluded. */
+const effects = () => {
+  const off = !siteOrigin || isExcluded(settings, siteOrigin);
+  return { fx: !off && fxActive(settings.fx) ? settings.fx : null, block: !off && inList(settings.autoplayBlock, siteOrigin!) };
+};
+const push = (sync = false) => resolved && toMain({ level: level === null || !captured ? level : Math.min(level, 100), sync, ...effects() });
 
 window.addEventListener('svs:hello', sendKey);
 window.addEventListener(key + ':up', (e) => {
@@ -78,7 +83,7 @@ function state(): StateReply {
 
 chrome.runtime.onMessage.addListener((msg: Message | CaptureState, _sender, reply) => {
   if (msg.type === 'set-volume') {
-    preview = clampVolume(msg.volume, settings.boostEnabled);
+    preview = clampVolume(msg.volume, settings.boostEnabled, settings.boostMax);
     update(true);
   } else if (msg.type === 'get-state' && window === window.top) {
     reply(state()); // only the top frame answers, so the reply is the page's
