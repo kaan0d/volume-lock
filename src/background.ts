@@ -1,6 +1,19 @@
 import { originOf } from './lib/origin';
 import { clampVolume, resolveVolume } from './lib/rules';
-import type { SetVolume, StateReply, VizStart, VizStopped } from './lib/messages';
+import type {
+  CaptureGain,
+  CaptureStarted,
+  CaptureState,
+  CaptureStop,
+  LevelChanged,
+  LevelReply,
+  NeedsCapture,
+  SetVolume,
+  StateReply,
+  VizStart,
+  VizStartReply,
+  VizStopped,
+} from './lib/messages';
 import * as storage from './lib/storage';
 
 // exposed so Playwright can call storage functions inside the real extension
@@ -22,11 +35,16 @@ async function refreshBadge(tab: chrome.tabs.Tab) {
 
 const refreshAll = async () => (await chrome.tabs.query({})).forEach(refreshBadge);
 
-/** Chrome only injects content scripts on navigation, so tabs already open at install or update get them here. */
+/**
+ * Chrome only injects content scripts on navigation, so tabs already open at install or update get them here.
+ * After an update the MAIN-world copy already in a page stays in charge and the new one steps aside.
+ */
 async function injectOpenTabs() {
   for (const tab of await chrome.tabs.query({ url: ['http://*/*', 'https://*/*'] })) {
     if (tab.id === undefined) continue;
-    void chrome.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, files: ['content.js'] }).catch(() => {});
+    const target = { tabId: tab.id, allFrames: true };
+    void chrome.scripting.executeScript({ target, files: ['inject.js'], world: 'MAIN' }).catch(() => {});
+    void chrome.scripting.executeScript({ target, files: ['content.js'] }).catch(() => {});
   }
 }
 
@@ -66,33 +84,121 @@ chrome.commands.onCommand.addListener((name) => void run(name));
 // exposed so Playwright can trigger commands (it cannot press extension shortcuts)
 (globalThis as unknown as { svsCommands: { run: typeof run } }).svsCommands = { run };
 
-// ---------- visualizer offscreen document ----------
+// ---------- offscreen document: visualizer and capture fallback ----------
 
 const OFFSCREEN = 'offscreen/offscreen.html';
 
+const hasOffscreen = async () =>
+  (await chrome.runtime.getContexts({ contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT] })).length > 0;
+
 const closeOffscreen = async () => {
-  const docs = await chrome.runtime.getContexts({ contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT] });
-  if (docs.length) await chrome.offscreen.closeDocument().catch(() => {});
+  if (await hasOffscreen()) await chrome.offscreen.closeDocument().catch(() => {});
+  for (const id of Object.keys(await getTabs('captured'))) await setCaptured(Number(id), null);
 };
 
-/** Fresh document per popup: closing the old one ends any capture still running, so getMediaStreamId cannot fail on it. */
-const startOffscreen = async () => {
-  await closeOffscreen();
-  await chrome.offscreen.createDocument({
+const createOffscreen = () =>
+  chrome.offscreen.createDocument({
     url: OFFSCREEN,
     reasons: [chrome.offscreen.Reason.USER_MEDIA],
-    justification: 'Plays captured tab audio back unchanged and measures its levels for the popup visualizer.',
+    justification: 'Plays captured tab audio back, with gain when boosting media the page itself cannot, and measures its levels for the popup visualizer.',
   });
+
+/** Tab id -> origin, in session storage so it survives a service worker restart. */
+type Tabs = Record<string, string>;
+type TabsKey = 'needy' | 'captured'; // needy: has media only capture can boost; captured: override capture running
+const getTabs = async (k: TabsKey): Promise<Tabs> => ((await chrome.storage.session.get(k))[k] as Tabs | undefined) ?? {};
+const setTabs = (k: TabsKey, t: Tabs) => chrome.storage.session.set({ [k]: t });
+const gainFor = (volume: number | null) => Math.max(volume ?? 100, 100) / 100; // in-page carries up to 100
+
+/** Records an override capture and tells every frame of the tab, so in-page stops boosting on top of it. */
+async function setCaptured(tabId: number, origin: string | null) {
+  const t = await getTabs('captured');
+  if (!origin && !(tabId in t)) return;
+  if (origin) t[tabId] = origin;
+  else delete t[tabId];
+  await setTabs('captured', t);
+  const msg: CaptureState = { type: 'capture-state', active: !!origin };
+  await chrome.tabs.sendMessage(tabId, msg).catch(() => {});
+}
+
+/**
+ * A captured tab is joined, not captured again. Otherwise a fresh document ends any leftover capture,
+ * so getMediaStreamId cannot fail on it, unless override captures of other tabs must keep running.
+ */
+async function vizStart(tabId: number | undefined): Promise<VizStartReply> {
+  if (!(await hasOffscreen())) await closeOffscreen(); // forget captures of a document that is gone
+  else if (tabId !== undefined && (await getTabs('captured'))[tabId]) return { attach: true };
+  if (!Object.keys(await getTabs('captured')).length) {
+    await closeOffscreen();
+    await createOffscreen();
+  }
+  if (tabId === undefined || !(await getTabs('needy'))[tabId]) return { attach: false };
+  return { attach: false, gain: gainFor((await getState(tabId))?.volume ?? null) };
+}
+
+async function vizStopped({ tabId, remaining }: VizStopped) {
+  if (tabId !== undefined) await setCaptured(tabId, null);
+  if (remaining === 0 || (remaining === undefined && !Object.keys(await getTabs('captured')).length)) await closeOffscreen();
+}
+
+/** Tab closed (origin null) or navigated: drop what belonged to its old origin. */
+async function forgetTab(tabId: number, origin: string | null) {
+  const needy = await getTabs('needy');
+  if (tabId in needy && needy[tabId] !== origin) {
+    delete needy[tabId];
+    await setTabs('needy', needy);
+  }
+  const captured = (await getTabs('captured'))[tabId];
+  if (captured && captured !== origin) {
+    const stop: CaptureStop = { type: 'capture-stop', tabId };
+    const stopped = await chrome.runtime.sendMessage<CaptureStop, boolean>(stop).catch(() => false); // then viz-stopped follows
+    if (!stopped) await setCaptured(tabId, null);
+  }
+}
+
+/** Level changed in a tab that might be captured: re-apply the gain, tell the frame whether it is capped. */
+async function levelChanged(tabId: number, volume: number | null): Promise<LevelReply> {
+  const captured = !!(await getTabs('captured'))[tabId];
+  const msg: CaptureGain = { type: 'capture-gain', tabId, gain: gainFor(volume) };
+  if (captured) await chrome.runtime.sendMessage(msg).catch(() => {});
+  return { captured };
+}
+
+// one document at a time and no lost updates to the session maps: jobs run in order
+let queue: Promise<unknown> = Promise.resolve();
+const serial = <T>(job: () => Promise<T>): Promise<T> => {
+  const run = queue.then(job, job);
+  queue = run.catch(() => {});
+  return run;
 };
 
-// one document at a time: run opens and closes in order
-let queue: Promise<unknown> = Promise.resolve();
-const serial = (job: () => Promise<void>) => (queue = queue.then(job, job));
+type CaptureMsg = VizStart | VizStopped | CaptureStarted | NeedsCapture | LevelChanged;
 
-chrome.runtime.onMessage.addListener((msg: VizStart | VizStopped, _sender, reply) => {
-  if (msg?.type === 'viz-start') {
-    serial(startOffscreen).then(() => reply(true), () => reply(false));
-    return true;
+chrome.runtime.onMessage.addListener((msg: CaptureMsg, sender, reply) => {
+  const tabId = sender.tab?.id;
+  switch (msg?.type) {
+    case 'viz-start':
+      serial(() => vizStart(msg.tabId)).then(reply, () => reply(false));
+      return true;
+    case 'viz-stopped':
+      void serial(() => vizStopped(msg));
+      break;
+    case 'capture-started':
+      void serial(async () => setCaptured(msg.tabId, originOf((await chrome.tabs.get(msg.tabId).catch(() => null))?.url) ?? ''));
+      break;
+    case 'needs-capture': {
+      const origin = originOf(sender.tab?.url);
+      if (tabId !== undefined && origin) void serial(async () => setTabs('needy', { ...(await getTabs('needy')), [tabId]: origin }));
+      break;
+    }
+    case 'level':
+      if (tabId === undefined) return;
+      serial(() => levelChanged(tabId, msg.volume)).then(reply, () => reply({ captured: false }));
+      return true;
   }
-  if (msg?.type === 'viz-stopped') void serial(closeOffscreen);
+});
+
+chrome.tabs.onRemoved.addListener((tabId) => void serial(() => forgetTab(tabId, null)));
+chrome.tabs.onUpdated.addListener((tabId, info) => {
+  if (info.url) void serial(() => forgetTab(tabId, originOf(info.url)));
 });
