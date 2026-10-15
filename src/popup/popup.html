@@ -2,138 +2,74 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=420">
   <title>Simple Volume Saver</title>
+  <link rel="stylesheet" href="../ui/tokens.css">
+  <link rel="stylesheet" href="../ui/base.css">
+  <link rel="stylesheet" href="../ui/knob.css">
   <link rel="stylesheet" href="./popup.css">
 </head>
 <body>
-  <div class="app">
-    <header class="app-header">
-      <div class="brand">
-        <img src="/icons/low-volume-48.png" alt="" class="brand-icon">
-        <h1>Volume Saver</h1>
+  <main class="app" data-testid="app">
+    <header class="top">
+      <img id="favicon" class="favicon" alt="" hidden>
+      <div class="site">
+        <span id="siteOrigin" class="site-origin" data-testid="site-origin">&nbsp;</span>
+        <span id="sourcePill" class="pill" data-testid="source-pill"></span>
       </div>
-      <button id="themeToggle" class="icon-btn" type="button" title="Toggle theme" aria-label="Toggle theme">
-        <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
-        </svg>
-        <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
+      <div class="menu-wrap">
+        <button id="menuBtn" class="icon-btn" type="button" aria-label="Site options" aria-haspopup="menu" aria-expanded="false" data-testid="site-menu-btn">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+        </button>
+        <div id="menu" class="menu" role="menu" hidden>
+          <button id="menuExclude" class="menu-item" type="button" role="menuitem" data-testid="menu-exclude"></button>
+          <button id="menuWildcard" class="menu-item" type="button" role="menuitem" data-testid="menu-wildcard"></button>
+        </div>
+      </div>
+      <button id="gearBtn" class="icon-btn" type="button" aria-label="Open settings" data-testid="gear">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
       </button>
     </header>
 
-    <nav class="tabs" role="tablist">
-      <button class="tab-btn" id="tabBtnMain" type="button" role="tab" aria-selected="true" aria-controls="pageMain">Volume</button>
-      <button class="tab-btn" id="tabBtnSites" type="button" role="tab" aria-selected="false" aria-controls="pageSites">Saved Sites</button>
-    </nav>
-
-    <section class="tab-page" id="pageMain" role="tabpanel" aria-labelledby="tabBtnMain">
-      <section class="card volume-card">
-        <div class="site-label-row">
-          <span class="site-label" id="siteOrigin">&nbsp;</span>
-          <span class="source-tag" id="siteSource"></span>
-        </div>
-
-        <div class="wave-control" id="waveControl">
-          <span id="volumeDisplay" class="volume-value-bg" aria-hidden="true">100%</span>
-          <span id="waveBars" class="wave-bars" aria-hidden="true"></span>
-          <span id="boostMark" class="boost-mark hidden" aria-hidden="true">100%</span>
-          <div id="waveLine" class="wave-line" role="slider" tabindex="0" aria-label="Volume" aria-orientation="vertical"
-               aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
-            <span class="wave-line-arrow wave-line-arrow-up" aria-hidden="true"></span>
-            <span class="wave-line-arrow wave-line-arrow-down" aria-hidden="true"></span>
-          </div>
-        </div>
-
-        <div class="volume-actions">
-          <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
-          <button id="saveBtn" class="btn btn-primary" type="button">Save site</button>
-        </div>
-        <div class="volume-actions">
-          <button id="muteBtn" class="btn btn-ghost" type="button" aria-pressed="false">Mute tab</button>
-          <button id="muteOthersBtn" class="btn btn-ghost" type="button">Mute other tabs</button>
-        </div>
-        <p id="notice" class="notice hidden" role="status"></p>
-      </section>
+    <section id="hint" class="hint glass" data-testid="first-run-hint" hidden>
+      <p><strong>Set it once.</strong> Turn the knob, then press Save: this site will always start at that level.</p>
+      <button id="hintClose" class="btn" type="button" data-testid="hint-close">Got it</button>
     </section>
 
-    <section class="tab-page hidden" id="pageSites" role="tabpanel" aria-labelledby="tabBtnSites">
-      <section class="card sites-card">
-        <div class="sites-header">
-          <h2>Saved sites</h2>
-          <span id="siteCount" class="badge">0</span>
-        </div>
-        <input id="search" class="field" type="search" placeholder="Search saved sites" aria-label="Search saved sites">
-        <ul id="siteList" class="site-list"></ul>
-        <p id="emptyState" class="empty-state">No sites saved yet. Set a level on the Volume tab and hit <strong>Save site</strong>.</p>
-        <form id="addForm" class="row" autocomplete="off">
-          <input id="addPattern" class="field grow" type="text" placeholder="https://example.com or *.example.com" aria-label="Site or wildcard pattern" spellcheck="false">
-          <input id="addLevel" class="field level" type="number" min="0" max="100" value="100" aria-label="Level for new site">
-          <button class="btn btn-primary" type="submit">Add</button>
-        </form>
-        <p id="addError" class="notice warn hidden" role="alert"></p>
-        <div class="delete-all-row">
-          <button id="deleteAllBtn" class="btn btn-ghost" type="button">Delete all saved sites</button>
-          <div id="deleteAllConfirm" class="confirm-row hidden">
-            <span class="confirm-text">Delete every saved site?</span>
-            <button id="deleteAllYes" class="btn btn-danger" type="button">Delete all</button>
-            <button id="deleteAllNo" class="btn btn-ghost" type="button">Cancel</button>
-          </div>
-        </div>
-      </section>
+    <section id="controls" class="controls">
+      <div id="knobHost" class="knob-host" data-testid="knob"></div>
 
-      <section class="card sites-card">
-        <div class="sites-header"><h2>Never touch</h2><span id="excludeCount" class="badge">0</span></div>
-        <ul id="excludeList" class="site-list"></ul>
-        <form id="excludeForm" class="row" autocomplete="off">
-          <input id="excludePattern" class="field grow" type="text" placeholder="https://example.com or *.example.com" aria-label="Origin or wildcard to exclude" spellcheck="false">
-          <button class="btn btn-ghost" type="submit">Exclude</button>
-        </form>
-        <p id="excludeError" class="notice warn hidden" role="alert"></p>
-      </section>
-
-      <section class="card sites-card">
-        <div class="sites-header"><h2>Options</h2></div>
-        <div class="row opt">
-          <label class="check"><input id="defaultOn" type="checkbox"> Default volume for unsaved sites</label>
-          <input id="defaultLevel" class="field level" type="number" min="0" max="100" value="100" aria-label="Default volume level">
-        </div>
-        <div class="row opt">
-          <label class="check"><input id="boostOn" type="checkbox"> Allow boost up to 200%</label>
-        </div>
-        <p id="boostNote" class="notice hidden"></p>
-      </section>
-
-      <section class="card sites-card">
-        <div class="sites-header"><h2>Backup</h2></div>
-        <div class="row">
-          <button id="exportBtn" class="btn btn-ghost grow" type="button">Export settings</button>
-          <button id="importBtn" class="btn btn-ghost grow" type="button">Import settings</button>
-          <input id="importFile" type="file" accept=".json,application/json" hidden aria-label="Settings file to import">
-        </div>
-        <p id="backupError" class="notice warn hidden" role="alert"></p>
-        <div id="importConfirm" class="confirm-row hidden">
-          <span class="confirm-text">Replace all current settings with this file?</span>
-          <button id="importYes" class="btn btn-danger" type="button">Replace</button>
-          <button id="importNo" class="btn btn-ghost" type="button">Cancel</button>
-        </div>
-      </section>
-    </section>
-
-    <footer class="app-footer">
-      <p class="footer-note">Mind adding a star? It helps this reach more people.</p>
-      <div class="github-actions">
-        <a class="btn btn-star btn-link" href="https://github.com/kaan0d/simple-volume-saver" target="_blank" rel="noopener noreferrer">
-          <svg class="icon icon-star" viewBox="0 0 24 24" fill="#ffc632" stroke="#e0a300" stroke-width="1" stroke-linejoin="round" aria-hidden="true">
-            <polygon points="12 2 14.9 8.6 22 9.3 16.5 14 18.2 21 12 17.3 5.8 21 7.5 14 2 9.3 9.1 8.6"></polygon>
-          </svg>
-          Star on GitHub
-        </a>
-        <a class="btn btn-follow btn-link" href="https://github.com/kaan0d" target="_blank" rel="noopener noreferrer">Follow</a>
+      <div class="row chips" role="group" aria-label="Presets">
+        <button class="chip" type="button" data-preset="25" data-testid="preset-25">25</button>
+        <button class="chip" type="button" data-preset="50" data-testid="preset-50">50</button>
+        <button class="chip" type="button" data-preset="100" data-testid="preset-100">100</button>
+        <label class="boost">
+          <span>Boost</span>
+          <input id="boost" class="switch-input" type="checkbox" role="switch" data-testid="boost-switch" aria-label="Boost up to 200%">
+          <span class="switch-track" aria-hidden="true"></span>
+        </label>
       </div>
+
+      <button id="saveBtn" class="btn btn-primary save" type="button" aria-pressed="false" data-testid="save-btn">Save</button>
+
+      <div class="row two">
+        <button id="muteBtn" class="btn" type="button" aria-pressed="false" data-testid="mute-tab">Mute tab</button>
+        <button id="muteOthersBtn" class="btn" type="button" data-testid="mute-others">Mute other tabs</button>
+      </div>
+    </section>
+
+    <section id="blocked" class="blocked glass" data-testid="unreachable" hidden>
+      <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/></svg>
+      <p id="blockedText" class="blocked-text"></p>
+      <button id="reloadBtn" class="btn btn-primary" type="button" data-testid="reload-btn" hidden>Reload tab</button>
+    </section>
+
+    <p id="notice" class="notice" role="status" data-testid="notice" hidden></p>
+
+    <footer class="foot">
+      <a href="https://github.com/kaan0d/simple-volume-saver" target="_blank" rel="noopener noreferrer" data-testid="github-link">Star on GitHub</a>
     </footer>
-  </div>
+  </main>
   <script type="module" src="./popup.ts"></script>
 </body>
 </html>
