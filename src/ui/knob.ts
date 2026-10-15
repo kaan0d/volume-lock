@@ -236,7 +236,8 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
     (e) => {
       if (disabled || e.deltaY === 0) return;
       e.preventDefault();
-      commit(value + (e.deltaY < 0 ? step : -step), true, false);
+      const s = e.shiftKey ? 1 : step; // Shift = fine steps
+      commit(value + (e.deltaY < 0 ? s : -s), true, false);
       clearTimeout(wheelTimer);
       wheelTimer = window.setTimeout(() => opts.onChange(value), WHEEL_SETTLE_MS);
     },
@@ -246,9 +247,10 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   let keyHeld = false;
   root.addEventListener('keydown', (e) => {
     if (disabled) return;
+    const s = e.shiftKey ? 1 : step; // Shift = fine steps
     const by = (d: number) => value + d;
     const next: Record<string, number> = {
-      ArrowUp: by(step), ArrowRight: by(step), ArrowDown: by(-step), ArrowLeft: by(-step),
+      ArrowUp: by(s), ArrowRight: by(s), ArrowDown: by(-s), ArrowLeft: by(-s),
       PageUp: by(10), PageDown: by(-10), Home: 0, End: max,
     };
     if (!(e.key in next)) return;

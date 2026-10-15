@@ -107,6 +107,7 @@ function paintMenu() {
   const ex = origin !== null && settings.excluded.includes(origin);
   $('menuExclude').textContent = ex ? 'Stop ignoring this site' : 'Never touch this site';
   ($('menuExclude') as HTMLButtonElement).disabled = !origin;
+  ($('menuDefault') as HTMLButtonElement).disabled = !reachable;
 }
 
 function paint() {
@@ -224,6 +225,11 @@ $('menuExclude').addEventListener('click', async () => {
   if (!origin) return;
   const list = settings.excluded.includes(origin) ? settings.excluded.filter((x) => x !== origin) : [...settings.excluded, origin];
   await storage.setExcluded(list).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+});
+$('menuDefault').addEventListener('click', async () => {
+  toggleMenu(false);
+  await storage.setDefaultVolume(volume).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+  notice(`Sites without a saved level now start at ${volume}%.`);
 });
 $('menuUrl').addEventListener('click', async () => {
   toggleMenu(false);
