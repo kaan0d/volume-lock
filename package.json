@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node build.mjs",
     "dev": "node build.mjs --watch",
+    "icons": "node scripts/icons.mjs",
     "typecheck": "tsc --noEmit",
     "test": "npm run build && playwright test",
     "zip": "npm run build && node zip.mjs"
