@@ -3,3 +3,7 @@ node_modules/
 dist/
 test-results/
 playwright-report/
+/.agents
+/.claude
+/development
+/release
