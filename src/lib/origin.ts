@@ -7,3 +7,6 @@ export function originOf(url: string | undefined): string | null {
     return null;
   }
 }
+
+/** Origin as shown to the user: no scheme, no leading "www.". Wildcards and other keys pass through. */
+export const displayOrigin = (o: string) => o.replace(/^https?:\/\/(www\.)?/, '');

@@ -1,4 +1,5 @@
 import { clampVolume, emptySettings, EQ_BANDS, EQ_LIMIT, EQ_PRESETS, isValidPattern, isWildcard, maxVolume, presetOf, type Settings } from '../lib/rules';
+import { displayOrigin } from '../lib/origin';
 import * as storage from '../lib/storage';
 import { exportSettings, parseImport } from '../lib/transfer';
 import { getTheme, initTheme, setTheme } from '../ui/theme';
@@ -79,7 +80,7 @@ function renderSites() {
     ...shown.map(([p, v]) =>
       el(
         'tr', {},
-        el('td', { className: 'site', textContent: p }),
+        el('td', { className: 'site', textContent: displayOrigin(p), title: p }),
         el('td', { className: 'type', textContent: isWildcard(p) ? 'Wildcard' : 'Exact' }),
         el('td', {}, levelInput(`Level for ${p}`, v, (n) => storage.saveSite(p, n))),
         el('td', {}, removeBtn(p, () => storage.removeSite(p))),

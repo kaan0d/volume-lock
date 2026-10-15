@@ -56,10 +56,12 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   const arc = `M ${sx} ${sy} A ${TRACK_R} ${TRACK_R} 0 1 1 ${-sx} ${sy}`;
   const ring = svg('svg', { class: 'knob-ring', viewBox: '-100 -100 200 200', 'aria-hidden': 'true' });
   const barGroup = svg('g', { class: 'knob-bars' });
+  // No bars in the bottom gap, where the track has none either.
+  const inGap = (i: number) => Math.abs((i * 360) / BARS - 180) < (360 - SWEEP) / 2 - 0.01;
   const bars = Array.from({ length: BARS }, (_, i) => {
     const [x1, y1] = polar((i * 360) / BARS, BAR_IN);
     const line = svg('line', { x1, y1, x2: x1, y2: y1 });
-    barGroup.append(line);
+    if (!inGap(i)) barGroup.append(line);
     return line;
   });
   const track = svg('path', { class: 'knob-track', d: arc, pathLength: SWEEP });

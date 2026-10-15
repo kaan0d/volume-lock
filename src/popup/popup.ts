@@ -1,4 +1,4 @@
-import { originOf } from '../lib/origin';
+import { displayOrigin, originOf } from '../lib/origin';
 import { clampVolume, coveringKey, covers, EQ_PRESETS, emptySettings, inList, isExcluded, maxVolume, presetOf, resolveVolume, type Settings } from '../lib/rules';
 import type { GetState, SetVolume, StateReply } from '../lib/messages';
 import * as storage from '../lib/storage';
@@ -50,6 +50,9 @@ const knob = createKnob($('knobHost'), {
   },
   onChange(v) {
     volume = v;
+    // a saved site follows the knob: the new level is stored once the move settles
+    const key = covering();
+    if (key !== null && reachable && settings.sites[key] !== v) storage.saveSite(key, v).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
   },
 });
 
@@ -133,7 +136,7 @@ function paintMenu() {
 }
 
 function paint() {
-  $('siteOrigin').textContent = origin ?? 'This page';
+  $('siteOrigin').textContent = origin ? displayOrigin(origin) : 'This page';
   let tag = '';
   if (origin) {
     const r = resolveVolume(settings, origin);
