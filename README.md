@@ -1,6 +1,6 @@
 # Simple Volume Saver
 
-Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the volume of each site, with a live visualizer of the tab's audio. Chrome only.
+Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the volume of each site, with an optional boost up to 200%. Chrome only.
 
 <table>
   <tr>
@@ -12,13 +12,17 @@ Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the vol
 
 ## Features
 
-- **Volume:** sets the volume of `<video>` and `<audio>` elements on the page, independent of the site's own player. Draggable fader with arrow, Home and End keys, per-tab mute, mute other tabs, dark and light theme.
-- **Rules:** levels saved per origin (`https://example.com`) or per wildcard (`*.example.com`), a default level for unsaved sites, and a "Never touch" list. Exact origin beats wildcard, wildcard beats default, excluded beats all. Saved sites are searchable and editable on the Saved Sites tab.
-- **Boost:** optional, off by default. Raises the limit to 200% through a Web Audio gain node.
-- **Shortcuts:** `Alt+Shift+Up` and `Alt+Shift+Down` change the volume by 5%, `Alt+Shift+M` mutes the tab, `Alt+Shift+S` saves the current site. Chrome lets you change them at `chrome://extensions/shortcuts`.
-- **Badge:** the saved level is shown on the toolbar icon for saved and wildcard sites.
-- **Visualizer:** live level bars from the tab's final audio output, captured with `tabCapture` in an offscreen document. Audio is played back unchanged; nothing is recorded or sent.
-- **Import/export:** all settings as one JSON file. Import is validated and replaces current settings only after confirmation.
+- **Popup:** rotary knob with drag, mouse wheel and keyboard control, presets at 25, 50 and 100, and a boost switch. The knob ring shows the tab's live audio levels.
+- **Saving:** a Save/Saved toggle per site. The site menu excludes a site ("Never touch") or saves a wildcard such as `*.example.com`. Exact origin beats wildcard, wildcard beats default, excluded beats all.
+- **Mute:** mute the current tab or all other audible tabs.
+- **Override:** page writes to `volume` are virtualized, so the page reads back its own value while the real level is ours. Web Audio output follows the level through a master gain. Covers `new Audio()` and closed shadow roots.
+- **Tab capture fallback:** media that in-page code cannot reach (another origin without CORS, DRM) is boosted through `tabCapture`. It starts when the popup is opened on that tab.
+- **Options page:** Sites table with sort, filter and inline level edit; wildcard and never-touch rules; default level; boost; export, import and delete all, each with confirmation; theme.
+- **Theme:** System, Light or Dark.
+- **Shortcuts:** `Alt+Shift+Up` and `Alt+Shift+Down` change the volume by 5%, `Alt+Shift+M` mutes the tab, `Alt+Shift+S` saves the site. Rebind at `chrome://extensions/shortcuts`.
+- **Badge:** the saved level of the site. Blue for saved sites, violet for wildcards, gray for the default, red while the tab is muted.
+- **Visualizer:** audio is analyzed in memory and played back unchanged. Nothing is recorded or sent; the extension makes no network requests.
+- **Import/export:** all settings as one JSON file, validated before they replace the current ones.
 
 ## Install
 
@@ -31,43 +35,45 @@ Build from source (Node 22 or later):
 ## Commands
 
 ```bash
-npm run build       # bundle src/ into dist/
-npm run dev         # rebuild on change
-npm run typecheck   # tsc --noEmit
-npm test            # build, then Playwright (Chromium)
-npm run zip         # build, then release/simple-volume-saver-<version>.zip
+npm run build         # bundle src/ into dist/
+npm run dev           # rebuild on change
+npm run typecheck     # tsc --noEmit
+npm test              # build, then Playwright (Chromium)
+npm run icons         # regenerate toolbar PNGs from public/icons/icon.svg
+npm run store-images  # render store/*.png (1280x800) from screenshots/
+npm run zip           # build, then release/simple-volume-saver-<version>.zip
 ```
 
 ## Permissions
 
 | Permission | Why |
 |---|---|
-| `storage` | Saved levels, rules and settings in `chrome.storage.sync`; theme in `storage.local` |
+| `storage` | Saved levels, rules and settings in `chrome.storage.sync`; theme and first-run hint in `storage.local`; tab state in `storage.session` |
 | `tabs` | Reads the active tab's URL, mutes tabs, finds audible tabs for "mute other tabs", updates the badge |
-| `scripting` | Injects the content script into tabs already open when the extension is installed or updated |
-| `tabCapture` | Visualizer only. Audio is analyzed in memory and played back; nothing is recorded |
-| `offscreen` | Hosts the visualizer's capture and analysis page, so audio is not cut when the popup closes |
-| `<all_urls>` | The content script runs on every page at `document_start`, so a saved level applies before media plays. Any site can have a level, so access cannot be limited to a list |
+| `scripting` | Injects the content scripts into tabs already open when the extension is installed or updated |
+| `tabCapture` | Visualizer, and the boost fallback for media the page cannot reach. Audio is analyzed in memory and played back; nothing is recorded |
+| `offscreen` | Hosts the capture and analysis page, so audio is not cut when the popup closes |
+| `<all_urls>` | The content scripts run on every page at `document_start`, so a saved level applies before media plays. The MAIN-world override script needs no permission beyond this host access |
 
 ## Verification
 
-50 Playwright tests run the built extension in Chromium against local pages with media. No network access is needed.
+81 Playwright tests run the built extension in Chromium against local pages with media. No network access is needed.
 
 | Spec | Tests | Covers |
 |---|---|---|
-| `lib` | 4 | Origin parsing, rule precedence, clamping, import validation and round trip |
-| `content` | 10 | Apply at `document_start`, media added later, shadow DOM, iframes, boost, cross-origin cap, page resets |
-| `background` | 6 | Badge, shortcuts, tab mute, content script injection at install |
-| `popup` | 18 | Fader, save and reset, rules, import/export, sync quota errors, theme, boost |
-| `visualizer` | 4 | Bars from offscreen levels, failed capture, offscreen document lifecycle |
+| `content`, `override` | 17 | Apply at `document_start`, media added later, detached media, shadow DOM, iframes, boost, cross-origin cap, capture flag |
+| `popup`, `knob`, `theme` | 23 | Knob keys and drag, presets, save and reset, rules, import/export, sync quota errors, theme |
+| `options` | 16 | Sites table, rules, audio, backup with confirmation, appearance, screenshots in both themes |
+| `background`, `visualizer` | 13 | Badge, shortcuts, tab mute, content script injection, capture and offscreen lifecycle |
 | `flows` | 6 | End-to-end: popup and shortcuts, badge, import, boost, default volume |
-| `smoke`, `storage` | 2 | Worker starts without errors, storage wrapper and legacy migration |
+| `lib`, `smoke`, `storage` | 6 | Origin parsing, rule precedence, import validation, worker start, storage wrapper and migration |
 
 ## Limits
 
-- Boost is skipped for cross-origin media without CORS and for DRM-protected media. Web Audio cannot read them, so they stay at 100%.
-- Media that is never attached to the page (for example a `new Audio()` that is never inserted) is not covered.
-- Volume controls and the visualizer do not work on browser-internal pages such as `chrome://` and the Chrome Web Store.
+- Cross-origin media without CORS and DRM media cannot be boosted in the page. The tab capture fallback handles them only after the popup is opened once on that tab. The capture ends when the tab closes or navigates to another origin. DRM capture has not been verified.
+- A detached element that autoplays without `play()` or volume access (for example a `new Audio()` with `autoplay` that is never inserted) is not covered.
+- Web Audio contexts created before the extension script was injected (tabs open during install or update) need a reload.
+- Volume controls, the visualizer and the boost do not work on browser-internal pages such as `chrome://` and the Chrome Web Store.
 - A level applies to the exact origin only. `https://example.com` does not cover `https://www.example.com` unless a wildcard is saved.
 - Saved sites sync through `chrome.storage.sync`, which holds 512 items and 100 KB in total. Saves and imports over that quota show an error, and a failed import keeps the old settings.
 
@@ -76,11 +82,16 @@ npm run zip         # build, then release/simple-volume-saver-<version>.zip
 ```
 src/
   lib/          origin, rules, storage, transfer, messages (shared pure logic)
-  background.ts service worker: badge, shortcuts, tab mute, offscreen lifecycle
-  content.ts    applies volume and boost in each frame
-  popup/        popup.html, popup.ts, popup.css
-  offscreen/    visualizer capture and analysis
+  background.ts service worker: badge, shortcuts, tab mute, capture coordination
+  content.ts    isolated script: resolves the level per frame, talks to the popup
+  inject.ts     MAIN-world script: volume override, master gain, shadow roots
+  popup/        popup.html, popup.ts, popup.css, capture.ts (visualizer and capture port)
+  options/      options page: Sites, Rules, Audio, Backup, Appearance
+  ui/           shared tokens, base styles, Inter, knob, theme
+  offscreen/    capture and analysis document
 public/         manifest.json, icons
+scripts/        icon generation and store images
+store/          Chrome Web Store images (generated)
 tests/          Playwright specs and fixtures
 dist/           build output (generated)
 release/        store zip (generated by npm run zip)
