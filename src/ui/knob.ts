@@ -1,4 +1,5 @@
-// Rotary volume knob with a 24-bar visualizer ring. Styles live in knob.css (link it next to the page CSS).
+// Rotary volume knob with a 24-bar visualizer ring.
+import './knob.css';
 
 export type KnobOptions = {
   value: number;
