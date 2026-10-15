@@ -7,3 +7,8 @@ playwright-report/
 /.claude
 /development
 /release
+/webstore/*.zip
+/screenshots/options-dark.png
+/screenshots/options-general.png
+/screenshots/popup-menu-dark.png
+/screenshots/popup-saved-light.png
