@@ -93,7 +93,9 @@ onSettingsChanged((s) => {
   preview = null;
   update();
 });
-void loadSettings().then((s) => {
-  settings = s;
-  update();
-});
+// Always answer, even when storage fails: an explicit "no level" lets MAIN pass through at once
+// instead of holding the page silent until its 1.5 s fallback.
+void loadSettings()
+  .then((s) => void (settings = s))
+  .catch(() => {})
+  .finally(update);
