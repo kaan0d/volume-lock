@@ -1,6 +1,6 @@
 # Volume Lock
 
-Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the volume of each site, with an optional boost up to 200%. Chrome only.
+Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the volume of each site, with boost up to 600%, an equalizer and a night mode. Chrome only.
 
 <table>
   <tr>
@@ -12,12 +12,15 @@ Chrome extension (Manifest V3, TypeScript, Vite) that sets and remembers the vol
 
 ## Features
 
-- **Popup:** rotary knob with drag, mouse wheel and keyboard control, presets at 25, 50 and 100, and a boost switch. The knob ring shows the tab's live audio levels.
-- **Saving:** Save/Unsave stores the level for the whole domain (a wildcard such as `*.example.com`). The site menu saves a level for this URL only or excludes the site ("Never touch"). Exact origin beats wildcard, wildcard beats default, excluded beats all.
+- **Popup:** rotary knob with drag, mouse wheel and keyboard control (hold Shift for 1% steps), presets at 25, 50 and 100, a boost switch, an equalizer preset and a Night toggle. The knob ring shows the tab's live audio levels.
+- **Boost:** up to 200, 300, 400 or 600% (set in options). Above 100% a limiter keeps peaks from clipping.
+- **Sound:** five-band equalizer (60 Hz to 14 kHz, ±12 dB, presets), leveler (compressor, "night mode"), mono and L/R balance. One global setting for every site that is not excluded. Applies to media that goes through Web Audio: plain media is routed through it once the page can start audio, and DRM or cross-origin media without CORS is left unchanged.
+- **Autoplay:** per-site list; media that starts before any click or key press is paused.
+- **Saving:** Save/Unsave stores the level for the whole domain (a wildcard such as `*.example.com`). The site menu saves a level for this URL only, sets the default level, blocks autoplay or excludes the site ("Never touch"). Exact origin beats wildcard, wildcard beats default, excluded beats all.
 - **Mute:** mute the current tab or all other audible tabs. Muted tabs are listed in the popup with an Unmute button each.
 - **Override:** page writes to `volume` are virtualized, so the page reads back its own value while the real level is ours. Moving the level from the extension also updates the page's own volume (YouTube's slider follows). Web Audio output follows the level through a master gain. Covers `new Audio()` and closed shadow roots.
 - **Tab capture fallback:** media that in-page code cannot reach (another origin without CORS, DRM) is boosted through `tabCapture`. It starts when the popup is opened on that tab.
-- **Options page:** two tabs. Sites: table with sort, filter and inline level edit, wildcard and never-touch rules. General: default level, boost, export, import and delete all (each with confirmation), theme.
+- **Options page:** two tabs. Sites: table with sort, filter and inline level edit, wildcard and never-touch rules. General: default level, boost and its limit, sound effects, export, import and delete all (each with confirmation), theme.
 - **Theme:** System, Light or Dark.
 - **Shortcuts:** `Alt+Shift+Up` and `Alt+Shift+Down` change the volume by 5%, `Alt+Shift+M` mutes the tab, `Alt+Shift+S` saves the site. Rebind at `chrome://extensions/shortcuts`.
 - **Badge:** the level for saved and wildcard sites, empty otherwise. Blue for saved, violet for wildcards, red while the tab is muted.
