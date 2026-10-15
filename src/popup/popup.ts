@@ -224,8 +224,17 @@ $('menuExclude').addEventListener('click', async () => {
 $('menuUrl').addEventListener('click', async () => {
   toggleMenu(false);
   if (!origin) return;
-  const op = urlSaved() ? storage.removeSite(origin) : storage.saveSite(origin, volume);
-  await op.catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+  const unsave = urlSaved();
+  try {
+    if (!unsave) return await storage.saveSite(origin, volume);
+    await storage.removeSite(origin);
+    // the page falls back to the domain level; keep the knob in step with it
+    const { [origin]: _, ...sites } = settings.sites;
+    const r = resolveVolume({ ...settings, sites }, origin);
+    if (r) setVolume(r.volume);
+  } catch (e) {
+    notice(`Save failed: ${(e as Error).message}`, true);
+  }
 });
 
 // first-run hint: shown once, remembered per device
