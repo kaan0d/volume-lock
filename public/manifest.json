@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Volume Lock",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Remembers a volume level per site and applies it automatically. Boost to 600%, equalizer, night mode.",
   "permissions": ["storage", "tabs", "scripting", "tabCapture", "offscreen"],
   "host_permissions": ["<all_urls>"],
