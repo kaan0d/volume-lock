@@ -2,6 +2,8 @@
 
 Chrome extension (Manifest V3, TypeScript) that remembers the volume of each site, with boost up to 600%, an equalizer and a night mode. Chrome only.
 
+**[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/volume-lock/hfpdohjhnfgkhnangkecmkhochllhifb)**
+
 <table>
   <tr>
     <td><img src="screenshots/popup-dark.png" width="200" alt="Popup, dark theme"></td>
