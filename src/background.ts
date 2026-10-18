@@ -8,6 +8,7 @@ import type {
   LevelChanged,
   LevelReply,
   NeedsCapture,
+  ResetTab,
   SetVolume,
   StateReply,
   VizStart,
@@ -173,7 +174,11 @@ async function forgetTab(tabId: number, origin: string | null) {
 
 /** Level changed in a tab that might be captured: re-apply the gain, tell the frame whether it is capped. */
 async function levelChanged(tabId: number, volume: number | null): Promise<LevelReply> {
-  const captured = !!(await getTabs('captured'))[tabId];
+  let captured = !!(await getTabs('captured'))[tabId];
+  if (captured && (volume ?? 100) <= 100) {
+    await forgetTab(tabId, null); // back to normal: end the capture, it breaks fullscreen and the tab's own audio path
+    captured = false;
+  }
   const msg: CaptureGain = { type: 'capture-gain', tabId, gain: gainFor(volume) };
   if (captured) await chrome.runtime.sendMessage(msg).catch(() => {});
   return { captured };
@@ -187,7 +192,7 @@ const serial = <T>(job: () => Promise<T>): Promise<T> => {
   return run;
 };
 
-type CaptureMsg = VizStart | VizStopped | CaptureStarted | NeedsCapture | LevelChanged;
+type CaptureMsg = VizStart | VizStopped | CaptureStarted | NeedsCapture | LevelChanged | ResetTab;
 
 chrome.runtime.onMessage.addListener((msg: CaptureMsg, sender, reply) => {
   const tabId = sender.tab?.id;
@@ -206,6 +211,9 @@ chrome.runtime.onMessage.addListener((msg: CaptureMsg, sender, reply) => {
       if (tabId !== undefined && origin) void serial(async () => setTabs('needy', { ...(await getTabs('needy')), [tabId]: origin }));
       break;
     }
+    case 'reset-tab':
+      void serial(() => forgetTab(msg.tabId, null));
+      break;
     case 'level':
       if (tabId === undefined) return;
       serial(() => levelChanged(tabId, msg.volume)).then(reply, () => reply({ captured: false }));

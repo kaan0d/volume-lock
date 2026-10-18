@@ -1,6 +1,6 @@
 import { displayOrigin, originOf } from '../lib/origin';
 import { clampVolume, coveringKey, covers, EQ_PRESETS, emptySettings, inList, isExcluded, maxVolume, presetOf, resolveVolume, type Settings } from '../lib/rules';
-import type { GetState, SetVolume, StateReply } from '../lib/messages';
+import type { GetState, ResetTab, SetVolume, StateReply } from '../lib/messages';
 import * as storage from '../lib/storage';
 import '../ui/tokens.css';
 import '../ui/base.css';
@@ -230,6 +230,13 @@ chrome.tabs.onUpdated.addListener((id, info) => {
 chrome.tabs.onRemoved.addListener(() => void paintMuted());
 void paintMuted();
 
+$('version').textContent = `v${chrome.runtime.getManifest().version}`;
+$('menuReset').addEventListener('click', async () => {
+  if (tabId === undefined) return;
+  await chrome.runtime.sendMessage({ type: 'reset-tab', tabId } satisfies ResetTab).catch(() => {});
+  await chrome.tabs.reload(tabId);
+  window.close();
+});
 $('gearBtn').addEventListener('click', () => void chrome.runtime.openOptionsPage());
 $('reloadBtn').addEventListener('click', () => tabId !== undefined && void chrome.tabs.reload(tabId).then(() => window.close()));
 

@@ -20,6 +20,8 @@ export type CaptureState = { type: 'capture-state'; active: boolean };
 export type CaptureStarted = { type: 'capture-started'; tabId: number };
 /** background -> offscreen: new gain for a tab's override capture. */
 export type CaptureGain = { type: 'capture-gain'; tabId: number; gain: number };
+/** popup -> background: drop the tab's capture and boost state (the popup then reloads the tab). */
+export type ResetTab = { type: 'reset-tab'; tabId: number };
 /** background -> offscreen: stop the tab's capture (tab closed or changed origin). */
 export type CaptureStop = { type: 'capture-stop'; tabId: number };
 
