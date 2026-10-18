@@ -1,21 +1,15 @@
-MIT License
+# Volume Lock Source License
 
 Copyright (c) 2026 Kaan
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is granted to view, build, run and modify this source code for personal, non-commercial use, and to fork it and propose changes through this repository.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+You may NOT, without prior written permission from the copyright holder:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. Publish or upload this extension, or a copy, fork or derivative of it, to the Chrome Web Store or any other extension store or marketplace, whether modified or not.
+2. Redistribute it, or a derivative, under the name "Volume Lock" or with its icons and branding.
+3. Sell it or use it in a commercial product or service.
+
+The software is provided "as is", without warranty of any kind. The author is not liable for any claim or damages arising from its use.
+
+The bundled Inter font keeps its own license (SIL OFL 1.1), see `src/ui/fonts/OFL.txt`.
