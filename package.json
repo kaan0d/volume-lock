@@ -6,10 +6,10 @@
   "scripts": {
     "build": "node build.mjs",
     "dev": "node build.mjs --watch",
-    "icons": "node scripts/icons.mjs",
-    "store-images": "node scripts/store-images.mjs",
+    "icons": "node development/scripts/icons.mjs",
+    "store-images": "node development/scripts/store-images.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "npm run build && playwright test",
+    "test": "npm run build && playwright test -c development",
     "zip": "npm run build && node zip.mjs",
     "store": "npm run zip && npm run store-images"
   },

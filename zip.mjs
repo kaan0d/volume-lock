@@ -1,4 +1,4 @@
-// Zips dist/ with manifest.json at the root into webstore/volume-lock-<version>.zip. Uses only node:zlib.
+// Zips dist/ with manifest.json at the root into development/webstore/volume-lock-<version>.zip. Uses only node:zlib.
 import { crc32, deflateRawSync } from 'node:zlib';
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
@@ -60,7 +60,7 @@ end.writeUInt16LE(count, 10);
 end.writeUInt32LE(cdSize, 12);
 end.writeUInt32LE(offset, 16);
 
-mkdirSync('webstore', { recursive: true });
-const out = join('webstore', `volume-lock-${version}.zip`);
+mkdirSync('development/webstore', { recursive: true });
+const out = join('development/webstore', `volume-lock-${version}.zip`);
 writeFileSync(out, Buffer.concat([...locals, ...centrals, end]));
 console.log(`${out}: ${count} files`);

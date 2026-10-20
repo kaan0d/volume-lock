@@ -30,7 +30,7 @@ Build from source (Node 22 or later):
 ```bash
 npm install
 npm run build   # then load dist/ via chrome://extensions > Developer mode > Load unpacked
-npm run zip     # webstore/volume-lock-<version>.zip
+npm run zip     # development/webstore/volume-lock-<version>.zip
 ```
 
 ## Limits

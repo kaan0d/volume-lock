@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "isolatedModules": true
   },
-  "include": ["src", "tests", "*.ts", "build.mjs"]
+  "include": ["src", "development/tests", "development/*.ts", "build.mjs"]
 }
