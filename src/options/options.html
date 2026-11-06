@@ -129,6 +129,11 @@
           </select>
         </div>
         <div class="card glass">
+          <label class="row-switch" for="vizToggle">Live level ring in the popup</label>
+          <p class="hint-text">Shows the sound of the tab as moving bars. It captures the tab, so the sound cuts for a moment when the popup opens.</p>
+          <label class="switch"><input id="vizToggle" type="checkbox" role="switch" data-testid="viz-toggle"><span class="track" aria-hidden="true"></span></label>
+        </div>
+        <div class="card glass">
           <label id="designLabel">Popup design</label>
           <p class="hint-text">Aurora Glass follows the theme above. The other designs bring their own colors.</p>
           <div id="designGrid" class="design-grid" role="radiogroup" aria-labelledby="designLabel" data-testid="design-grid"></div>

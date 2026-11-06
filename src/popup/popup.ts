@@ -337,8 +337,11 @@ void (async () => {
     }
   }
   paint();
-  if (reachable) connectAudio(tabId!, (levels) => (levels.length ? knob.setLevels(levels) : knob.setIdle()));
-  else showBlocked();
+  // The level ring needs tab capture, which cuts the tab's audio for a moment when it starts: opt-in (settings), off by default.
+  const viz = new URLSearchParams(location.search).has('vizTest') || (await chrome.storage.local.get('visualizer')).visualizer === true;
+  if (reachable) {
+    if (viz) connectAudio(tabId!, (levels) => (levels.length ? knob.setLevels(levels) : knob.setIdle()));
+  } else showBlocked();
   void firstRun();
   storage.onSettingsChanged((s) => {
     settings = s;

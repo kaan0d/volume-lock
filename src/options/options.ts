@@ -260,6 +260,9 @@ input('importFile').addEventListener('change', async () => {
 
 $<HTMLSelectElement>('themeSel').addEventListener('change', (e) => void setTheme((e.target as HTMLSelectElement).value as 'system' | 'light' | 'dark'));
 
+const vizToggle = $<HTMLInputElement>('vizToggle');
+vizToggle.addEventListener('change', () => void chrome.storage.local.set({ visualizer: vizToggle.checked }));
+
 const designGrid = $('designGrid');
 for (const d of DESIGNS) {
   const b = document.createElement('button');
@@ -294,6 +297,7 @@ void (async () => {
   await initTheme();
   $<HTMLSelectElement>('themeSel').value = await getTheme();
   await paintDesigns();
+  vizToggle.checked = (await chrome.storage.local.get('visualizer')).visualizer === true;
   settings = await storage.loadSettings();
   render();
   storage.onSettingsChanged((s) => {
