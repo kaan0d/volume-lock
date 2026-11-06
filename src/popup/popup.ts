@@ -5,10 +5,9 @@ import * as storage from '../lib/storage';
 import '../ui/tokens.css';
 import '../ui/base.css';
 import './popup.css';
-import { getDesign, initTheme, setDesign } from '../ui/theme';
+import { initTheme } from '../ui/theme';
 import { createKnob } from '../ui/knob';
 import '../ui/designs.css';
-import { DESIGNS } from '../ui/designs';
 import { connectAudio } from './capture';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -277,16 +276,6 @@ $('menuAutoplay').addEventListener('click', async () => {
   const list = autoplayBlocked() ? settings.autoplayBlock.filter((p) => !covers(p, origin!)) : [...settings.autoplayBlock, domainKey()!];
   await storage.setAutoplayBlock(list).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
 });
-// design: stays open so each click previews the next one
-let design = DESIGNS[0].id as (typeof DESIGNS)[number]['id'];
-const paintDesign = () => ($('menuDesign').textContent = `Design: ${DESIGNS.find((d) => d.id === design)!.name} ›`);
-$('menuDesign').addEventListener('click', async () => {
-  design = DESIGNS[(DESIGNS.findIndex((d) => d.id === design) + 1) % DESIGNS.length].id;
-  paintDesign();
-  await setDesign(design);
-});
-void getDesign().then((d) => ((design = d), paintDesign()));
-
 $('menuDefault').addEventListener('click', async () => {
   toggleMenu(false);
   await storage.setDefaultVolume(volume).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
