@@ -50,10 +50,11 @@ window.addEventListener('svs:key', (e) => {
 sendKey();
 
 /** Test seam: MAIN's view of every tracked element and master gain (only reachable from the extension). */
-(globalThis as unknown as { svsProbe: () => unknown }).svsProbe = () => {
+const probeNow = () => {
   toMain({ probe: true }); // MAIN answers synchronously
   return probeReply;
 };
+(globalThis as unknown as { svsProbe: () => unknown }).svsProbe = probeNow;
 
 // ---------- level ----------
 
@@ -76,9 +77,12 @@ function update(sync = false) {
 }
 
 function state(): StateReply {
-  const first = document.querySelector<HTMLMediaElement>('video, audio');
+  // skip site-muted elements (volume 0), so the popup never seeds or saves their 0
+  const first = [...document.querySelectorAll<HTMLMediaElement>('video, audio')].find((m) => m.volume > 0);
   // this world sees the real element volume, which equals the page's own value when we leave it alone
-  return { volume: level ?? Math.round((first?.volume ?? 1) * 100) };
+  const needsRoute = !captured && ((level ?? 0) > 100 || effects().fx !== null);
+  const els = (probeNow() as { els: { routed: boolean }[] } | undefined)?.els ?? [];
+  return { volume: level ?? Math.round((first?.volume ?? 1) * 100), idle: (needsRoute && els.some((e) => !e.routed)) || undefined };
 }
 
 chrome.runtime.onMessage.addListener((msg: Message | CaptureState, _sender, reply) => {

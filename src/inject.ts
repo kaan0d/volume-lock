@@ -115,6 +115,7 @@ function setLevel(l: number | null, sync = false) {
   reported = false;
   for (const ref of tracked) {
     const el = ref.deref();
+    if (el) stopAutoplay(el); // media already playing when the block flag arrived
     if (el && sync && l !== null) {
       const v = Math.min(l, 100) / 100;
       const old = virtual.get(el);
@@ -170,6 +171,8 @@ function route(el: HTMLMediaElement, boosting: boolean) {
       resuming = true;
       call(listen, ours, ['statechange', () => ours!.state === 'running' && sweep()]);
       void ours.resume();
+      // resume() without user activation stays pending, so retry on the first gesture or play
+      for (const t of ['pointerdown', 'keydown', 'play']) call(listen, window, [t, () => ours!.state !== 'running' && void ours!.resume(), true]);
     }
     return;
   }
