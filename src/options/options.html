@@ -47,9 +47,9 @@
         <p id="addError" class="error hidden" role="alert"></p>
 
         <h2 id="h-rules">Rules</h2>
-        <p class="hint">Precedence: never touch &gt; exact site &gt; wildcard &gt; default volume.</p>
-        <h3>Wildcards <span id="wildCount" class="count">0</span></h3>
-        <p class="hint">A wildcard like <code>*.example.com</code> covers the domain and all its subdomains. Add one in the Sites table above; an exact site always beats it.</p>
+        <p class="hint">Precedence: never touch &gt; exact site &gt; site and subdomains &gt; default volume.</p>
+        <h3>Site and subdomains <span id="wildCount" class="count">0</span></h3>
+        <p class="hint">A pattern like <code>*.example.com</code> covers the domain and all its subdomains. Add one in the Sites table above; an exact site always beats it.</p>
         <ul id="wildList" class="list glass"></ul>
         <h3>Never touch <span id="excludeCount" class="count">0</span></h3>
         <p class="hint">The extension leaves these sites alone, whatever else is saved.</p>
@@ -85,7 +85,7 @@
 
         <h2 id="h-fx">Sound</h2>
         <div class="card glass">
-          <label class="line"><input id="fxLeveler" type="checkbox" aria-label="Leveler"> Leveler (night mode)</label>
+          <label class="line"><input id="fxLeveler" type="checkbox" aria-label="Leveler"> Quiet loud parts (leveler)</label>
           <p class="hint">Evens out loud and quiet parts, so ads and explosions stop jumping out.</p>
           <label class="line"><input id="fxMono" type="checkbox" aria-label="Mono"> Mono</label>
           <div class="fxrow"><label for="fxBalance">Balance</label><input id="fxBalance" type="range" min="-100" max="100" step="5"><output id="fxBalanceOut" for="fxBalance"></output></div>

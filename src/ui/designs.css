@@ -88,7 +88,7 @@
 [data-design="rams"] .save.is-saved { background: transparent; border: 1.5px solid #f26a1b; color: #f26a1b; }
 [data-design="rams"] .switch .track { background: transparent; border: 1.5px solid #222; }
 [data-design="rams"] .site-origin { font: 600 15px "Barlow Condensed", sans-serif; letter-spacing: 0.14em; text-transform: uppercase; }
-[data-design="rams"] .pill { background: none; border: 0; color: #f26a1b; font-family: "Barlow Condensed", sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+[data-design="rams"] .pill { background: none; border: 0; color: #b8470d; font-family: "Barlow Condensed", sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
 [data-design="rams"] .knob-ring { display: none; }
 [data-design="rams"] .knob-press { inset: 0; }
 [data-design="rams"] .knob-body { background: #f5f4ef; border: 1.5px solid #222; box-shadow: none; backdrop-filter: none; }

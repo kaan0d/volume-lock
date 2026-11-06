@@ -2,7 +2,8 @@
 export type SetVolume = { type: 'set-volume'; volume: number };
 /** popup -> content: ask what the page currently plays at */
 export type GetState = { type: 'get-state' };
-export type StateReply = { volume: number };
+/** `idle`: boost or effects are wanted but the page audio is not routed yet (Chrome waits for a click). */
+export type StateReply = { volume: number; idle?: boolean };
 
 export type Message = SetVolume | GetState;
 

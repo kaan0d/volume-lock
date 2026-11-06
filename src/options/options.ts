@@ -82,7 +82,7 @@ function renderSites() {
       el(
         'tr', {},
         el('td', { className: 'site', textContent: displayOrigin(p), title: p }),
-        el('td', { className: 'type', textContent: isWildcard(p) ? 'Wildcard' : 'Exact' }),
+        el('td', { className: 'type', textContent: isWildcard(p) ? 'Site and subdomains' : 'Exact' }),
         el('td', {}, levelInput(`Level for ${p}`, v, (n) => storage.saveSite(p, n))),
         el('td', {}, removeBtn(p, () => storage.removeSite(p))),
       ),
@@ -106,7 +106,7 @@ $('addForm').addEventListener('submit', async (e) => {
     await storage.saveSite(pattern, level);
     input('addPattern').value = '';
   } catch (err) {
-    show('addError', `Save failed: ${(err as Error).message}`);
+    show('addError', `Save failed: ${storage.friendly(err)}`);
   }
 });
 
@@ -237,7 +237,7 @@ let imported: Settings | null = null;
 const showImport = inlineConfirm('importBtn', 'importConfirm', 'importYes', 'importNo', async () => {
   const s = imported;
   imported = null;
-  if (s) await storage.replaceSettings(s).catch((e: Error) => show('backupError', `Import failed: ${e.message}`));
+  if (s) await storage.replaceSettings(s).catch((e: Error) => show('backupError', `Import failed: ${storage.friendly(e)}`));
 });
 // the confirm row only appears once a valid file was picked
 $('importBtn').addEventListener('click', () => input('importFile').click());
@@ -252,7 +252,7 @@ input('importFile').addEventListener('change', async () => {
     showImport(true);
   } catch (e) {
     imported = null;
-    show('backupError', `Import failed: ${(e as Error).message}`);
+    show('backupError', `Import failed: ${storage.friendly(e)}`);
   }
 });
 
@@ -273,7 +273,11 @@ for (const d of DESIGNS) {
 }
 async function paintDesigns() {
   const now = await getDesign();
-  for (const b of designGrid.children) b.setAttribute('aria-checked', String((b as HTMLElement).dataset.design === now));
+  for (const b of designGrid.children as Iterable<HTMLButtonElement>) {
+    const on = b.dataset.design === now;
+    b.setAttribute('aria-checked', String(on));
+    b.tabIndex = on ? 0 : -1; // roving tabindex: one tab stop for the group
+  }
 }
 
 // ---------- boot ----------

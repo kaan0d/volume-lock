@@ -118,7 +118,7 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   function drawStatic() {
     root.setAttribute('aria-valuemax', String(max));
     root.setAttribute('aria-valuenow', String(value));
-    root.setAttribute('aria-valuetext', `${value}%`);
+    root.setAttribute('aria-valuetext', `${value} percent${value > 100 ? ', boosted' : ''}`);
     const boost = max > 100;
     root.classList.toggle('is-boost', boost);
     const [x1, y1] = polar(angleOf(100), TRACK_R - 8);

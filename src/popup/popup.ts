@@ -41,6 +41,14 @@ function sendLive(v: number) {
   });
 }
 
+/** Re-asks the page whether boost/effects are routed; shows the click hint if not. */
+async function recheckIdle() {
+  if (!reachable || tabId === undefined) return;
+  await new Promise((r) => setTimeout(r, 250));
+  const state = await chrome.tabs.sendMessage<GetState, StateReply>(tabId, { type: 'get-state' }, { frameId: 0 }).catch(() => null);
+  if (state) $('boostHint').hidden = !state.idle;
+}
+
 const knob = createKnob($('knobHost'), {
   value: 100,
   max: 100,
@@ -54,7 +62,8 @@ const knob = createKnob($('knobHost'), {
     volume = v;
     // a saved site follows the knob: the new level is stored once the move settles
     const key = covering();
-    if (key !== null && reachable && settings.sites[key] !== v) storage.saveSite(key, v).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+    void recheckIdle();
+    if (key !== null && reachable && settings.sites[key] !== v) storage.saveSite(key, v).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
   },
 });
 
@@ -70,7 +79,7 @@ for (const b of document.querySelectorAll<HTMLElement>('[data-preset]')) {
 }
 
 $<HTMLInputElement>('boost').addEventListener('change', (e) => {
-  void storage.setBoostEnabled((e.target as HTMLInputElement).checked).catch((err: Error) => notice(`Save failed: ${err.message}`, true));
+  void storage.setBoostEnabled((e.target as HTMLInputElement).checked).catch((err: Error) => notice(`Save failed: ${storage.friendly(err)}`, true));
 });
 
 // ---------- paint ----------
@@ -110,10 +119,10 @@ const eqSel = $<HTMLSelectElement>('eqSel');
 eqSel.replaceChildren(...[...Object.keys(EQ_PRESETS), 'Custom'].map((n) => Object.assign(document.createElement('option'), { value: n, textContent: n })));
 eqSel.addEventListener('change', () => {
   const eq = EQ_PRESETS[eqSel.value];
-  if (eq) void storage.setFx({ ...settings.fx, eq }).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+  if (eq) void storage.setFx({ ...settings.fx, eq }).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
 });
 $('nightBtn').addEventListener('click', () => {
-  void storage.setFx({ ...settings.fx, leveler: !settings.fx.leveler }).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+  void storage.setFx({ ...settings.fx, leveler: !settings.fx.leveler }).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
 });
 
 function paintSound() {
@@ -145,9 +154,9 @@ function paint() {
     tag = isExcluded(settings, origin) ? 'excluded' : r ? (r.source === 'exact' ? 'saved' : r.source) : 'not saved';
   }
   const pill = $('sourcePill');
-  pill.textContent = tag;
+  pill.textContent = tag === 'wildcard' ? 'site and subdomains' : tag;
   pill.hidden = !tag;
-  pill.dataset.source = tag.replace(' ', '-');
+  pill.dataset.source = tag.replace(' ', '-'); // tag, not the shown text: CSS keys on 'wildcard'
 
   volume = clampVolume(volume, settings.boostEnabled, settings.boostMax);
   knob.setMax(maxVolume(settings.boostEnabled, settings.boostMax));
@@ -182,7 +191,7 @@ $('saveBtn').addEventListener('click', async () => {
     else await storage.saveSite(key, volume);
     notice('');
   } catch (e) {
-    notice(`Save failed: ${(e as Error).message}`, true);
+    notice(`Save failed: ${storage.friendly(e)}`, true);
   }
 });
 
@@ -200,7 +209,7 @@ muteBtn.addEventListener('click', async () => {
 $('muteOthersBtn').addEventListener('click', async () => {
   const others = (await chrome.tabs.query({ audible: true })).filter((t) => t.id !== undefined && t.id !== tabId);
   await Promise.all(others.map((t) => chrome.tabs.update(t.id!, { muted: true })));
-  notice(others.length ? `Muted ${others.length} other tab${others.length > 1 ? 's' : ''}.` : 'No other tab is playing audio.');
+  notice(others.length ? `Muted ${others.length} other tab${others.length > 1 ? 's' : ''} that were playing audio.` : 'No other tab is playing audio.');
 });
 
 // muted tabs: listed with an unmute button each, hidden when none
@@ -260,13 +269,13 @@ $('menuExclude').addEventListener('click', async () => {
   toggleMenu(false);
   if (!origin) return;
   const list = settings.excluded.includes(origin) ? settings.excluded.filter((x) => x !== origin) : [...settings.excluded, origin];
-  await storage.setExcluded(list).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+  await storage.setExcluded(list).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
 });
 $('menuAutoplay').addEventListener('click', async () => {
   toggleMenu(false);
   if (!origin) return;
   const list = autoplayBlocked() ? settings.autoplayBlock.filter((p) => !covers(p, origin!)) : [...settings.autoplayBlock, domainKey()!];
-  await storage.setAutoplayBlock(list).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+  await storage.setAutoplayBlock(list).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
 });
 // design: stays open so each click previews the next one
 let design = DESIGNS[0].id as (typeof DESIGNS)[number]['id'];
@@ -280,7 +289,7 @@ void getDesign().then((d) => ((design = d), paintDesign()));
 
 $('menuDefault').addEventListener('click', async () => {
   toggleMenu(false);
-  await storage.setDefaultVolume(volume).catch((e: Error) => notice(`Save failed: ${e.message}`, true));
+  await storage.setDefaultVolume(volume).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
   notice(`Sites without a saved level now start at ${volume}%.`);
 });
 $('menuUrl').addEventListener('click', async () => {
@@ -295,7 +304,7 @@ $('menuUrl').addEventListener('click', async () => {
     const r = resolveVolume({ ...settings, sites }, origin);
     if (r) setVolume(r.volume);
   } catch (e) {
-    notice(`Save failed: ${(e as Error).message}`, true);
+    notice(`Save failed: ${storage.friendly(e)}`, true);
   }
 });
 
@@ -335,6 +344,7 @@ void (async () => {
     if (state) {
       reachable = true;
       volume = state.volume;
+      $('boostHint').hidden = !state.idle;
     }
   }
   paint();

@@ -67,3 +67,9 @@ export async function migrateLegacy(): Promise<void> {
   await sync().set(items);
   await sync().remove('siteList');
 }
+
+/** Message for the UI: Chrome's raw sync quota errors become plain language. */
+export function friendly(e: unknown): string {
+  const m = e instanceof Error ? e.message : String(e);
+  return /quota|kMaxItems|MAX_/i.test(m) ? 'Too many saves or saved sites, try again in a minute. Chrome sync allows 512 items.' : m;
+}

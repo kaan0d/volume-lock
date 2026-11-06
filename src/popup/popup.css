@@ -1,6 +1,8 @@
 body {
   width: 420px;
   min-height: 560px;
+  max-height: 600px; /* Chrome's popup cap; the first-run hint can overflow it, so scroll instead of cutting the controls */
+  overflow-y: auto;
   background:
     radial-gradient(420px 260px at 50% 150px, var(--hero-glow, var(--accent-glow)), transparent 70%),
     var(--backdrop), var(--bg);
@@ -31,7 +33,7 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
 .controls { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
 .controls.is-off { opacity: .6; }
 .knob-host { display: grid; place-items: center; min-height: 240px; width: 100%; --knob-size: 240px; }
-.app:has(#hint:not([hidden])) .knob-host { --knob-size: 200px; min-height: 200px; } /* keeps the first run under Chrome's 600px popup limit */
+.app:has(#hint:not([hidden])) .knob-host { --knob-size: 170px; min-height: 170px; } /* keeps the first run under Chrome's 600px popup limit */
 .row { display: flex; align-items: center; gap: var(--space-2); width: 100%; }
 .chips { justify-content: center; }
 .chip { min-width: 56px; }
@@ -56,7 +58,7 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
 .muted-list { list-style: none; margin: 0; padding: 0; width: 100%; max-height: 152px; overflow-y: auto; scrollbar-gutter: stable both-edges; /* reserved on both sides so the rows stay centered and never shift */ display: flex; flex-direction: column; gap: var(--space-1); }
 .muted-list li { display: flex; align-items: center; gap: var(--space-2); }
 .muted-list span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--text-muted); }
-.notice { margin: 0; text-align: center; font-size: 13px; color: var(--text-muted); }
+.notice { margin: 0; text-align: center; font-size: 13px; font-weight: 600; color: var(--text); }
 .notice.warn { color: var(--danger); }
 
 @media (prefers-reduced-motion: reduce) {
