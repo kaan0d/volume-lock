@@ -381,3 +381,11 @@
 :root[data-design="pill"] .app:has(#hint:not([hidden])) .knob { --lin-h: 206px; }
 :root[data-design="spectrum"] .app:has(#hint:not([hidden])) .knob-wall { height: 100px; }
 :root[data-design="swiss"] .app:has(#hint:not([hidden])) .knob-n { font-size: 32cqi; }
+
+/* Rams Dial scale numerals follow the current maximum (100, or the boost limit) */
+[data-design="rams"] .knob-press::after, [data-design="rams"] .knob-num::before, [data-design="rams"] .knob-num::after {
+  position: absolute; font: 600 5cqi "Barlow Condensed", sans-serif; color: #222; letter-spacing: 0.04em;
+}
+[data-design="rams"] .knob-num::after { content: "0"; left: 26%; bottom: 5%; }
+[data-design="rams"] .knob-press::after { content: attr(data-max); right: 24%; bottom: 5%; }
+[data-design="rams"] .knob-num::before { content: attr(data-mid); top: 17%; left: 50%; translate: -50% 0; }

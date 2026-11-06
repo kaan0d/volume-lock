@@ -76,6 +76,7 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   press.innerHTML = '<div class="knob-body"><div class="knob-dial"><span class="knob-dot"></span></div></div><div class="knob-num" aria-hidden="true"><span class="knob-n"></span><span class="knob-pct">%</span></div>';
   const dial = press.querySelector<HTMLElement>('.knob-dial')!;
   const num = press.querySelector<HTMLElement>('.knob-n')!;
+  const numBox = press.querySelector<HTMLElement>('.knob-num')!;
   // Extra parts for the non-rotary designs (hidden unless designs.css shows them).
   const lin = document.createElement('div');
   lin.className = 'knob-lin';
@@ -117,6 +118,8 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
 
   function drawStatic() {
     root.setAttribute('aria-valuemax', String(max));
+    press.dataset.max = String(max); // scale labels in the dial designs
+    numBox.dataset.mid = String(max / 2);
     root.setAttribute('aria-valuenow', String(value));
     root.setAttribute('aria-valuetext', `${value} percent${value > 100 ? ', boosted' : ''}`);
     const boost = max > 100;

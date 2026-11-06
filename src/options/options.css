@@ -179,3 +179,4 @@ th:last-child, td:last-child { width: 56px; text-align: right; padding-right: 0;
   th:nth-child(2), td.type { display: none; }
   .site { overflow-wrap: break-word; word-break: normal; font-size: 15px; }
 }
+.card:has(+ .rule) { border-bottom: 0; padding-bottom: 0; }
