@@ -270,7 +270,7 @@ for (const d of DESIGNS) {
   b.className = 'design';
   b.dataset.design = d.id;
   b.setAttribute('role', 'radio');
-  b.innerHTML = `<span class="swatch" style="background:linear-gradient(135deg,${d.swatch[0]} 50%,${d.swatch[1]} 50%)"></span><span>${d.name}</span>`;
+  b.innerHTML = `<span class="swatch" style="--bg:${d.swatch[0]};--ac:${d.swatch[1]}"><i></i><i></i></span><span class="nm">${d.name}</span>`;
   b.addEventListener('click', () => void setDesign(d.id).then(paintDesigns));
   designGrid.append(b);
 }

@@ -10,22 +10,24 @@
 </head>
 <body>
   <div class="layout">
-    <aside class="sidebar glass">
-      <div class="brand"><img src="/icons/low-volume-48.png" alt="" width="28" height="28"><h1>Volume Lock</h1></div>
+    <aside class="sidebar">
+      <div class="brand"><img src="/icons/low-volume-48.png" alt="" width="32" height="32"><h1>Volume<br><em>Lock</em></h1></div>
       <nav id="nav" aria-label="Settings sections">
-        <a href="#sites" data-s="sites">Sites</a>
-        <a href="#general" data-s="general">General</a>
+        <a href="#sites" data-s="sites"><span class="no" aria-hidden="true">01</span>Sites</a>
+        <a href="#general" data-s="general"><span class="no" aria-hidden="true">02</span>General</a>
       </nav>
+      <p class="tag">Per-site volume.<br>Boost. Calm.</p>
     </aside>
 
     <main class="content">
       <section id="sites" class="panel" aria-labelledby="h-sites">
+        <div class="hero"><p class="eyebrow">01 · Sites</p><p class="hero-line"><span id="siteCount" class="big">0</span><span class="hero-text">sites<br><em>remembered</em></span></p></div>
         <h2 id="h-sites">Sites</h2>
-        <p class="hint">Levels saved per site. <span id="siteCount">0</span> saved.</p>
+        <p class="hint">Levels saved per site. Click a level to edit it.</p>
         <div class="toolbar">
           <input id="search" type="search" class="field" placeholder="Filter sites" aria-label="Filter sites">
         </div>
-        <div class="table-wrap glass">
+        <div class="table-wrap">
           <table>
             <thead>
               <tr>
@@ -46,14 +48,15 @@
         </form>
         <p id="addError" class="error hidden" role="alert"></p>
 
+        <hr class="rule">
         <h2 id="h-rules">Rules</h2>
         <p class="hint">Precedence: never touch &gt; exact site &gt; site and subdomains &gt; default volume.</p>
         <h3>Site and subdomains <span id="wildCount" class="count">0</span></h3>
         <p class="hint">A pattern like <code>*.example.com</code> covers the domain and all its subdomains. Add one in the Sites table above; an exact site always beats it.</p>
-        <ul id="wildList" class="list glass"></ul>
+        <ul id="wildList" class="list"></ul>
         <h3>Never touch <span id="excludeCount" class="count">0</span></h3>
         <p class="hint">The extension leaves these sites alone, whatever else is saved.</p>
-        <ul id="excludeList" class="list glass"></ul>
+        <ul id="excludeList" class="list"></ul>
         <form id="excludeForm" class="row-form" novalidate>
           <input id="excludePattern" class="field grow" aria-label="Origin or wildcard to exclude" placeholder="https://example.com or *.example.com" autocomplete="off">
           <button class="btn btn-primary" type="submit">Exclude</button>
@@ -61,7 +64,7 @@
         <p id="excludeError" class="error hidden" role="alert"></p>
         <h3>Block autoplay <span id="autoplayCount" class="count">0</span></h3>
         <p class="hint">On these sites, media that starts playing before you click or press a key is paused.</p>
-        <ul id="autoplayList" class="list glass"></ul>
+        <ul id="autoplayList" class="list"></ul>
         <form id="autoplayForm" class="row-form" novalidate>
           <input id="autoplayPattern" class="field grow" aria-label="Origin or wildcard to block autoplay on" placeholder="https://example.com or *.example.com" autocomplete="off">
           <button class="btn btn-primary" type="submit">Block</button>
@@ -70,12 +73,13 @@
       </section>
 
       <section id="general" class="panel" aria-labelledby="h-audio">
+        <div class="hero"><p class="eyebrow">02 · General</p><p class="hero-line serif">Set it once.<br><em>Hear it right.</em></p></div>
         <h2 id="h-audio">Audio</h2>
-        <div class="card glass">
+        <div class="card">
           <label class="line"><input id="defaultOn" type="checkbox" aria-label="Default volume for unsaved sites"> Default volume for unsaved sites</label>
           <div class="line"><input id="defaultLevel" class="field num" type="number" min="0" max="100" value="100" aria-label="Default volume level" disabled> %</div>
         </div>
-        <div class="card glass">
+        <div class="card">
           <label class="line"><input id="boostOn" type="checkbox" aria-label="Allow boost"> Allow boost</label>
           <div class="line"><label for="boostMax">Boost limit</label>
             <select id="boostMax" class="field"><option value="200">200%</option><option value="300">300%</option><option value="400">400%</option><option value="600">600%</option></select></div>
@@ -83,21 +87,23 @@
           <p id="boostNote" class="hint warn hidden"></p>
         </div>
 
+        <hr class="rule">
         <h2 id="h-fx">Sound</h2>
-        <div class="card glass">
+        <div class="card">
           <label class="line"><input id="fxLeveler" type="checkbox" aria-label="Leveler"> Quiet loud parts (leveler)</label>
           <p class="hint">Evens out loud and quiet parts, so ads and explosions stop jumping out.</p>
           <label class="line"><input id="fxMono" type="checkbox" aria-label="Mono"> Mono</label>
           <div class="fxrow"><label for="fxBalance">Balance</label><input id="fxBalance" type="range" min="-100" max="100" step="5"><output id="fxBalanceOut" for="fxBalance"></output></div>
         </div>
-        <div class="card glass">
+        <div class="card">
           <div class="line"><label for="eqPreset">Equalizer</label><select id="eqPreset" class="field" aria-label="Equalizer preset"></select></div>
           <div id="eqBands" class="eq"></div>
           <p class="hint">Sound settings apply to every site you have not excluded, and to media played through Web Audio. Protected (DRM) media and media from another site without CORS stay unchanged.</p>
         </div>
 
+        <hr class="rule">
         <h2 id="h-backup">Backup</h2>
-        <div class="card glass">
+        <div class="card">
           <div class="actions">
             <button id="exportBtn" class="btn" type="button">Export settings</button>
             <button id="importBtn" class="btn" type="button">Import settings</button>
@@ -110,7 +116,7 @@
           </div>
           <p id="backupError" class="error hidden" role="alert"></p>
         </div>
-        <div class="card glass">
+        <div class="card">
           <button id="deleteAllBtn" class="btn btn-danger" type="button">Delete all saved sites</button>
           <div id="deleteAllConfirm" class="confirm hidden">
             <span>Delete every saved site? Default, boost and the never-touch list stay.</span>
@@ -119,8 +125,9 @@
           </div>
         </div>
 
+        <hr class="rule">
         <h2 id="h-appearance">Appearance</h2>
-        <div class="card glass">
+        <div class="card">
           <label for="themeSel">Theme</label>
           <select id="themeSel" class="field">
             <option value="system">System</option>
@@ -128,14 +135,16 @@
             <option value="dark">Dark</option>
           </select>
         </div>
-        <div class="card glass">
-          <label class="row-switch" for="vizToggle">Live level ring in the popup</label>
-          <p class="hint-text">Shows the sound of the tab as moving bars. It captures the tab, so the sound cuts for a moment when the popup opens.</p>
-          <label class="switch"><input id="vizToggle" type="checkbox" role="switch" data-testid="viz-toggle"><span class="track" aria-hidden="true"></span></label>
+        <div class="card">
+          <div class="toggle-row">
+            <label class="row-switch" for="vizToggle">Live level ring in the popup</label>
+            <label class="switch"><input id="vizToggle" type="checkbox" role="switch" data-testid="viz-toggle"><span class="track" aria-hidden="true"></span></label>
+          </div>
+          <p class="hint">Shows the sound of the tab as moving bars. It captures the tab, so the sound cuts for a moment when the popup opens.</p>
         </div>
-        <div class="card glass">
+        <div class="card">
           <label id="designLabel">Popup design</label>
-          <p class="hint-text">Aurora Glass follows the theme above. The other designs bring their own colors.</p>
+          <p class="hint">Aurora Glass follows the theme above. The other designs bring their own colors.</p>
           <div id="designGrid" class="design-grid" role="radiogroup" aria-labelledby="designLabel" data-testid="design-grid"></div>
         </div>
       </section>
