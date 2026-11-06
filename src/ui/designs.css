@@ -356,3 +356,28 @@
 [data-design="pill"] .knob-lin { left: 22px; right: 22px; bottom: 22px; height: 64px; border-radius: 32px; background: #e8ecf8; overflow: hidden; }
 [data-design="pill"] .knob-lin-fill { inset: 0 auto 0 0; width: calc(32px + var(--v) * (100% - 64px)); background: var(--k-accent); border-radius: 32px; }
 [data-design="pill"] .knob-lin-thumb { left: calc(6px + var(--v) * (100% - 64px)); top: 6px; width: 52px; height: 52px; border-radius: 50%; background: #fff; box-shadow: 0 4px 12px rgb(18 23 43 / 0.3); }
+
+/* ---------- boost colour per design (the light-theme default mixes in blue and clashes with every palette) ---------- */
+:root[data-design="studio"] .knob { --k-hot: #c43c0a; }
+:root[data-design="rams"] .knob { --k-hot: #b8470d; }
+:root[data-design="noir"] .knob { --k-hot: #f0d9a0; }
+:root[data-design="phosphor"] .knob { --k-hot: #c6ffd8; }
+:root[data-design="vinyl"] .knob { --k-hot: #ffd58a; }
+:root[data-design="synthwave"] .knob { --k-hot: #ff8bd0; }
+:root[data-design="liquid"] .knob { --k-hot: #ffffff; }
+:root[data-design="soft"] .knob { --k-hot: #4a2fc0; }
+:root[data-design="swiss"] .knob { --k-hot: #e5261f; }
+:root[data-design="spectrum"] .knob { --k-hot: #ffc2cb; }
+:root[data-design="pill"] .knob { --k-hot: #1d3fc4; }
+[data-design="vinyl"] .knob.is-hot .knob-n { color: #2a1a08; }
+[data-design="synthwave"] .knob.is-hot .knob-n { color: #fff; text-shadow: 0 0 10px #ff3cac; }
+[data-design="liquid"] .knob.is-hot::before { border-color: #2de2c8; box-shadow: 0 0 18px rgb(45 226 200 / 0.55); }
+[data-design="liquid"] .knob-body::before, [data-design="liquid"] .knob-body::after { top: calc((1.04 - 0.94 * var(--v)) * 100%); }
+[data-design="studio"] .knob-fill { stroke-width: 4; }
+[data-design="studio"] .knob-track { stroke-width: 6; }
+
+/* first-run hint: shorter linear boxes keep the popup near Chrome's 600px cap */
+.app:has(#hint:not([hidden])) .knob { --lin-h: 190px; }
+:root[data-design="pill"] .app:has(#hint:not([hidden])) .knob { --lin-h: 206px; }
+:root[data-design="spectrum"] .app:has(#hint:not([hidden])) .knob-wall { height: 100px; }
+:root[data-design="swiss"] .app:has(#hint:not([hidden])) .knob-n { font-size: 32cqi; }
