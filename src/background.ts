@@ -92,10 +92,14 @@ async function run(name: string) {
   await setBadge(tabId, String(volume)); // preview only; next navigation or settings change recomputes
 }
 
-chrome.commands.onCommand.addListener((name) => void run(name));
+// Key auto-repeat fires faster than a run finishes. Overlapping runs read the same old level and write stale
+// values out of order, so the volume jumps back and loses steps: run one at a time.
+let cmdQueue: Promise<unknown> = Promise.resolve();
+const enqueue = (name: string) => (cmdQueue = cmdQueue.then(() => run(name)).catch(() => {}));
+chrome.commands.onCommand.addListener((name) => void enqueue(name));
 
 // exposed so Playwright can trigger commands (it cannot press extension shortcuts)
-(globalThis as unknown as { svsCommands: { run: typeof run } }).svsCommands = { run };
+(globalThis as unknown as { svsCommands: { run: typeof enqueue } }).svsCommands = { run: enqueue };
 
 // ---------- offscreen document: visualizer and capture fallback ----------
 
