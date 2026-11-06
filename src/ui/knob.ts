@@ -16,6 +16,7 @@ export type Knob = {
   setLevels(levels: number[]): void;
   setIdle(): void;
   setDisabled(d: boolean): void;
+  refresh(): void;
   destroy(): void;
 };
 
@@ -75,7 +76,20 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   press.innerHTML = '<div class="knob-body"><div class="knob-dial"><span class="knob-dot"></span></div></div><div class="knob-num" aria-hidden="true"><span class="knob-n"></span><span class="knob-pct">%</span></div>';
   const dial = press.querySelector<HTMLElement>('.knob-dial')!;
   const num = press.querySelector<HTMLElement>('.knob-n')!;
-  root.append(ring, press);
+  // Extra parts for the non-rotary designs (hidden unless designs.css shows them).
+  const lin = document.createElement('div');
+  lin.className = 'knob-lin';
+  lin.innerHTML = '<i class="knob-lin-fill"></i><i class="knob-lin-thumb"></i>';
+  const wall = document.createElement('div');
+  wall.className = 'knob-wall';
+  const cols = Array.from({ length: BARS }, (_, i) => {
+    const c = document.createElement('i');
+    c.style.setProperty('--p', String((i + 0.5) / BARS));
+    c.style.setProperty('--b', String(0.18 + 0.4 * Math.abs(Math.sin(i * 0.7)))); // resting profile when no audio is captured
+    wall.append(c);
+    return c;
+  });
+  root.append(ring, press, lin, wall);
   host.append(root);
 
   // ---------- drawing ----------
@@ -92,9 +106,13 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
     hot.style.strokeDasharray = `${Math.max(0, deg - deg100)} 999`;
     hot.style.strokeDashoffset = `${-deg100}`;
     root.classList.toggle('is-hot', deg > deg100 + 0.01);
+    root.style.setProperty('--v', String(v / max));
     dial.style.transform = `rotate(${angleOf(v)}deg)`;
     const text = String(Math.round(v));
-    if (text !== shownText) num.textContent = shownText = text;
+    if (text !== shownText) {
+      num.textContent = shownText = text;
+      root.dataset.v = text;
+    }
   }
 
   function drawStatic() {
@@ -112,12 +130,27 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
     mark.classList.toggle('is-on', boost);
   }
 
+  // ---------- design-driven layout (read from CSS custom properties) ----------
+  let wallOn = false;
+  let dragMode = 'r'; // r = rotate, h = horizontal slide, v = vertical slide
+  let dragPad = 0; // track length the thumb cannot use (px)
+  function readDesign() {
+    const cs = getComputedStyle(root);
+    wallOn = cs.getPropertyValue('--wall').trim() === '1';
+    dragMode = cs.getPropertyValue('--drag').trim() || 'r';
+    dragPad = parseFloat(cs.getPropertyValue('--drag-pad')) || 0;
+  }
+  readDesign();
+
   // ---------- levels ----------
   const target = new Float32Array(BARS);
   const level = new Float32Array(BARS);
   let barsDirty = true;
 
   function drawBars() {
+    if (wallOn) {
+      cols.forEach((c, i) => c.style.setProperty('--l', (level[i] / 255).toFixed(3)));
+    }
     for (let i = 0; i < BARS; i++) {
       const [x, y] = polar((i * 360) / BARS, BAR_IN + BAR_MIN + (level[i] / 255) * (BAR_MAX - BAR_MIN));
       bars[i].setAttribute('x2', x.toFixed(2));
@@ -190,6 +223,8 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   let cy = 0;
   let lastAngle = 0;
   let lastY = 0;
+  let lastX = 0;
+  let width = 0;
   let radius = 0;
   let vertical = false; // grabbed near the center, where angles are noisy: drag like a fader
   let raw = 0; // unclamped drag value so the indicator never jumps across the gap
@@ -201,7 +236,9 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
     cx = r.left + r.width / 2;
     cy = r.top + r.height / 2;
     radius = r.width / 2; // cached so moves never read layout
-    vertical = Math.hypot(e.clientX - cx, e.clientY - cy) < radius * 0.3;
+    width = ((lin.offsetWidth ? lin : wall.offsetWidth ? wall : root).getBoundingClientRect().width || r.width) - dragPad;
+    lastX = e.clientX;
+    vertical = dragMode === 'v' || (dragMode === 'r' && Math.hypot(e.clientX - cx, e.clientY - cy) < radius * 0.3);
     lastAngle = pointerAngle(e);
     lastY = e.clientY;
     raw = value;
@@ -214,11 +251,15 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   root.addEventListener('pointermove', (e) => {
     if (!dragging) return;
     const a = pointerAngle(e);
-    raw += vertical
-      ? ((lastY - e.clientY) / (radius * 2)) * max
-      : ((((a - lastAngle + 540) % 360) - 180) / SWEEP) * max; // angle delta wrapped into [-180, 180)
+    raw +=
+      dragMode === 'h'
+        ? ((e.clientX - lastX) / width) * max
+        : vertical
+          ? ((lastY - e.clientY) / (radius * 2)) * max
+          : ((((a - lastAngle + 540) % 360) - 180) / SWEEP) * max; // angle delta wrapped into [-180, 180)
     lastAngle = a;
     lastY = e.clientY;
+    lastX = e.clientX;
     raw = clamp(raw, -max * 0.25, max * 1.25); // a little slack past the ends, no runaway
     commit(raw, false, false);
   });
@@ -268,6 +309,13 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   // ---------- init ----------
   show(false);
   drawBars();
+  const onDesign = () => {
+    readDesign();
+    show(false);
+    barsDirty = true;
+    schedule();
+  };
+  window.addEventListener('designchange', onDesign);
 
   return {
     setValue(v, animate = false) {
@@ -297,7 +345,9 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
       root.setAttribute('aria-disabled', String(d));
       root.classList.toggle('is-disabled', d);
     },
+    refresh: onDesign,
     destroy() {
+      window.removeEventListener('designchange', onDesign);
       cancelAnimationFrame(raf);
       clearTimeout(wheelTimer);
       root.remove();

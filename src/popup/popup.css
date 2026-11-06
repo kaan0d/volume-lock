@@ -2,7 +2,7 @@ body {
   width: 420px;
   min-height: 560px;
   background:
-    radial-gradient(420px 260px at 50% 150px, var(--accent-glow), transparent 70%),
+    radial-gradient(420px 260px at 50% 150px, var(--hero-glow, var(--accent-glow)), transparent 70%),
     var(--backdrop), var(--bg);
 }
 [hidden] { display: none !important; }
@@ -17,7 +17,7 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
 .site { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--space-2); }
 .site-origin { font-weight: 600; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pill {
-  flex: none; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 500;
+  flex: none; padding: 2px 10px; border-radius: var(--radius-pill, 999px); font-size: 12px; font-weight: 500;
   background: var(--glass-strong); border: 1px solid var(--glass-border); color: var(--text-muted);
   transition: background var(--dur-med) var(--ease-out), color var(--dur-med) var(--ease-out);
 }
