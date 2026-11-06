@@ -2,7 +2,8 @@ import { clampVolume, emptySettings, EQ_BANDS, EQ_LIMIT, EQ_PRESETS, isValidPatt
 import { displayOrigin } from '../lib/origin';
 import * as storage from '../lib/storage';
 import { exportSettings, parseImport } from '../lib/transfer';
-import { getTheme, initTheme, setTheme } from '../ui/theme';
+import { getDesign, getTheme, initTheme, setDesign, setTheme } from '../ui/theme';
+import { DESIGNS } from '../ui/designs';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const input = (id: string) => $<HTMLInputElement>(id);
@@ -259,6 +260,22 @@ input('importFile').addEventListener('change', async () => {
 
 $<HTMLSelectElement>('themeSel').addEventListener('change', (e) => void setTheme((e.target as HTMLSelectElement).value as 'system' | 'light' | 'dark'));
 
+const designGrid = $('designGrid');
+for (const d of DESIGNS) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'design';
+  b.dataset.design = d.id;
+  b.setAttribute('role', 'radio');
+  b.innerHTML = `<span class="swatch" style="background:linear-gradient(135deg,${d.swatch[0]} 50%,${d.swatch[1]} 50%)"></span><span>${d.name}</span>`;
+  b.addEventListener('click', () => void setDesign(d.id).then(paintDesigns));
+  designGrid.append(b);
+}
+async function paintDesigns() {
+  const now = await getDesign();
+  for (const b of designGrid.children) b.setAttribute('aria-checked', String((b as HTMLElement).dataset.design === now));
+}
+
 // ---------- boot ----------
 
 function render() {
@@ -272,6 +289,7 @@ function render() {
 void (async () => {
   await initTheme();
   $<HTMLSelectElement>('themeSel').value = await getTheme();
+  await paintDesigns();
   settings = await storage.loadSettings();
   render();
   storage.onSettingsChanged((s) => {
