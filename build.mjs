@@ -23,6 +23,7 @@ await build({
   base: './',
   build: {
     ...out(false),
+    target: 'es2022', // top-level await in the pages
     rollupOptions: { input: { popup: 'src/popup/popup.html', offscreen: 'src/offscreen/offscreen.html', options: 'src/options/options.html' } },
   },
 });
