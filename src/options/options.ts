@@ -24,6 +24,11 @@ document.querySelectorAll<HTMLElement>('.list').forEach((l) => (l.dataset.empty 
 let settings: Settings = emptySettings();
 const max = () => maxVolume(settings.boostEnabled, settings.boostMax);
 const BAD_PATTERN = t('badPattern');
+/** Typed pattern; a bare domain like example.com gets https:// so people need not type the scheme. */
+const patternOf = (id: string) => {
+  const v = input(id).value.trim().toLowerCase();
+  return /^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?$/.test(v) ? `https://${v}` : v;
+};
 
 // ---------- nav ----------
 
@@ -99,7 +104,7 @@ input('search').addEventListener('input', renderSites);
 
 $('addForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const pattern = input('addPattern').value.trim().toLowerCase();
+  const pattern = patternOf('addPattern');
   const level = input('addLevel').valueAsNumber;
   if (!isValidPattern(pattern)) return show('addError', BAD_PATTERN);
   if (!Number.isInteger(level) || level < 0 || level > max()) return show('addError', t('levelRange', max()));
@@ -132,7 +137,7 @@ function renderRules() {
 
 $('excludeForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const pattern = input('excludePattern').value.trim().toLowerCase();
+  const pattern = patternOf('excludePattern');
   if (!isValidPattern(pattern)) return show('excludeError', BAD_PATTERN);
   show('excludeError', '');
   if (!settings.excluded.includes(pattern)) await storage.setExcluded([...settings.excluded, pattern]);
@@ -141,7 +146,7 @@ $('excludeForm').addEventListener('submit', async (e) => {
 
 $('autoplayForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const pattern = input('autoplayPattern').value.trim().toLowerCase();
+  const pattern = patternOf('autoplayPattern');
   if (!isValidPattern(pattern)) return show('autoplayError', BAD_PATTERN);
   show('autoplayError', '');
   if (!settings.autoplayBlock.includes(pattern)) await storage.setAutoplayBlock([...settings.autoplayBlock, pattern]);
