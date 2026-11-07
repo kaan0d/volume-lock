@@ -62,7 +62,7 @@ function showState(state: StateReply) {
   lastState = state;
   paintBoost();
   $('boostHint').hidden = !state.idle;
-  $('captureWarn').hidden = !state.needsCapture;
+  $('captureWarn').hidden = !state.needsCapture || !chrome.tabCapture; // no tab capture in Firefox: such media is simply left alone
 }
 
 // tag -> message key; the tag itself stays English because CSS and tests key on it

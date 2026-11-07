@@ -3,7 +3,8 @@ import { crc32, deflateRawSync } from 'node:zlib';
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 
-const dist = 'dist';
+const firefox = process.argv.includes('--firefox');
+const dist = firefox ? 'dist-firefox' : 'dist';
 const { version } = JSON.parse(readFileSync(join(dist, 'manifest.json'), 'utf8'));
 const files = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((d) => (d.isDirectory() ? files(join(dir, d.name)) : [join(dir, d.name)]));
 
@@ -61,6 +62,6 @@ end.writeUInt32LE(cdSize, 12);
 end.writeUInt32LE(offset, 16);
 
 mkdirSync('development/webstore', { recursive: true });
-const out = join('development/webstore', `volume-lock-${version}.zip`);
+const out = join('development/webstore', `volume-lock${firefox ? '-firefox' : ''}-${version}.zip`);
 writeFileSync(out, Buffer.concat([...locals, ...centrals, end]));
 console.log(`${out}: ${count} files`);
