@@ -31,12 +31,18 @@ export function parseImport(json: string): Settings {
   for (const p of d.excluded) {
     if (typeof p !== 'string' || !isValidPattern(p)) throw new Error(t('errExcluded', String(p)));
   }
+  const muteSites = d.muteSites ?? []; // older exports lack it
+  if (!Array.isArray(muteSites)) throw new Error(t('errExcludedList'));
+  for (const p of muteSites) {
+    if (typeof p !== 'string' || !isValidPattern(p)) throw new Error(t('errExcluded', String(p)));
+  }
   return {
     defaultVolume: d.defaultVolume,
     boostEnabled: d.boostEnabled,
     boostMax: d.boostMax ?? 200,
     sites: d.sites,
     excluded: d.excluded,
+    muteSites,
     fx: cleanFx(d.fx),
   };
 }

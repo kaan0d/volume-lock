@@ -13,6 +13,7 @@ export async function loadSettings(): Promise<Settings> {
   s.boostMax = cleanBoostMax(all.boostMax);
   s.fx = cleanFx(all.fx);
   if (Array.isArray(all.excluded)) s.excluded = all.excluded.filter((x) => typeof x === 'string');
+  if (Array.isArray(all.muteSites)) s.muteSites = all.muteSites.filter((x) => typeof x === 'string');
   for (const [k, v] of Object.entries(all)) {
     if (k.startsWith(SITE) && typeof v === 'number') s.sites[k.slice(SITE.length)] = v;
   }
@@ -33,6 +34,7 @@ export const setBoostEnabled = (b: boolean) => sync().set({ boostEnabled: b });
 export const setBoostMax = (n: number) => sync().set({ boostMax: n });
 export const setFx = (fx: Fx) => sync().set({ fx });
 export const setExcluded = (list: string[]) => sync().set({ excluded: list });
+export const setMuteSites = (list: string[]) => sync().set({ muteSites: list });
 
 /** Replaces every setting with `s` (import). On a quota error the old settings are put back. */
 export async function replaceSettings(s: Settings): Promise<void> {
@@ -41,7 +43,7 @@ export async function replaceSettings(s: Settings): Promise<void> {
   const rest: Record<string, number> = s.defaultVolume === null ? {} : { defaultVolume: s.defaultVolume };
   await sync().clear();
   try {
-    await sync().set({ ...sites, ...rest, boostEnabled: s.boostEnabled, boostMax: s.boostMax, excluded: s.excluded, fx: s.fx });
+    await sync().set({ ...sites, ...rest, boostEnabled: s.boostEnabled, boostMax: s.boostMax, excluded: s.excluded, muteSites: s.muteSites, fx: s.fx });
   } catch (e) {
     await sync().set(before); // they fit before, so they fit again
     throw e;

@@ -8,6 +8,9 @@ export type StateReply = { volume: number; idle?: boolean; needsCapture?: boolea
 
 export type Message = SetVolume | GetState;
 
+/** Alarm name prefix of a timed mute; the tab id follows. */
+export const UNMUTE_ALARM = 'unmute:';
+
 // ---------- capture fallback ----------
 
 /** content -> background: this frame has media only tab capture can boost (another origin without CORS, DRM). */

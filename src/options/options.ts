@@ -131,7 +131,20 @@ function renderRules() {
   $('excludeList').replaceChildren(
     ...settings.excluded.map((p) => el('li', {}, el('span', { textContent: p }), removeBtn(p, () => storage.setExcluded(settings.excluded.filter((x) => x !== p))))),
   );
+  $('muteCount').textContent = String(settings.muteSites.length);
+  $('muteList').replaceChildren(
+    ...settings.muteSites.map((p) => el('li', {}, el('span', { textContent: p }), removeBtn(p, () => storage.setMuteSites(settings.muteSites.filter((x) => x !== p))))),
+  );
 }
+
+$('muteForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pattern = patternOf('mutePattern');
+  if (!isValidPattern(pattern)) return show('muteError', BAD_PATTERN);
+  show('muteError', '');
+  if (!settings.muteSites.includes(pattern)) await storage.setMuteSites([...settings.muteSites, pattern]);
+  input('mutePattern').value = '';
+});
 
 $('excludeForm').addEventListener('submit', async (e) => {
   e.preventDefault();

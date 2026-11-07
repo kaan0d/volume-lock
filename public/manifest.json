@@ -4,7 +4,7 @@
   "name": "__MSG_extName__",
   "version": "2.0.0",
   "description": "__MSG_extDescription__",
-  "permissions": ["storage", "tabs", "scripting", "tabCapture", "offscreen"],
+  "permissions": ["storage", "tabs", "scripting", "tabCapture", "offscreen", "alarms"],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js" },
   "content_scripts": [

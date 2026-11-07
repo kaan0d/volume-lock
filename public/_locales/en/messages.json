@@ -694,5 +694,37 @@
   },
   "switchToTab": {
     "message": "Go to this tab"
+  },
+  "muteSitesH": {
+    "message": "Start muted"
+  },
+  "muteSitesHint": {
+    "message": "Tabs on these sites are muted when the page loads. Moving to another site unmutes them again."
+  },
+  "muteSitesAria": {
+    "message": "Origin or wildcard to start muted"
+  },
+  "muteSiteAdd": {
+    "message": "Mute site"
+  },
+  "menuMute15": {
+    "message": "Mute for 15 minutes"
+  },
+  "menuMute60": {
+    "message": "Mute for 1 hour"
+  },
+  "startMuted": {
+    "message": "Always start muted here"
+  },
+  "stopStartMuted": {
+    "message": "Stop starting muted here"
+  },
+  "mutedFor": {
+    "message": "Muted. It unmutes in $MIN$ minutes.",
+    "placeholders": {
+      "min": {
+        "content": "$1"
+      }
+    }
   }
 }

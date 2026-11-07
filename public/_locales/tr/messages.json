@@ -694,5 +694,37 @@
   },
   "switchToTab": {
     "message": "Bu sekmeye git"
+  },
+  "muteSitesH": {
+    "message": "Sessiz başlat"
+  },
+  "muteSitesHint": {
+    "message": "Bu sitelerdeki sekmeler sayfa açılınca sessize alınır. Başka siteye geçince sesi geri açılır."
+  },
+  "muteSitesAria": {
+    "message": "Sessiz başlatılacak adres veya joker"
+  },
+  "muteSiteAdd": {
+    "message": "Siteyi sessize al"
+  },
+  "menuMute15": {
+    "message": "15 dakika sessize al"
+  },
+  "menuMute60": {
+    "message": "1 saat sessize al"
+  },
+  "startMuted": {
+    "message": "Burada hep sessiz başlat"
+  },
+  "stopStartMuted": {
+    "message": "Burada sessiz başlatmayı bırak"
+  },
+  "mutedFor": {
+    "message": "Sessize alındı. $MIN$ dakika sonra açılır.",
+    "placeholders": {
+      "min": {
+        "content": "$1"
+      }
+    }
   }
 }

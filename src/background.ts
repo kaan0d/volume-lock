@@ -1,5 +1,6 @@
 import { originOf } from './lib/origin';
-import { clampVolume, resolveVolume, type Resolved } from './lib/rules';
+import { clampVolume, inList, resolveVolume, type Resolved } from './lib/rules';
+import { UNMUTE_ALARM } from './lib/messages';
 import type {
   CaptureGain,
   CaptureStarted,
@@ -69,6 +70,29 @@ chrome.tabs.onActivated.addListener(({ tabId }) => void chrome.tabs.get(tabId).t
 chrome.tabs.onUpdated.addListener((_id, info, tab) => {
   if (info.url || info.status || info.mutedInfo) void refreshBadge(tab);
 });
+
+// ---------- muting: timers and start-muted sites ----------
+
+/** Tabs this extension muted for a start-muted site, so leaving the site can undo it (session storage: survives a worker restart). */
+const autoMuted = async () => ((await chrome.storage.session.get('autoMuted')).autoMuted as number[] | undefined) ?? [];
+chrome.tabs.onUpdated.addListener((id, info) => {
+  const origin = originOf(info.url);
+  if (!info.url || !origin) return;
+  void (async () => {
+    const mine = await autoMuted();
+    const want = inList((await storage.loadSettings()).muteSites, origin);
+    if (want) {
+      await chrome.tabs.update(id, { muted: true }).catch(() => {});
+      if (!mine.includes(id)) await chrome.storage.session.set({ autoMuted: [...mine, id] });
+    } else if (mine.includes(id)) {
+      await chrome.storage.session.set({ autoMuted: mine.filter((x) => x !== id) });
+      await chrome.tabs.update(id, { muted: false }).catch(() => {});
+    }
+  })();
+});
+chrome.alarms.onAlarm.addListener(({ name }) => name.startsWith(UNMUTE_ALARM) && void chrome.tabs.update(Number(name.slice(UNMUTE_ALARM.length)), { muted: false }).catch(() => {}));
+chrome.tabs.onUpdated.addListener((id, info) => info.mutedInfo?.muted === false && void chrome.alarms.clear(UNMUTE_ALARM + id)); // unmuted by hand: the timer is moot
+chrome.tabs.onRemoved.addListener((id) => void chrome.alarms.clear(UNMUTE_ALARM + id));
 
 /** Current level of the tab's top frame, or null when the content script is unreachable. */
 const getState = (tabId: number) =>

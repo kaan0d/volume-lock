@@ -20,6 +20,8 @@ export interface Settings {
   /** Keys are exact origins or wildcard patterns like `*.example.com`. */
   sites: Record<string, number>;
   excluded: string[];
+  /** Tabs on these sites (same patterns) are muted when they load. */
+  muteSites: string[];
   /** Sites (same patterns) where media that starts playing before any click is paused. */
   fx: Fx;
 }
@@ -41,7 +43,7 @@ export const EQ_PRESETS: Record<string, number[]> = {
 export const presetOf = (eq: number[]) => Object.keys(EQ_PRESETS).find((k) => EQ_PRESETS[k].every((g, i) => g === eq[i])) ?? null;
 export const emptyFx = (): Fx => ({ leveler: false, mono: false, balance: 0, eq: EQ_BANDS.map(() => 0) });
 export const fxActive = (f: Fx) => f.leveler || f.mono || f.balance !== 0 || f.eq.some((g) => g !== 0);
-export const emptySettings = (): Settings => ({ defaultVolume: null, boostEnabled: false, boostMax: 200, sites: {}, excluded: [], fx: emptyFx() });
+export const emptySettings = (): Settings => ({ defaultVolume: null, boostEnabled: false, boostMax: 200, sites: {}, excluded: [], muteSites: [], fx: emptyFx() });
 
 /** Fx from untrusted input (storage, import): anything off-spec falls back to its default. */
 export function cleanFx(x: unknown): Fx {

@@ -64,6 +64,14 @@
           <button class="btn btn-primary" type="submit" data-i18n="exclude">Exclude</button>
         </form>
         <p id="excludeError" class="error hidden" role="alert"></p>
+        <h3><span data-i18n="muteSitesH">Start muted</span> <span id="muteCount" class="count">0</span></h3>
+        <p class="hint" data-i18n="muteSitesHint">Tabs on these sites are muted when the page loads. Moving to another site unmutes them again.</p>
+        <ul id="muteList" class="list" data-testid="mute-list"></ul>
+        <form id="muteForm" class="row-form" novalidate>
+          <input id="mutePattern" class="field grow" aria-label="Origin or wildcard to start muted" placeholder="https://example.com or *.example.com" data-i18n-aria="muteSitesAria" data-i18n-placeholder="patternPlaceholder" data-testid="mute-pattern" autocomplete="off">
+          <button class="btn btn-primary" type="submit" data-i18n="muteSiteAdd">Add</button>
+        </form>
+        <p id="muteError" class="error hidden" role="alert"></p>
       </section>
 
       <section id="general" class="panel" aria-labelledby="h-audio">

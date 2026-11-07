@@ -9,6 +9,7 @@ import { initTheme, isPreview } from '../ui/theme';
 import { createKnob } from '../ui/knob';
 import '../ui/designs.css';
 import { startCapture } from './capture';
+import { UNMUTE_ALARM } from '../lib/messages';
 import { applyI18n, initLang, presetName, t as tr } from '../lib/i18n';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -170,6 +171,9 @@ function paintMenu() {
   $('menuExclude').textContent = tr(ex ? 'stopIgnoring' : 'neverTouchSite');
   ($('menuExclude') as HTMLButtonElement).disabled = !origin;
   ($('menuDefault') as HTMLButtonElement).disabled = !reachable;
+  const sm = origin !== null && settings.muteSites.includes(origin);
+  $('menuStartMuted').textContent = tr(sm ? 'stopStartMuted' : 'startMuted');
+  ($('menuStartMuted') as HTMLButtonElement).disabled = !origin;
 }
 
 function paint() {
@@ -373,6 +377,21 @@ $('menuExclude').addEventListener('click', async () => {
   const list = settings.excluded.includes(origin) ? settings.excluded.filter((x) => x !== origin) : [...settings.excluded, origin];
   await storage.setExcluded(list).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
 });
+$('menuStartMuted').addEventListener('click', async () => {
+  toggleMenu(false);
+  if (!origin) return;
+  const list = settings.muteSites.includes(origin) ? settings.muteSites.filter((x) => x !== origin) : [...settings.muteSites, origin];
+  await storage.setMuteSites(list).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
+});
+for (const [id, min] of [['menuMute15', 15], ['menuMute60', 60]] as const) {
+  $(id).addEventListener('click', async () => {
+    toggleMenu(false);
+    if (tabId === undefined) return;
+    await chrome.alarms.create(UNMUTE_ALARM + tabId, { delayInMinutes: min });
+    await chrome.tabs.update(tabId, { muted: true });
+    notice(tr('mutedFor', min));
+  });
+}
 $('menuDefault').addEventListener('click', async () => {
   toggleMenu(false);
   await storage.setDefaultVolume(volume).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
