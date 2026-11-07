@@ -636,5 +636,42 @@
   },
   "heroLookB": {
     "message": "your look."
+  },
+  "navLanguage": {
+    "message": "Language"
+  },
+  "heroLangA": {
+    "message": "Your language,"
+  },
+  "heroLangB": {
+    "message": "your words."
+  },
+  "langH": {
+    "message": "Language"
+  },
+  "langAuto": {
+    "message": "Automatic (browser language)"
+  },
+  "langHint": {
+    "message": "Applies to the popup and the settings. The extension name and shortcut names follow the browser language."
+  },
+  "unmuteOthers": {
+    "message": "Unmute other tabs"
+  },
+  "unmutedOthersMany": {
+    "message": "Unmuted $COUNT$ other tabs.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "unmutedOthersOne": {
+    "message": "Unmuted $COUNT$ other tab.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   }
 }

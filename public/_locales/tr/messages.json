@@ -636,5 +636,42 @@
   },
   "heroLookB": {
     "message": "senin görünümün."
+  },
+  "navLanguage": {
+    "message": "Dil"
+  },
+  "heroLangA": {
+    "message": "Senin dilin,"
+  },
+  "heroLangB": {
+    "message": "senin sözlerin."
+  },
+  "langH": {
+    "message": "Dil"
+  },
+  "langAuto": {
+    "message": "Otomatik (tarayıcı dili)"
+  },
+  "langHint": {
+    "message": "Açılır pencere ve ayarlar için geçerlidir. Eklenti adı ve kısayol adları tarayıcı dilini izler."
+  },
+  "unmuteOthers": {
+    "message": "Diğer sekmelerin sesini aç"
+  },
+  "unmutedOthersMany": {
+    "message": "$COUNT$ diğer sekmenin sesi açıldı.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "unmutedOthersOne": {
+    "message": "$COUNT$ diğer sekmenin sesi açıldı.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   }
 }

@@ -233,12 +233,24 @@ muteBtn.addEventListener('click', async () => {
   await chrome.tabs.update(tabId, { muted });
   paintMute(muted);
 });
+const otherTabs = async (info: chrome.tabs.QueryInfo) => (await chrome.tabs.query(info)).filter((t) => t.id !== undefined && t.id !== tabId);
+/** One button both ways: "Unmute other tabs" once every playing tab is muted and some tab is muted, else "Mute other tabs". */
+async function othersMode(): Promise<'mute' | 'unmute'> {
+  const [playing, muted] = await Promise.all([otherTabs({ audible: true }), otherTabs({ muted: true })]);
+  return muted.length > 0 && playing.every((t) => t.mutedInfo?.muted) ? 'unmute' : 'mute';
+}
+async function paintMuteOthers() {
+  $('muteOthersBtn').textContent = tr((await othersMode()) === 'unmute' ? 'unmuteOthers' : 'muteOthers');
+}
 $('muteOthersBtn').addEventListener('click', async () => {
-  const others = (await chrome.tabs.query({ audible: true })).filter((t) => t.id !== undefined && t.id !== tabId);
-  await Promise.all(others.map((t) => chrome.tabs.update(t.id!, { muted: true })));
+  const unmute = (await othersMode()) === 'unmute';
+  const others = await otherTabs(unmute ? { muted: true } : { audible: true });
+  await Promise.all(others.map((t) => chrome.tabs.update(t.id!, { muted: !unmute })));
   const msg = $('othersNotice');
-  msg.textContent = others.length ? tr(others.length > 1 ? 'mutedOthersMany' : 'mutedOthersOne', others.length) : tr('noOthers');
+  const key = unmute ? ['unmutedOthersMany', 'unmutedOthersOne'] : ['mutedOthersMany', 'mutedOthersOne'];
+  msg.textContent = others.length ? tr(key[others.length > 1 ? 0 : 1], others.length) : tr('noOthers');
   msg.hidden = false;
+  void paintMuteOthers();
 });
 
 // the other-tabs page replaces the popup content; its own result text goes away with it
@@ -258,6 +270,7 @@ const mutedList = $('mutedList');
 async function paintMuted() {
   const tabs = (await chrome.tabs.query({ muted: true })).filter((t) => t.id !== undefined);
   $('mutedBox').hidden = !tabs.length;
+  void paintMuteOthers();
   mutedList.replaceChildren(
     ...tabs.map((t) => {
       const name = document.createElement('span');
@@ -281,6 +294,7 @@ async function paintOthers() {
   const levels = await Promise.all(tabs.map((t) => chrome.tabs.sendMessage<GetState, StateReply>(t.id!, { type: 'get-state' }, { frameId: 0 }).catch(() => null)));
   others.hidden = !tabs.length;
   $('othersEmpty').hidden = tabs.length > 0;
+  void paintMuteOthers();
   $('othersCount').textContent = String(tabs.length);
   $('othersBtn').textContent = tabs.length ? `${tr('otherTabs')} (${tabs.length})` : tr('otherTabs');
   $('othersList').replaceChildren(
