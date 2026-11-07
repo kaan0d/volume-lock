@@ -1,8 +1,10 @@
 # Volume Lock
 
-Chromium extension (Manifest V3, TypeScript) that remembers the volume of each site, with boost up to 600%, an equalizer and a night mode. Works in Chrome, Edge and Brave; a Firefox build exists without the tab-capture fallback.
+Your volume. Your rules.
 
-Chrome Web Store: [Volume Lock](https://chromewebstore.google.com/detail/volume-lock/hfpdohjhnfgkhnangkecmkhochllhifb). Edge and Brave: install from this GitHub repo (see Install).
+Volume Lock remembers your preferred volume for each website and applies it whenever you return. Boost up to 600%, shape the sound with an equalizer and night mode, and control audio across tabs. Browser extension (Manifest V3) for Chrome, Edge, Brave and Firefox.
+
+[Chrome Web Store](https://chromewebstore.google.com/detail/volume-lock/hfpdohjhnfgkhnangkecmkhochllhifb) · [Download for Edge, Brave and Firefox](https://github.com/kaan0d/volume-lock/releases/latest)
 
 <table>
   <tr>
@@ -14,43 +16,45 @@ Chrome Web Store: [Volume Lock](https://chromewebstore.google.com/detail/volume-
 
 ## Features
 
-- **Per-site volume:** a rotary knob sets the level; Save stores it for the domain (or one URL) and it applies before media plays.
-- **Boost:** up to 200, 300, 400 or 600%, with a limiter against clipping. The popup shows the live gain (for example +6.0 dB) while boosting.
-- **Sound:** five-band equalizer, night mode (leveler), mono and balance.
-- **Mute:** mute the current tab or all other audible tabs, and unmute them again with the same button (settings: every muted tab, or only the ones the extension muted). Timed mute for 15 minutes or an hour, and sites that start muted.
-- **Shortcuts:** `Alt+Shift+Up/Down` volume, `Alt+Shift+M` mute, `Alt+Shift+S` save. Settings lists them and opens the browser's shortcut page.
-- **Reset tab:** site menu item that ends tab capture and reloads the tab, restoring fullscreen and the page's own audio path.
-- **Other tabs:** list of the other audible tabs with their own volume and mute; a tab's name switches to it.
-- **Per-tab level:** a level set in the popup without saving stays with that tab across reloads.
-- **Loud-level warning:** warns when the output level gets loud; quiet hours cap the level during a set time window.
-- **Capture warning:** the popup says when a tab is boosted through tab capture.
-- **Backup:** export and import as JSON; the import says how many sites it adds, removes and changes before it replaces anything.
-- **Designs and languages:** 12 designs with live previews in settings; English, German, Spanish, French, Brazilian Portuguese and Turkish, followed from the browser or picked in settings.
-- **Private:** no network requests; audio is analyzed in memory and never recorded.
+- **Simple and smart:** save a level for one page or a whole site and it applies automatically, even to media that loads later. Set a default volume or exclude sites. Adjust with presets, shortcuts or the mouse wheel.
+- **Boost:** up to 200, 300, 400 or 600% with an optional limiter. The popup shows the live gain (for example +6.0 dB).
+- **Sound:** five-band equalizer, night mode, mono and left/right balance.
+- **Tabs and mute:** list of other audible tabs with their own volume and mute. Mute one tab or all others, timed mute for 15 minutes or an hour, and sites that start muted.
+- **Safe listening:** warning when the level gets loud, and quiet hours that cap the level during a set time window.
+- **Shortcuts:** `Alt+Shift+Up/Down` volume, `Alt+Shift+M` mute, `Alt+Shift+S` save.
+- **Backup:** export and import settings as JSON. The import shows what it adds, removes and changes first.
+- **Personal:** 12 popup designs with light and dark themes. English, German, Spanish, French, Brazilian Portuguese and Turkish.
+- **Private:** no tracking, no analytics, no network requests. Audio is analyzed in memory and never recorded. Saved sites stay in your browser's sync storage.
 
 ## Install
 
-Edge and Brave have no store listing. Get the source from GitHub (download the ZIP or clone), build it (Node 22 or later), then load `dist/`:
+- **Chrome:** [Chrome Web Store](https://chromewebstore.google.com/detail/volume-lock/hfpdohjhnfgkhnangkecmkhochllhifb).
+- **Edge, Brave, Firefox:** download the ZIP from the [latest release](https://github.com/kaan0d/volume-lock/releases/latest).
+  - `volume-lock-chrome-<version>.zip` and `volume-lock-edge-<version>.zip` are the same Chromium build. Unzip, open `edge://extensions` (or `brave://extensions`), turn on Developer mode, choose Load unpacked and select the folder.
+  - `volume-lock-firefox-<version>.zip` is the Firefox build (128 or later, without tab capture). Open `about:debugging#/runtime/this-firefox` and choose Load Temporary Add-on, then select the ZIP. Firefox asks for site access separately: allow all sites on the add-on's permissions tab. Not tested in a real Firefox yet.
 
-```bash
-npm install
-npm run build
-npm run zip     # development/webstore/volume-lock-<version>.zip
-```
-
-Firefox (128 or later): `npm run zip:firefox` builds `dist-firefox/` and a zip without tab capture, so media that only capture can boost is left alone. Firefox asks for site access separately: allow it for all sites on the add-on's permissions tab. It is not tested in a real Firefox yet.
-
-Open `chrome://extensions`, `edge://extensions` or `brave://extensions`, turn on Developer mode, choose Load unpacked and select `dist/`. Rebind shortcuts on the `shortcuts` page of the same scheme.
+Rebind shortcuts on the `shortcuts` page of your browser (for example `chrome://extensions/shortcuts`).
 
 ## Limits
 
-- Cross-origin media without CORS and DRM media are boosted through tab capture, which starts when the popup is opened on that tab above 100%. Use Reset tab if fullscreen breaks.
+- Browsers restrict extensions on internal pages (`chrome://`, `edge://`, `brave://`) and the extension stores.
+- DRM-protected and some cross-origin media are boosted through tab capture. It starts when you open the popup on that tab above 100% and can briefly interrupt audio. Use Reset tab in the site menu if fullscreen breaks.
 - Tabs open during install or update need a reload.
-- Nothing works on browser-internal pages (`chrome://`, `edge://`, `brave://`) or the extension stores.
-- The styled dropdown needs Chromium 135 or later; older versions show the native list.
+- The styled dropdown needs Chromium 135 or later. Older versions show the native list.
 - Saved sites sync through `chrome.storage.sync` (512 items, 100 KB).
 
-## Layout
+## Development
+
+Node 22 or later.
+
+```bash
+npm install
+npm run dev           # watch build into dist/
+npm run build         # dist/
+npm run zip           # development/webstore/volume-lock-<version>.zip
+npm run zip:firefox   # dist-firefox/ and volume-lock-firefox-<version>.zip
+npm run typecheck
+```
 
 ```
 src/popup, src/options     popup and options page
@@ -58,7 +62,7 @@ src/ui                     knob, 12 designs, shared styles
 src/lib                    settings, rules, storage, i18n
 src/background.ts          tab capture, shortcuts, offscreen audio
 src/content.ts, inject.ts  page-side audio graph
-store/<lang>/                Chrome Web Store images per language (1280x800 screenshots, promo tiles)
+store/<lang>/              Chrome Web Store images per language
 screenshots/               images used in this README
 ```
 
