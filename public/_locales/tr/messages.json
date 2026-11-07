@@ -146,12 +146,6 @@
       }
     }
   },
-  "allowAutoplay": {
-    "message": "Burada otomatik oynatmaya izin ver"
-  },
-  "blockAutoplay": {
-    "message": "Burada otomatik oynatmayı engelle"
-  },
   "unsaveUrl": {
     "message": "Bu adresin kaydını kaldır"
   },
@@ -305,15 +299,6 @@
   },
   "exclude": {
     "message": "Hariç tut"
-  },
-  "autoplayH": {
-    "message": "Otomatik oynatmayı engelle"
-  },
-  "autoplayHint": {
-    "message": "Bu sitelerde, siz tıklamadan veya tuşa basmadan başlayan medya duraklatılır."
-  },
-  "autoplayAria": {
-    "message": "Otomatik oynatmanın engelleneceği kaynak veya desen"
   },
   "block": {
     "message": "Engelle"
@@ -565,9 +550,6 @@
       }
     }
   },
-  "errAutoplay": {
-    "message": "autoplayBlock bir site listesi olmalı"
-  },
   "errDefault": {
     "message": "Geçersiz defaultVolume: $VALUE$",
     "placeholders": {
@@ -611,5 +593,28 @@
   },
   "errQuota": {
     "message": "Çok fazla kayıt veya kayıtlı site var, bir dakika sonra tekrar deneyin. Chrome eşitlemesi en fazla 512 öğeye izin verir."
+  },
+  "boostReady": {
+    "message": "Güçlendirme açık. %100 üstü seviyeler yükseltilir."
+  },
+  "boostActive": {
+    "message": "$DB$ dB güçlendiriliyor (×$GAIN$)",
+    "placeholders": {
+      "db": {
+        "content": "$1"
+      },
+      "gain": {
+        "content": "$2"
+      }
+    }
+  },
+  "boostWaiting": {
+    "message": "Güçlendirme açık, sayfaya bir tıklama bekliyor."
+  },
+  "globalHint": {
+    "message": "Güçlendirme ve ses ayarları tüm sitelerde geçerlidir."
+  },
+  "boostGlobal": {
+    "message": "Güçlendirme tüm siteler için tek ayardır. Her site kendi seviyesini korur."
   }
 }

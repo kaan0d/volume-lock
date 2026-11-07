@@ -36,7 +36,6 @@ const createSource = AudioContext.prototype.createMediaElementSource;
 const gainOf = gopd(GainNode.prototype, 'gain')!.get!;
 const setParam = gopd(AudioParam.prototype, 'value')!.set!;
 const scratch = document.createElement('audio'); // validates page writes exactly like the real setter
-const pause = Media.prototype.pause;
 const createBiquad = BaseAudioContext.prototype.createBiquadFilter;
 const createComp = BaseAudioContext.prototype.createDynamicsCompressor;
 const createPanner = BaseAudioContext.prototype.createStereoPanner;
@@ -51,10 +50,6 @@ const panOf = getter(StereoPannerNode.prototype, 'pan');
 const setCount = setter(AudioNode.prototype, 'channelCount');
 const setCountMode = setter(AudioNode.prototype, 'channelCountMode');
 const setInterp = setter(AudioNode.prototype, 'channelInterpretation');
-const userActivation = gopd(Navigator.prototype, 'userActivation')?.get;
-const hasBeenActive = gopd(UserActivation.prototype, 'hasBeenActive')?.get;
-/** True once the user has clicked or pressed a key on this page; autoplay is "unprompted" before that. */
-const activated = () => (userActivation && hasBeenActive ? !!call(hasBeenActive, call(userActivation, navigator, []), []) : true);
 
 const realGet = (el: HTMLMediaElement): number => call(vol.get!, el, []);
 const realSet = (el: HTMLMediaElement, v: number) => call(vol.set!, el, [v]);
@@ -62,7 +57,6 @@ const realSet = (el: HTMLMediaElement, v: number) => call(vol.set!, el, [v]);
 let pending = true; // no level yet: hold real output silent instead of risking a blast
 let level: number | null = null; // percent; null = pass through
 let fx: Fx | null = null; // sound effects for this site, null = none
-let block = false; // pause media that starts before any user activation
 const controlled = () => pending || level !== null;
 
 const seen = new WeakSet<HTMLMediaElement>();
@@ -101,7 +95,6 @@ function onMessage(e: Event) {
   const msg = parse(call(detailOf, e, []));
   if ('level' in msg) {
     fx = msg.fx ?? null;
-    block = msg.block === true;
     setLevel(msg.level, msg.sync === true);
   }
   if (msg.probe) up({ probe: probe() });
@@ -115,7 +108,6 @@ function setLevel(l: number | null, sync = false) {
   reported = false;
   for (const ref of tracked) {
     const el = ref.deref();
-    if (el) stopAutoplay(el); // media already playing when the block flag arrived
     if (el && sync && l !== null) {
       const v = Math.min(l, 100) / 100;
       const old = virtual.get(el);
@@ -215,15 +207,7 @@ function mayRestore(el: HTMLMediaElement): boolean {
   return ++r.n <= 5;
 }
 
-/** Media that starts before the user did anything on this page, on a site that blocks autoplay. */
-function stopAutoplay(el: Element): boolean {
-  if (!block || !(el instanceof Media) || activated()) return false;
-  call(pause, el, []);
-  return true;
-}
-
 function onMediaEvent(this: HTMLMediaElement, e: Event) {
-  if (e.type === 'play' && stopAutoplay(this)) return;
   if (e.type === 'encrypted') encrypted.add(this);
   if (e.type === 'volumechange' && (realGet(this) === target(this) || !mayRestore(this))) return;
   apply(this);
@@ -246,7 +230,7 @@ const observer = new Observer((records) => {
 
 function watch(root: Document | ShadowRoot) {
   call(observe, observer, [root, { childList: true, subtree: true }]);
-  call(listen, root, ['play', (e: Event) => e.target instanceof Media && !stopAutoplay(e.target) && track(e.target), true]);
+  call(listen, root, ['play', (e: Event) => e.target instanceof Media && track(e.target), true]);
 }
 
 /** Tracks media under root, descending into open shadow roots made by the parser. */

@@ -15,9 +15,8 @@ Chrome Web Store: [Volume Lock](https://chromewebstore.google.com/detail/volume-
 ## Features
 
 - **Per-site volume:** a rotary knob sets the level; Save stores it for the domain (or one URL) and it applies before media plays.
-- **Boost:** up to 200, 300, 400 or 600%, with a limiter against clipping.
+- **Boost:** up to 200, 300, 400 or 600%, with a limiter against clipping. The popup shows the live gain (for example +6.0 dB) while boosting.
 - **Sound:** five-band equalizer, night mode (leveler), mono and balance.
-- **Autoplay:** block media that starts before any click or key press, per site.
 - **Mute:** mute the current tab or all other audible tabs.
 - **Shortcuts:** `Alt+Shift+Up/Down` volume, `Alt+Shift+M` mute, `Alt+Shift+S` save. Rebind at `chrome://extensions/shortcuts`.
 - **Reset tab:** site menu item that ends tab capture and reloads the tab, restoring fullscreen and the page's own audio path.

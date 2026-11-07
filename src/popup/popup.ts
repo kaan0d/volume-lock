@@ -52,7 +52,11 @@ async function recheckIdle() {
   if (state) showState(state);
 }
 
+let lastState: StateReply | null = null;
+
 function showState(state: StateReply) {
+  lastState = state;
+  paintBoost();
   $('boostHint').hidden = !state.idle;
   $('captureWarn').hidden = !state.needsCapture;
 }
@@ -116,8 +120,18 @@ function paintChips() {
   for (const b of document.querySelectorAll<HTMLElement>('[data-preset]')) b.setAttribute('aria-pressed', String(Number(b.dataset.preset) === volume));
 }
 
+/** Says in words whether boost is doing something right now. */
+function paintBoost() {
+  const el = $('boostStatus');
+  el.hidden = !settings.boostEnabled || !reachable || excluded();
+  if (el.hidden) return;
+  const gain = volume / 100;
+  el.textContent = lastState?.idle ? tr('boostWaiting') : volume > 100 ? tr('boostActive', [`+${(20 * Math.log10(gain)).toFixed(1)}`, gain.toFixed(1)]) : tr('boostReady');
+}
+
 function paintSave() {
   paintChips();
+  paintBoost();
   $('loudWarn').hidden = !(warnAbove > 0 && volume > warnAbove);
   const s = saved();
   const btn = $<HTMLButtonElement>('saveBtn');
@@ -145,11 +159,7 @@ function paintSound() {
   ($('nightBtn') as HTMLButtonElement).disabled = off;
 }
 
-const autoplayBlocked = () => origin !== null && inList(settings.autoplayBlock, origin);
-
 function paintMenu() {
-  $('menuAutoplay').textContent = tr(autoplayBlocked() ? 'allowAutoplay' : 'blockAutoplay');
-  ($('menuAutoplay') as HTMLButtonElement).disabled = !origin;
   $('menuUrl').textContent = tr(urlSaved() ? 'unsaveUrl' : 'saveUrl');
   ($('menuUrl') as HTMLButtonElement).disabled = !origin || !reachable || origin === domainKey(); // same key as the main button
   const ex = origin !== null && settings.excluded.includes(origin);
@@ -201,6 +211,7 @@ $('saveBtn').addEventListener('click', async () => {
   try {
     if (saved()) await storage.removeSite(covering()!);
     else await storage.saveSite(key, volume);
+    $('hint').hidden = true; // saving is what the hint asked for
     notice('');
   } catch (e) {
     notice(tr('saveFailed', storage.friendly(e)), true);
@@ -308,12 +319,6 @@ $('menuExclude').addEventListener('click', async () => {
   if (!origin) return;
   const list = settings.excluded.includes(origin) ? settings.excluded.filter((x) => x !== origin) : [...settings.excluded, origin];
   await storage.setExcluded(list).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
-});
-$('menuAutoplay').addEventListener('click', async () => {
-  toggleMenu(false);
-  if (!origin) return;
-  const list = autoplayBlocked() ? settings.autoplayBlock.filter((p) => !covers(p, origin!)) : [...settings.autoplayBlock, domainKey()!];
-  await storage.setAutoplayBlock(list).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
 });
 $('menuDefault').addEventListener('click', async () => {
   toggleMenu(false);

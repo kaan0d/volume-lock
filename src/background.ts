@@ -60,7 +60,7 @@ async function injectOpenTabs() {
   }
 }
 
-chrome.runtime.onInstalled.addListener(() => void storage.migrateLegacy().then(() => Promise.all([injectOpenTabs(), refreshAll()])));
+chrome.runtime.onInstalled.addListener(() => void chrome.storage.sync.remove('autoplayBlock').then(() => storage.migrateLegacy()).then(() => Promise.all([injectOpenTabs(), refreshAll()])));
 chrome.runtime.onStartup.addListener(() => void storage.migrateLegacy().then(refreshAll));
 chrome.action.setBadgeBackgroundColor({ color: '#5f6368' });
 chrome.action.setBadgeTextColor({ color: '#ffffff' });

@@ -19,7 +19,6 @@ export function parseImport(json: string): Settings {
   const top = 600;
   // new in this version, so older exports lack them
   if (d.boostMax !== undefined && !BOOST_CHOICES.includes(d.boostMax)) throw new Error(t('errBoostMax', String(d.boostMax)));
-  if (d.autoplayBlock !== undefined && (!Array.isArray(d.autoplayBlock) || !d.autoplayBlock.every((p: unknown) => typeof p === 'string' && isValidPattern(p)))) throw new Error(t('errAutoplay'));
   if (d.defaultVolume !== null && !isValidVolume(d.defaultVolume, boost, top)) {
     throw new Error(t('errDefault', String(d.defaultVolume)));
   }
@@ -38,7 +37,6 @@ export function parseImport(json: string): Settings {
     boostMax: d.boostMax ?? 200,
     sites: d.sites,
     excluded: d.excluded,
-    autoplayBlock: d.autoplayBlock ?? [],
     fx: cleanFx(d.fx),
   };
 }

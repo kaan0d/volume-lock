@@ -146,12 +146,6 @@
       }
     }
   },
-  "allowAutoplay": {
-    "message": "Allow autoplay here"
-  },
-  "blockAutoplay": {
-    "message": "Block autoplay here"
-  },
   "unsaveUrl": {
     "message": "Unsave this URL"
   },
@@ -305,15 +299,6 @@
   },
   "exclude": {
     "message": "Exclude"
-  },
-  "autoplayH": {
-    "message": "Block autoplay"
-  },
-  "autoplayHint": {
-    "message": "On these sites, media that starts playing before you click or press a key is paused."
-  },
-  "autoplayAria": {
-    "message": "Origin or wildcard to block autoplay on"
   },
   "block": {
     "message": "Block"
@@ -565,9 +550,6 @@
       }
     }
   },
-  "errAutoplay": {
-    "message": "autoplayBlock must be a list of sites"
-  },
   "errDefault": {
     "message": "Invalid defaultVolume: $VALUE$",
     "placeholders": {
@@ -611,5 +593,28 @@
   },
   "errQuota": {
     "message": "Too many saves or saved sites, try again in a minute. Chrome sync allows 512 items."
+  },
+  "boostReady": {
+    "message": "Boost is on. Levels above 100% are amplified."
+  },
+  "boostActive": {
+    "message": "Boosting $DB$ dB (×$GAIN$)",
+    "placeholders": {
+      "db": {
+        "content": "$1"
+      },
+      "gain": {
+        "content": "$2"
+      }
+    }
+  },
+  "boostWaiting": {
+    "message": "Boost is on, waiting for a click on the page."
+  },
+  "globalHint": {
+    "message": "Boost and sound settings apply to every site."
+  },
+  "boostGlobal": {
+    "message": "Boost is one setting for all sites. Each site still keeps its own level."
   }
 }

@@ -22,7 +22,6 @@
         <div id="menu" class="menu" role="menu" hidden>
           <button id="menuExclude" type="button" role="menuitem" data-testid="menu-exclude"></button>
           <button id="menuUrl" type="button" role="menuitem" data-testid="menu-url"></button>
-          <button id="menuAutoplay" type="button" role="menuitem" data-testid="menu-autoplay"></button>
           <button id="menuReset" type="button" role="menuitem" data-testid="menu-reset" data-i18n="menuReset">Reload tab and reset audio</button>
           <button id="menuDefault" type="button" role="menuitem" data-testid="menu-default" data-i18n="menuDefault">Use level for all sites</button>
         </div>
@@ -51,10 +50,14 @@
         </label>
       </div>
 
+      <p id="boostStatus" class="boost-status" data-testid="boost-status" role="status" hidden></p>
+
       <div class="row sound">
         <select id="eqSel" class="field" aria-label="Equalizer preset" data-i18n-aria="eqPreset" data-testid="eq-select"></select>
         <button id="nightBtn" class="chip" type="button" aria-pressed="false" data-testid="night-btn" title="Evens out loud and quiet parts" data-i18n-title="levelerTitle" data-i18n="levelerShort">Quiet loud parts</button>
       </div>
+
+      <p class="global-hint" data-i18n="globalHint">Boost and sound settings apply to every site.</p>
 
       <button id="saveBtn" class="btn btn-primary save" type="button" aria-pressed="false" data-testid="save-btn" data-i18n="save">Save</button>
 

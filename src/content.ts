@@ -2,7 +2,7 @@
 // the MAIN-world script (inject.ts), which applies it. Also answers the popup and reports media
 // only tab capture can boost.
 import { originOf } from './lib/origin';
-import { clampVolume, emptyQuiet, emptySettings, fxActive, inList, isExcluded, msToQuietChange, resolveVolume } from './lib/rules';
+import { clampVolume, emptyQuiet, emptySettings, fxActive, isExcluded, msToQuietChange, resolveVolume } from './lib/rules';
 import { loadQuiet, loadSettings, onLocalChanged, onSettingsChanged, quietLevel } from './lib/storage';
 import type { CaptureState, LevelChanged, LevelReply, Message, NeedsCapture, StateReply } from './lib/messages';
 
@@ -28,10 +28,10 @@ const toMain = (data: unknown) => window.dispatchEvent(new CustomEvent(key, { de
 const sendKey = () => window.dispatchEvent(new CustomEvent('svs:key', { detail: key }));
 let probeReply: unknown;
 let resolved = false; // nothing is sent until storage answered, so MAIN keeps holding instead of passing through
-/** Effects and autoplay blocking apply to every site that is not excluded. */
+/** Effects apply to every site that is not excluded. */
 const effects = () => {
   const off = !siteOrigin || isExcluded(settings, siteOrigin);
-  return { fx: !off && fxActive(settings.fx) ? settings.fx : null, block: !off && inList(settings.autoplayBlock, siteOrigin!) };
+  return { fx: !off && fxActive(settings.fx) ? settings.fx : null };
 };
 const push = (sync = false) => resolved && toMain({ level: level === null || !captured ? level : Math.min(level, 100), sync, ...effects() });
 

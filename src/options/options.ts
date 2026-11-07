@@ -125,10 +125,6 @@ function renderRules() {
   $('wildList').replaceChildren(
     ...wild.map(([p, v]) => el('li', {}, el('span', { textContent: `${p}  ·  ${v}%` }), removeBtn(p, () => storage.removeSite(p)))),
   );
-  $('autoplayCount').textContent = String(settings.autoplayBlock.length);
-  $('autoplayList').replaceChildren(
-    ...settings.autoplayBlock.map((p) => el('li', {}, el('span', { textContent: p }), removeBtn(p, () => storage.setAutoplayBlock(settings.autoplayBlock.filter((x) => x !== p))))),
-  );
   $('excludeCount').textContent = String(settings.excluded.length);
   $('excludeList').replaceChildren(
     ...settings.excluded.map((p) => el('li', {}, el('span', { textContent: p }), removeBtn(p, () => storage.setExcluded(settings.excluded.filter((x) => x !== p))))),
@@ -142,15 +138,6 @@ $('excludeForm').addEventListener('submit', async (e) => {
   show('excludeError', '');
   if (!settings.excluded.includes(pattern)) await storage.setExcluded([...settings.excluded, pattern]);
   input('excludePattern').value = '';
-});
-
-$('autoplayForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const pattern = patternOf('autoplayPattern');
-  if (!isValidPattern(pattern)) return show('autoplayError', BAD_PATTERN);
-  show('autoplayError', '');
-  if (!settings.autoplayBlock.includes(pattern)) await storage.setAutoplayBlock([...settings.autoplayBlock, pattern]);
-  input('autoplayPattern').value = '';
 });
 
 // ---------- audio ----------
