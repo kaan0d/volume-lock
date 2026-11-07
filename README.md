@@ -54,6 +54,8 @@ src/ui                     knob, 12 designs, shared styles
 src/lib                    settings, rules, storage, i18n
 src/background.ts          tab capture, shortcuts, offscreen audio
 src/content.ts, inject.ts  page-side audio graph
+store/                     Chrome Web Store images (1280x800 screenshots, promo tiles)
+screenshots/               images used in this README
 ```
 
 ## License
