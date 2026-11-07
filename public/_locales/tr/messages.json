@@ -726,5 +726,36 @@
         "content": "$1"
       }
     }
+  },
+  "importDiffSites": {
+    "message": "Siteler: $ADDED$ yeni, $REMOVED$ silinen, $CHANGED$ değişen.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "removed": {
+        "content": "$2"
+      },
+      "changed": {
+        "content": "$3"
+      }
+    }
+  },
+  "importDiffLists": {
+    "message": "Dokunma listesi: $A$ siteden $B$ siteye. Sessiz başlat: $C$ siteden $D$ siteye.",
+    "placeholders": {
+      "a": {
+        "content": "$1"
+      },
+      "b": {
+        "content": "$2"
+      },
+      "c": {
+        "content": "$3"
+      },
+      "d": {
+        "content": "$4"
+      }
+    }
   }
 }

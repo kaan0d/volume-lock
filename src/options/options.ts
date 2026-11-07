@@ -1,7 +1,7 @@
 import { cleanQuiet, cleanWarnAbove, clampVolume, emptySettings, EQ_BANDS, EQ_LIMIT, EQ_PRESETS, isValidPattern, isWildcard, maxVolume, presetOf, type Settings } from '../lib/rules';
 import { displayOrigin } from '../lib/origin';
 import * as storage from '../lib/storage';
-import { exportSettings, parseImport } from '../lib/transfer';
+import { diffSites, exportSettings, parseImport } from '../lib/transfer';
 import { getDesign, getTheme, initTheme, setDesign, setTheme } from '../ui/theme';
 import { DESIGNS } from '../ui/designs';
 import { applyI18n, getLang, initLang, LANGS, presetName, setLang, t } from '../lib/i18n';
@@ -258,6 +258,8 @@ input('importFile').addEventListener('change', async () => {
   try {
     imported = parseImport(await file.text());
     show('backupError', '');
+    const d = diffSites(settings, imported);
+    $('importDiff').textContent = `${t('importDiffSites', [d.added, d.removed, d.changed])} ${t('importDiffLists', [settings.excluded.length, imported.excluded.length, settings.muteSites.length, imported.muteSites.length])}`;
     showImport(true);
   } catch (e) {
     imported = null;

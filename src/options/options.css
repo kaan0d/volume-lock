@@ -194,3 +194,4 @@ th:last-child, td:last-child { width: 56px; text-align: right; padding-right: 0;
 .shortcuts { list-style: none; margin: 0 0 12px; padding: 0; }
 .shortcuts li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--glass-border); }
 .shortcuts kbd { font: 600 13px var(--f-mono); color: var(--text-muted); white-space: nowrap; }
+.confirm .hint { display: block; flex-basis: 100%; margin: 4px 0; }

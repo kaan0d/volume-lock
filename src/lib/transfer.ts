@@ -3,6 +3,14 @@ import { t } from './i18n';
 
 export const exportSettings = (s: Settings): string => JSON.stringify({ version: 1, ...s }, null, 2);
 
+/** What importing `next` over `now` changes in the saved sites, for the preview before the user confirms. */
+export function diffSites(now: Settings, next: Settings) {
+  const a = Object.keys(next.sites).filter((p) => !(p in now.sites)).length;
+  const r = Object.keys(now.sites).filter((p) => !(p in next.sites)).length;
+  const c = Object.keys(next.sites).filter((p) => p in now.sites && now.sites[p] !== next.sites[p]).length;
+  return { added: a, removed: r, changed: c };
+}
+
 /** Validates an exported file. Throws Error with a readable message. */
 export function parseImport(json: string): Settings {
   let d: any;

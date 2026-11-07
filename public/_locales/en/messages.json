@@ -726,5 +726,36 @@
         "content": "$1"
       }
     }
+  },
+  "importDiffSites": {
+    "message": "Sites: $ADDED$ new, $REMOVED$ removed, $CHANGED$ changed.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "removed": {
+        "content": "$2"
+      },
+      "changed": {
+        "content": "$3"
+      }
+    }
+  },
+  "importDiffLists": {
+    "message": "Never touch: $A$ to $B$ sites. Start muted: $C$ to $D$ sites.",
+    "placeholders": {
+      "a": {
+        "content": "$1"
+      },
+      "b": {
+        "content": "$2"
+      },
+      "c": {
+        "content": "$3"
+      },
+      "d": {
+        "content": "$4"
+      }
+    }
   }
 }
