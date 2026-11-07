@@ -67,7 +67,7 @@ nav a[aria-current="page"]::after { content: ""; margin-left: auto; align-self: 
 
 /* panels: label column + control column */
 .panel { display: none; }
-.panel.active { display: grid; grid-template-columns: minmax(130px, 190px) minmax(0, 1fr); column-gap: 56px; row-gap: 14px; align-content: start; }
+.panel.active { display: grid; grid-template-columns: minmax(130px, 190px) minmax(0, 1fr); column-gap: 56px; row-gap: 28px; align-content: start; }
 .panel > * { grid-column: 2; min-width: 0; animation: rise 0.6s var(--ease-out) backwards; }
 .panel > :nth-child(2) { animation-delay: 60ms; }
 .panel > :nth-child(3) { animation-delay: 110ms; }
@@ -77,7 +77,7 @@ nav a[aria-current="page"]::after { content: ""; margin-left: auto; align-self: 
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 .panel > h2 { grid-column: 1; align-self: start; position: sticky; top: 56px; margin: 0; font: 500 12px var(--f-mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); padding-top: 6px; }
 .panel > .hero, .panel > .rule, .panel > .wide { grid-column: 1 / -1; }
-.rule { border: 0; border-top: 1px solid var(--glass-border); margin: 38px 0 14px; }
+.rule { border: 0; border-top: 1px solid var(--glass-border); margin: 28px 0 28px; }
 
 .hero { margin-bottom: 26px; }
 .eyebrow { margin: 0 0 14px; font: 500 12px var(--f-mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
@@ -95,7 +95,7 @@ h3 { margin: 22px 0 0; font: 700 17px var(--f-ui); letter-spacing: -0.01em; }
 code { font: 500 0.88em var(--f-mono); background: var(--glass-strong); padding: 2px 6px; border-radius: 4px; }
 
 /* ---------- controls ---------- */
-.card { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; padding: 0 0 22px; border-bottom: 1px solid var(--glass-border); }
+.card { display: flex; flex-direction: column; gap: 18px; align-items: flex-start; padding: 0 0 32px; border-bottom: 1px solid var(--glass-border); }
 .card:last-child { border-bottom: 0; }
 .line { display: flex; align-items: center; gap: 12px; min-height: 40px; font-weight: 600; }
 .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; width: 100%; font-weight: 700; font-size: 17px; }
@@ -195,3 +195,5 @@ th:last-child, td:last-child { width: 56px; text-align: right; padding-right: 0;
 .shortcuts li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--glass-border); }
 .shortcuts kbd { font: 600 13px var(--f-mono); color: var(--text-muted); white-space: nowrap; }
 .confirm .hint { display: block; flex-basis: 100%; margin: 4px 0; }
+.shortcuts { width: 100%; }
+.card .hint + .hint { margin-top: -6px; }

@@ -754,5 +754,11 @@
         "content": "$4"
       }
     }
+  },
+  "listenH": {
+    "message": "Hören"
+  },
+  "tabsH": {
+    "message": "Tabs"
   }
 }

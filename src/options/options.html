@@ -90,20 +90,25 @@
           <p id="boostNote" class="hint warn hidden"></p>
         </div>
 
+        <hr class="rule">
+        <h2 id="h-listen" data-i18n="listenH">Listening</h2>
         <div class="card">
           <div class="line"><label for="warnAbove" data-i18n="warnAbove">Warn above</label><input id="warnAbove" class="field num" type="number" min="0" max="600" step="10"> %</div>
           <p class="hint" data-i18n="warnHint">Shows a notice in the popup when the level goes above this. It never stops you. 100 to 600, or 0 for no warning.</p>
-        </div>
-        <div class="card">
-          <div class="line"><label for="unmuteScope" data-i18n="unmuteScope">Unmute other tabs opens</label>
-            <select id="unmuteScope" class="field" data-testid="unmute-scope"><option value="all" data-i18n="unmuteAll">Every muted tab</option><option value="ours" data-i18n="unmuteOurs">Only tabs muted from the extension</option></select></div>
-          <p class="hint" data-i18n="unmuteHint">Applies to the button on the Other tabs page. "Only tabs muted from the extension" leaves tabs you muted yourself alone.</p>
         </div>
         <div class="card">
           <label class="line"><input id="quietOn" type="checkbox" aria-label="Quiet hours" data-i18n-aria="quietHours"> <span data-i18n="quietHours">Quiet hours</span></label>
           <div class="line"><label for="quietFrom" data-i18n="quietFrom">From</label><input id="quietFrom" class="field" type="time"><label for="quietTo" data-i18n="quietTo">to</label><input id="quietTo" class="field" type="time"></div>
           <div class="line"><label for="quietLevel" data-i18n="colLevel">Level</label><input id="quietLevel" class="field num" type="number" min="0" max="600"> %</div>
           <p class="hint" data-i18n="quietHint">During these hours, sites without a saved level start at this level instead of the default. Saved sites are not changed.</p>
+        </div>
+
+        <hr class="rule">
+        <h2 id="h-tabs" data-i18n="tabsH">Tabs</h2>
+        <div class="card">
+          <div class="line"><label for="unmuteScope" data-i18n="unmuteScope">Unmute other tabs opens</label>
+            <select id="unmuteScope" class="field" data-testid="unmute-scope"><option value="all" data-i18n="unmuteAll">Every muted tab</option><option value="ours" data-i18n="unmuteOurs">Only tabs muted from the extension</option></select></div>
+          <p class="hint" data-i18n="unmuteHint">Applies to the button on the Other tabs page. "Only tabs muted from the extension" leaves tabs you muted yourself alone.</p>
         </div>
 
         <hr class="rule">

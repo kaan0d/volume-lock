@@ -754,5 +754,11 @@
         "content": "$4"
       }
     }
+  },
+  "listenH": {
+    "message": "Escucha"
+  },
+  "tabsH": {
+    "message": "Pestañas"
   }
 }
