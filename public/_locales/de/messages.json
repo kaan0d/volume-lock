@@ -1,0 +1,758 @@
+{
+  "extName": {
+    "message": "Volume Lock"
+  },
+  "extDescription": {
+    "message": "Merkt sich die Lautstärke pro Website und stellt sie automatisch ein. Verstärkung bis 600 %, Equalizer, Nachtmodus."
+  },
+  "cmdVolumeUp": {
+    "message": "Lauter"
+  },
+  "cmdVolumeDown": {
+    "message": "Leiser"
+  },
+  "cmdToggleMute": {
+    "message": "Diesen Tab stummschalten oder wieder einschalten"
+  },
+  "cmdSaveSite": {
+    "message": "Lautstärke für die aktuelle Website speichern"
+  },
+  "siteOptions": {
+    "message": "Website-Optionen"
+  },
+  "menuReset": {
+    "message": "Tab neu laden und Audio zurücksetzen"
+  },
+  "menuDefault": {
+    "message": "Pegel für alle Websites verwenden"
+  },
+  "openSettings": {
+    "message": "Einstellungen öffnen"
+  },
+  "hintLead": {
+    "message": "Einmal einstellen."
+  },
+  "hintBody": {
+    "message": "Drehe den Regler und drücke Speichern: Diese Website startet dann immer mit diesem Pegel."
+  },
+  "gotIt": {
+    "message": "Verstanden"
+  },
+  "presets": {
+    "message": "Voreinstellungen"
+  },
+  "boost": {
+    "message": "Boost"
+  },
+  "boostAria": {
+    "message": "Bis zu $MAX$ % verstärken",
+    "placeholders": {
+      "max": {
+        "content": "$1"
+      }
+    }
+  },
+  "eqPreset": {
+    "message": "Equalizer-Voreinstellung"
+  },
+  "levelerShort": {
+    "message": "Laute Stellen dämpfen"
+  },
+  "levelerTitle": {
+    "message": "Gleicht laute und leise Stellen an"
+  },
+  "save": {
+    "message": "Speichern"
+  },
+  "unsave": {
+    "message": "Entfernen"
+  },
+  "muteTab": {
+    "message": "Tab stummschalten"
+  },
+  "unmuteTab": {
+    "message": "Tab einschalten"
+  },
+  "muteOthers": {
+    "message": "Andere Tabs stummschalten"
+  },
+  "mutedTabs": {
+    "message": "Stummgeschaltete Tabs"
+  },
+  "reloadTab": {
+    "message": "Tab neu laden"
+  },
+  "boostHintText": {
+    "message": "Klicke einmal auf die Seite, damit Chrome Verstärkung oder Effekte erlaubt."
+  },
+  "loudWarn": {
+    "message": "Hohe Lautstärken können das Gehör und Lautsprecher schädigen. Dreh leiser, wenn es wehtut."
+  },
+  "captureWarn": {
+    "message": "Auf dieser Website funktioniert die Verstärkung nur über die Tab-Aufnahme. Beim Start setzt der Ton kurz aus, und der Vollbildmodus kann gestört werden."
+  },
+  "saveFailed": {
+    "message": "Speichern fehlgeschlagen: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "defaultNow": {
+    "message": "Websites ohne gespeicherten Pegel starten jetzt bei $LEVEL$ %.",
+    "placeholders": {
+      "level": {
+        "content": "$1"
+      }
+    }
+  },
+  "mutedOthersOne": {
+    "message": "$COUNT$ anderer Tab mit Audio wurde stummgeschaltet.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "mutedOthersMany": {
+    "message": "$COUNT$ andere Tabs mit Audio wurden stummgeschaltet.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "noOthers": {
+    "message": "Kein anderer Tab gibt gerade Audio wieder."
+  },
+  "unmute": {
+    "message": "Einschalten"
+  },
+  "mute": {
+    "message": "Stummschalten"
+  },
+  "tabFallback": {
+    "message": "Tab"
+  },
+  "levelOf": {
+    "message": "Pegel von $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "unsaveUrl": {
+    "message": "Diese URL entfernen"
+  },
+  "saveUrl": {
+    "message": "Für diese URL speichern"
+  },
+  "stopIgnoring": {
+    "message": "Diese Website nicht mehr ignorieren"
+  },
+  "neverTouchSite": {
+    "message": "Diese Website nie anfassen"
+  },
+  "thisPage": {
+    "message": "Diese Seite"
+  },
+  "pillExcluded": {
+    "message": "ausgeschlossen"
+  },
+  "pillSaved": {
+    "message": "gespeichert"
+  },
+  "pillNotSaved": {
+    "message": "nicht gespeichert"
+  },
+  "pillWildcard": {
+    "message": "Website und Subdomains"
+  },
+  "pillQuiet": {
+    "message": "Ruhezeit"
+  },
+  "pillDefault": {
+    "message": "Standard"
+  },
+  "blockedReload": {
+    "message": "Dieser Tab lässt sich noch nicht steuern. Vermutlich war er schon offen, bevor die Erweiterung installiert oder aktualisiert wurde. Lade ihn neu und versuche es erneut."
+  },
+  "blockedBrowser": {
+    "message": "Browserseiten und der Web Store lassen sich von Erweiterungen nicht steuern."
+  },
+  "knobLabel": {
+    "message": "Lautstärke"
+  },
+  "percentLabel": {
+    "message": "PROZENT"
+  },
+  "noneYet": {
+    "message": "Noch keine."
+  },
+  "valueText": {
+    "message": "$VALUE$ Prozent",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "valueTextBoosted": {
+    "message": "$VALUE$ Prozent, verstärkt",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Volume-Lock-Einstellungen"
+  },
+  "navAria": {
+    "message": "Einstellungsbereiche"
+  },
+  "navSites": {
+    "message": "Websites"
+  },
+  "navGeneral": {
+    "message": "Allgemein"
+  },
+  "tagLine1": {
+    "message": "Lautstärke pro Website."
+  },
+  "tagLine2": {
+    "message": "Verstärken. Beruhigen."
+  },
+  "heroSites": {
+    "message": "Websites"
+  },
+  "heroRemembered": {
+    "message": "gemerkt"
+  },
+  "heroSetOnce": {
+    "message": "Einmal einstellen."
+  },
+  "heroHearRight": {
+    "message": "Richtig hören."
+  },
+  "sitesHint": {
+    "message": "Pegel pro Website. Klicke auf einen Pegel, um ihn zu bearbeiten."
+  },
+  "filterSites": {
+    "message": "Websites filtern"
+  },
+  "colSite": {
+    "message": "Website"
+  },
+  "colType": {
+    "message": "Typ"
+  },
+  "colLevel": {
+    "message": "Pegel"
+  },
+  "colDelete": {
+    "message": "Löschen"
+  },
+  "sitePatternAria": {
+    "message": "Website oder Platzhaltermuster"
+  },
+  "patternPlaceholder": {
+    "message": "https://beispiel.de oder *.beispiel.de"
+  },
+  "newLevelAria": {
+    "message": "Pegel für neue Website"
+  },
+  "add": {
+    "message": "Hinzufügen"
+  },
+  "rulesH": {
+    "message": "Regeln"
+  },
+  "precedence": {
+    "message": "Vorrang: nie anfassen > genaue Website > Website und Subdomains > Standardlautstärke."
+  },
+  "typeWildcard": {
+    "message": "Website und Subdomains"
+  },
+  "typeExact": {
+    "message": "Genau"
+  },
+  "wildHintPre": {
+    "message": "Ein Muster wie"
+  },
+  "wildHintPost": {
+    "message": "deckt die Domain und alle ihre Subdomains ab. Füge eines in der Websites-Tabelle oben hinzu; eine genaue Website hat immer Vorrang."
+  },
+  "neverH": {
+    "message": "Nie anfassen"
+  },
+  "neverHint": {
+    "message": "Die Erweiterung lässt diese Websites in Ruhe, egal was sonst gespeichert ist."
+  },
+  "excludeAria": {
+    "message": "Herkunft oder Platzhalter zum Ausschließen"
+  },
+  "exclude": {
+    "message": "Ausschließen"
+  },
+  "block": {
+    "message": "Sperren"
+  },
+  "audioH": {
+    "message": "Audio"
+  },
+  "defaultVolume": {
+    "message": "Standardlautstärke für nicht gespeicherte Websites"
+  },
+  "defaultLevelAria": {
+    "message": "Standardpegel"
+  },
+  "allowBoost": {
+    "message": "Verstärkung erlauben"
+  },
+  "boostLimit": {
+    "message": "Verstärkungsgrenze"
+  },
+  "boostExplain": {
+    "message": "Die Verstärkung hebt die Grenze von 100 % auf die gewählte Grenze an; ein Limiter verhindert, dass laute Spitzen verzerren. Ist sie aus, bleiben Pegel über 100 % gespeichert, spielen aber mit 100 %."
+  },
+  "boostNoteOne": {
+    "message": "$COUNT$ gespeicherter Pegel liegt über 100 % und spielt bei ausgeschalteter Verstärkung mit 100 %. Er bleibt unverändert gespeichert.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "boostNoteMany": {
+    "message": "$COUNT$ gespeicherte Pegel liegen über 100 % und spielen bei ausgeschalteter Verstärkung mit 100 %. Sie bleiben unverändert gespeichert.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnAbove": {
+    "message": "Warnen ab"
+  },
+  "warnHint": {
+    "message": "Zeigt im Popup einen Hinweis, wenn der Pegel darüber liegt. Er hindert dich nie. 100 bis 600, oder 0 für keine Warnung."
+  },
+  "quietHours": {
+    "message": "Ruhezeiten"
+  },
+  "quietFrom": {
+    "message": "Von"
+  },
+  "quietTo": {
+    "message": "bis"
+  },
+  "quietHint": {
+    "message": "In diesen Stunden starten Websites ohne gespeicherten Pegel mit diesem Pegel statt mit dem Standard. Gespeicherte Websites ändern sich nicht."
+  },
+  "soundH": {
+    "message": "Klang"
+  },
+  "leveler": {
+    "message": "Laute Stellen dämpfen (Leveler)"
+  },
+  "levelerAria": {
+    "message": "Leveler"
+  },
+  "levelerHint": {
+    "message": "Gleicht laute und leise Stellen an, damit Werbung und Explosionen nicht mehr hervorstechen."
+  },
+  "mono": {
+    "message": "Mono"
+  },
+  "balance": {
+    "message": "Balance"
+  },
+  "balanceCentre": {
+    "message": "Mitte"
+  },
+  "balanceLeft": {
+    "message": "L $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "balanceRight": {
+    "message": "R $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "equalizer": {
+    "message": "Equalizer"
+  },
+  "eqBandAria": {
+    "message": "EQ $BAND$",
+    "placeholders": {
+      "band": {
+        "content": "$1"
+      }
+    }
+  },
+  "soundHint": {
+    "message": "Klangeinstellungen gelten für jede Website, die du nicht ausgeschlossen hast, und für Medien, die über Web Audio laufen. Geschützte Medien (DRM) und Medien von einer anderen Website ohne CORS bleiben unverändert."
+  },
+  "eqFlat": {
+    "message": "Linear"
+  },
+  "eqBassboost": {
+    "message": "Bassverstärkung"
+  },
+  "eqTrebleboost": {
+    "message": "Höhenverstärkung"
+  },
+  "eqVocal": {
+    "message": "Stimme"
+  },
+  "eqLoudness": {
+    "message": "Loudness"
+  },
+  "eqCustom": {
+    "message": "Benutzerdefiniert"
+  },
+  "backupH": {
+    "message": "Sicherung"
+  },
+  "exportBtn": {
+    "message": "Einstellungen exportieren"
+  },
+  "importBtn": {
+    "message": "Einstellungen importieren"
+  },
+  "importFileAria": {
+    "message": "Einstellungsdatei zum Importieren"
+  },
+  "importAsk": {
+    "message": "Alle aktuellen Einstellungen durch diese Datei ersetzen?"
+  },
+  "replace": {
+    "message": "Ersetzen"
+  },
+  "cancel": {
+    "message": "Abbrechen"
+  },
+  "deleteAll": {
+    "message": "Alle gespeicherten Websites löschen"
+  },
+  "deleteAllAsk": {
+    "message": "Alle gespeicherten Websites löschen? Standardlautstärke, Verstärkung und die Nie-anfassen-Liste bleiben."
+  },
+  "deleteAllYes": {
+    "message": "Alle löschen"
+  },
+  "importFailed": {
+    "message": "Import fehlgeschlagen: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "appearanceH": {
+    "message": "Darstellung"
+  },
+  "theme": {
+    "message": "Design"
+  },
+  "themeSystem": {
+    "message": "System"
+  },
+  "themeLight": {
+    "message": "Hell"
+  },
+  "themeDark": {
+    "message": "Dunkel"
+  },
+  "popupDesign": {
+    "message": "Popup-Design"
+  },
+  "designHint": {
+    "message": "Aurora Glass folgt dem Design oben. Die anderen Designs bringen ihre eigenen Farben mit."
+  },
+  "remove": {
+    "message": "Entfernen"
+  },
+  "removeAria": {
+    "message": "$PATTERN$ entfernen",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "levelFor": {
+    "message": "Pegel für $PATTERN$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "noMatch": {
+    "message": "Keine passenden Websites."
+  },
+  "noSites": {
+    "message": "Noch keine Websites gespeichert. Öffne eine Seite, stelle im Popup einen Pegel ein und drücke Speichern, oder füge unten eine Website hinzu."
+  },
+  "badPattern": {
+    "message": "Gib eine Herkunft wie https://beispiel.de oder einen Platzhalter wie *.beispiel.de ein."
+  },
+  "levelRange": {
+    "message": "Der Pegel muss eine ganze Zahl von 0 bis $MAX$ sein.",
+    "placeholders": {
+      "max": {
+        "content": "$1"
+      }
+    }
+  },
+  "errJson": {
+    "message": "Kein gültiges JSON"
+  },
+  "errObject": {
+    "message": "JSON-Objekt erwartet"
+  },
+  "errVersion": {
+    "message": "Nicht unterstützte Version: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errBoostEnabled": {
+    "message": "boostEnabled muss true oder false sein"
+  },
+  "errBoostMax": {
+    "message": "Ungültiger boostMax: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errDefault": {
+    "message": "Ungültiger defaultVolume: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errSites": {
+    "message": "sites muss ein Objekt sein"
+  },
+  "errPattern": {
+    "message": "Ungültiges Website-Muster: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errVolume": {
+    "message": "Ungültige Lautstärke für $PATTERN$: $VALUE$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      },
+      "value": {
+        "content": "$2"
+      }
+    }
+  },
+  "errExcludedList": {
+    "message": "excluded muss eine Liste sein"
+  },
+  "errExcluded": {
+    "message": "Ungültiger excluded-Eintrag: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errQuota": {
+    "message": "Zu viele Speichervorgänge oder gespeicherte Websites, versuche es in einer Minute erneut. Chrome Sync erlaubt 512 Einträge."
+  },
+  "boostActive": {
+    "message": "$DB$ dB",
+    "placeholders": {
+      "db": {
+        "content": "$1"
+      }
+    }
+  },
+  "boostWaiting": {
+    "message": "auf die Seite klicken"
+  },
+  "globalHint": {
+    "message": "Boost und Klang gelten für alle Websites."
+  },
+  "boostGlobal": {
+    "message": "Die Verstärkung ist eine gemeinsame Einstellung für alle Websites. Jede Website behält ihren eigenen Pegel."
+  },
+  "boostNoMedia": {
+    "message": "keine Medien"
+  },
+  "boostStatusTitle": {
+    "message": "Verstärkungsstatus: $TEXT$",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "back": {
+    "message": "Zurück"
+  },
+  "otherTabs": {
+    "message": "Andere Tabs"
+  },
+  "playingNow": {
+    "message": "Spielt gerade"
+  },
+  "navAppearance": {
+    "message": "Darstellung"
+  },
+  "heroLookA": {
+    "message": "Deine Lautstärke,"
+  },
+  "heroLookB": {
+    "message": "dein Look."
+  },
+  "navLanguage": {
+    "message": "Sprache"
+  },
+  "heroLangA": {
+    "message": "Deine Sprache,"
+  },
+  "heroLangB": {
+    "message": "deine Worte."
+  },
+  "langH": {
+    "message": "Sprache"
+  },
+  "langAuto": {
+    "message": "Automatisch (Browsersprache)"
+  },
+  "langHint": {
+    "message": "Gilt für das Popup und die Einstellungen. Der Name der Erweiterung und die Namen der Tastenkürzel folgen der Browsersprache."
+  },
+  "unmuteOthers": {
+    "message": "Andere Tabs einschalten"
+  },
+  "unmutedOthersMany": {
+    "message": "Bei $COUNT$ anderen Tabs wurde der Ton eingeschaltet.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "unmutedOthersOne": {
+    "message": "Bei $COUNT$ anderem Tab wurde der Ton eingeschaltet.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "unmuteScope": {
+    "message": "Andere Tabs einschalten betrifft"
+  },
+  "unmuteAll": {
+    "message": "Jeden stummgeschalteten Tab"
+  },
+  "unmuteOurs": {
+    "message": "Nur Tabs, die über die Erweiterung stummgeschaltet wurden"
+  },
+  "unmuteHint": {
+    "message": "Gilt für die Schaltfläche auf der Seite Andere Tabs. „Nur Tabs, die über die Erweiterung stummgeschaltet wurden“ lässt Tabs in Ruhe, die du selbst stummgeschaltet hast."
+  },
+  "shortcutsH": {
+    "message": "Tastenkürzel"
+  },
+  "shortcutNotSet": {
+    "message": "Nicht festgelegt"
+  },
+  "shortcutsChange": {
+    "message": "Tastenkürzel ändern"
+  },
+  "shortcutsHint": {
+    "message": "Chrome verwaltet die Tasten. Die Schaltfläche öffnet die Kürzelseite von Chrome."
+  },
+  "muteSitesH": {
+    "message": "Stumm starten"
+  },
+  "muteSitesHint": {
+    "message": "Tabs auf diesen Websites werden beim Laden der Seite stummgeschaltet. Beim Wechsel zu einer anderen Website wird der Ton wieder eingeschaltet."
+  },
+  "muteSitesAria": {
+    "message": "Herkunft oder Platzhalter für Stumm-Start"
+  },
+  "muteSiteAdd": {
+    "message": "Website stummschalten"
+  },
+  "menuMute15": {
+    "message": "15 Minuten stummschalten"
+  },
+  "menuMute60": {
+    "message": "1 Stunde stummschalten"
+  },
+  "startMuted": {
+    "message": "Hier immer stumm starten"
+  },
+  "stopStartMuted": {
+    "message": "Hier nicht mehr stumm starten"
+  },
+  "mutedFor": {
+    "message": "Stummgeschaltet. In $MIN$ Minuten wird der Ton wieder eingeschaltet.",
+    "placeholders": {
+      "min": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiffSites": {
+    "message": "Websites: $ADDED$ neu, $REMOVED$ entfernt, $CHANGED$ geändert.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "removed": {
+        "content": "$2"
+      },
+      "changed": {
+        "content": "$3"
+      }
+    }
+  },
+  "importDiffLists": {
+    "message": "Nie anfassen: von $A$ auf $B$ Websites. Stumm starten: von $C$ auf $D$ Websites.",
+    "placeholders": {
+      "a": {
+        "content": "$1"
+      },
+      "b": {
+        "content": "$2"
+      },
+      "c": {
+        "content": "$3"
+      },
+      "d": {
+        "content": "$4"
+      }
+    }
+  }
+}

@@ -692,9 +692,6 @@
   "shortcutsHint": {
     "message": "Chrome keeps the keys. The button opens its shortcuts page."
   },
-  "switchToTab": {
-    "message": "Go to this tab"
-  },
   "muteSitesH": {
     "message": "Start muted"
   },

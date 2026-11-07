@@ -1,0 +1,758 @@
+{
+  "extName": {
+    "message": "Volume Lock"
+  },
+  "extDescription": {
+    "message": "Recuerda el volumen de cada sitio y lo aplica solo. Amplificación hasta 600 %, ecualizador y modo nocturno."
+  },
+  "cmdVolumeUp": {
+    "message": "Subir volumen"
+  },
+  "cmdVolumeDown": {
+    "message": "Bajar volumen"
+  },
+  "cmdToggleMute": {
+    "message": "Silenciar o reactivar esta pestaña"
+  },
+  "cmdSaveSite": {
+    "message": "Guardar el volumen del sitio actual"
+  },
+  "siteOptions": {
+    "message": "Opciones del sitio"
+  },
+  "menuReset": {
+    "message": "Recargar la pestaña y restablecer el audio"
+  },
+  "menuDefault": {
+    "message": "Usar este nivel en todos los sitios"
+  },
+  "openSettings": {
+    "message": "Abrir ajustes"
+  },
+  "hintLead": {
+    "message": "Ajústalo una vez."
+  },
+  "hintBody": {
+    "message": "Gira el control y pulsa Guardar: este sitio siempre empezará con ese nivel."
+  },
+  "gotIt": {
+    "message": "Entendido"
+  },
+  "presets": {
+    "message": "Preajustes"
+  },
+  "boost": {
+    "message": "Boost"
+  },
+  "boostAria": {
+    "message": "Amplificar hasta $MAX$ %",
+    "placeholders": {
+      "max": {
+        "content": "$1"
+      }
+    }
+  },
+  "eqPreset": {
+    "message": "Preajuste del ecualizador"
+  },
+  "levelerShort": {
+    "message": "Suavizar lo fuerte"
+  },
+  "levelerTitle": {
+    "message": "Equilibra las partes fuertes y las débiles"
+  },
+  "save": {
+    "message": "Guardar"
+  },
+  "unsave": {
+    "message": "Quitar"
+  },
+  "muteTab": {
+    "message": "Silenciar pestaña"
+  },
+  "unmuteTab": {
+    "message": "Reactivar pestaña"
+  },
+  "muteOthers": {
+    "message": "Silenciar otras pestañas"
+  },
+  "mutedTabs": {
+    "message": "Pestañas silenciadas"
+  },
+  "reloadTab": {
+    "message": "Recargar pestaña"
+  },
+  "boostHintText": {
+    "message": "Haz clic en la página una vez para que Chrome permita la amplificación o los efectos."
+  },
+  "loudWarn": {
+    "message": "Un volumen alto puede dañar el oído y los altavoces. Bájalo si te molesta."
+  },
+  "captureWarn": {
+    "message": "En este sitio la amplificación solo funciona mediante captura de pestaña. El sonido se corta un instante al empezar y la pantalla completa puede fallar."
+  },
+  "saveFailed": {
+    "message": "No se pudo guardar: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "defaultNow": {
+    "message": "Los sitios sin nivel guardado ahora empiezan en $LEVEL$ %.",
+    "placeholders": {
+      "level": {
+        "content": "$1"
+      }
+    }
+  },
+  "mutedOthersOne": {
+    "message": "Se silenció $COUNT$ otra pestaña que reproducía audio.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "mutedOthersMany": {
+    "message": "Se silenciaron $COUNT$ otras pestañas que reproducían audio.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "noOthers": {
+    "message": "Ninguna otra pestaña está reproduciendo audio."
+  },
+  "unmute": {
+    "message": "Reactivar"
+  },
+  "mute": {
+    "message": "Silenciar"
+  },
+  "tabFallback": {
+    "message": "Pestaña"
+  },
+  "levelOf": {
+    "message": "Nivel de $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "unsaveUrl": {
+    "message": "Quitar esta URL"
+  },
+  "saveUrl": {
+    "message": "Guardar para esta URL"
+  },
+  "stopIgnoring": {
+    "message": "Dejar de ignorar este sitio"
+  },
+  "neverTouchSite": {
+    "message": "No tocar nunca este sitio"
+  },
+  "thisPage": {
+    "message": "Esta página"
+  },
+  "pillExcluded": {
+    "message": "excluido"
+  },
+  "pillSaved": {
+    "message": "guardado"
+  },
+  "pillNotSaved": {
+    "message": "sin guardar"
+  },
+  "pillWildcard": {
+    "message": "sitio y subdominios"
+  },
+  "pillQuiet": {
+    "message": "horas de silencio"
+  },
+  "pillDefault": {
+    "message": "predeterminado"
+  },
+  "blockedReload": {
+    "message": "Esta pestaña aún no se puede controlar. Probablemente estaba abierta antes de instalar o actualizar la extensión. Recárgala e inténtalo de nuevo."
+  },
+  "blockedBrowser": {
+    "message": "Las extensiones no pueden controlar las páginas del navegador ni la tienda web."
+  },
+  "knobLabel": {
+    "message": "Volumen"
+  },
+  "percentLabel": {
+    "message": "PORCENTAJE"
+  },
+  "noneYet": {
+    "message": "Todavía ninguna."
+  },
+  "valueText": {
+    "message": "$VALUE$ por ciento",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "valueTextBoosted": {
+    "message": "$VALUE$ por ciento, amplificado",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Ajustes de Volume Lock"
+  },
+  "navAria": {
+    "message": "Secciones de ajustes"
+  },
+  "navSites": {
+    "message": "Sitios"
+  },
+  "navGeneral": {
+    "message": "General"
+  },
+  "tagLine1": {
+    "message": "Volumen por sitio."
+  },
+  "tagLine2": {
+    "message": "Amplifica. Calma."
+  },
+  "heroSites": {
+    "message": "sitios"
+  },
+  "heroRemembered": {
+    "message": "recordados"
+  },
+  "heroSetOnce": {
+    "message": "Ajústalo una vez."
+  },
+  "heroHearRight": {
+    "message": "Escúchalo bien."
+  },
+  "sitesHint": {
+    "message": "Niveles guardados por sitio. Haz clic en un nivel para editarlo."
+  },
+  "filterSites": {
+    "message": "Filtrar sitios"
+  },
+  "colSite": {
+    "message": "Sitio"
+  },
+  "colType": {
+    "message": "Tipo"
+  },
+  "colLevel": {
+    "message": "Nivel"
+  },
+  "colDelete": {
+    "message": "Eliminar"
+  },
+  "sitePatternAria": {
+    "message": "Sitio o patrón con comodín"
+  },
+  "patternPlaceholder": {
+    "message": "https://ejemplo.com o *.ejemplo.com"
+  },
+  "newLevelAria": {
+    "message": "Nivel del nuevo sitio"
+  },
+  "add": {
+    "message": "Añadir"
+  },
+  "rulesH": {
+    "message": "Reglas"
+  },
+  "precedence": {
+    "message": "Prioridad: no tocar > sitio exacto > sitio y subdominios > volumen predeterminado."
+  },
+  "typeWildcard": {
+    "message": "Sitio y subdominios"
+  },
+  "typeExact": {
+    "message": "Exacto"
+  },
+  "wildHintPre": {
+    "message": "Un patrón como"
+  },
+  "wildHintPost": {
+    "message": "cubre el dominio y todos sus subdominios. Añade uno en la tabla de sitios de arriba; un sitio exacto siempre tiene prioridad."
+  },
+  "neverH": {
+    "message": "No tocar"
+  },
+  "neverHint": {
+    "message": "La extensión deja en paz estos sitios, sea cual sea el resto de ajustes."
+  },
+  "excludeAria": {
+    "message": "Origen o comodín que excluir"
+  },
+  "exclude": {
+    "message": "Excluir"
+  },
+  "block": {
+    "message": "Bloquear"
+  },
+  "audioH": {
+    "message": "Audio"
+  },
+  "defaultVolume": {
+    "message": "Volumen predeterminado para sitios sin guardar"
+  },
+  "defaultLevelAria": {
+    "message": "Nivel de volumen predeterminado"
+  },
+  "allowBoost": {
+    "message": "Permitir amplificación"
+  },
+  "boostLimit": {
+    "message": "Límite de amplificación"
+  },
+  "boostExplain": {
+    "message": "La amplificación sube el límite del 100 % al límite elegido; un limitador evita que los picos fuertes distorsionen. Al desactivarla, los niveles superiores al 100 % se conservan, pero suenan al 100 %."
+  },
+  "boostNoteOne": {
+    "message": "$COUNT$ nivel guardado supera el 100 % y suena al 100 % mientras la amplificación está desactivada. Se conserva tal cual.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "boostNoteMany": {
+    "message": "$COUNT$ niveles guardados superan el 100 % y suenan al 100 % mientras la amplificación está desactivada. Se conservan tal cual.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnAbove": {
+    "message": "Avisar por encima de"
+  },
+  "warnHint": {
+    "message": "Muestra un aviso en la ventana emergente cuando el nivel supera este valor. Nunca te lo impide. De 100 a 600, o 0 para no avisar."
+  },
+  "quietHours": {
+    "message": "Horas de silencio"
+  },
+  "quietFrom": {
+    "message": "De"
+  },
+  "quietTo": {
+    "message": "a"
+  },
+  "quietHint": {
+    "message": "Durante estas horas, los sitios sin nivel guardado empiezan en este nivel en lugar del predeterminado. Los sitios guardados no cambian."
+  },
+  "soundH": {
+    "message": "Sonido"
+  },
+  "leveler": {
+    "message": "Suavizar lo fuerte (nivelador)"
+  },
+  "levelerAria": {
+    "message": "Nivelador"
+  },
+  "levelerHint": {
+    "message": "Equilibra las partes fuertes y las débiles, para que los anuncios y las explosiones no sobresalgan."
+  },
+  "mono": {
+    "message": "Mono"
+  },
+  "balance": {
+    "message": "Balance"
+  },
+  "balanceCentre": {
+    "message": "Centro"
+  },
+  "balanceLeft": {
+    "message": "I $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "balanceRight": {
+    "message": "D $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "equalizer": {
+    "message": "Ecualizador"
+  },
+  "eqBandAria": {
+    "message": "Banda EQ $BAND$",
+    "placeholders": {
+      "band": {
+        "content": "$1"
+      }
+    }
+  },
+  "soundHint": {
+    "message": "Los ajustes de sonido se aplican a todos los sitios que no hayas excluido y a los medios reproducidos con Web Audio. Los medios protegidos (DRM) y los de otro sitio sin CORS no cambian."
+  },
+  "eqFlat": {
+    "message": "Plano"
+  },
+  "eqBassboost": {
+    "message": "Más graves"
+  },
+  "eqTrebleboost": {
+    "message": "Más agudos"
+  },
+  "eqVocal": {
+    "message": "Voz"
+  },
+  "eqLoudness": {
+    "message": "Sonoridad"
+  },
+  "eqCustom": {
+    "message": "Personalizado"
+  },
+  "backupH": {
+    "message": "Copia de seguridad"
+  },
+  "exportBtn": {
+    "message": "Exportar ajustes"
+  },
+  "importBtn": {
+    "message": "Importar ajustes"
+  },
+  "importFileAria": {
+    "message": "Archivo de ajustes que importar"
+  },
+  "importAsk": {
+    "message": "¿Reemplazar todos los ajustes actuales con este archivo?"
+  },
+  "replace": {
+    "message": "Reemplazar"
+  },
+  "cancel": {
+    "message": "Cancelar"
+  },
+  "deleteAll": {
+    "message": "Eliminar todos los sitios guardados"
+  },
+  "deleteAllAsk": {
+    "message": "¿Eliminar todos los sitios guardados? Se conservan el volumen predeterminado, la amplificación y la lista de no tocar."
+  },
+  "deleteAllYes": {
+    "message": "Eliminar todo"
+  },
+  "importFailed": {
+    "message": "Error al importar: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "appearanceH": {
+    "message": "Apariencia"
+  },
+  "theme": {
+    "message": "Tema"
+  },
+  "themeSystem": {
+    "message": "Sistema"
+  },
+  "themeLight": {
+    "message": "Claro"
+  },
+  "themeDark": {
+    "message": "Oscuro"
+  },
+  "popupDesign": {
+    "message": "Diseño de la ventana emergente"
+  },
+  "designHint": {
+    "message": "Aurora Glass sigue el tema de arriba. Los demás diseños traen sus propios colores."
+  },
+  "remove": {
+    "message": "Quitar"
+  },
+  "removeAria": {
+    "message": "Quitar $PATTERN$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "levelFor": {
+    "message": "Nivel de $PATTERN$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "noMatch": {
+    "message": "Ningún sitio coincide."
+  },
+  "noSites": {
+    "message": "Aún no hay sitios guardados. Abre una página, elige un nivel en la ventana emergente y pulsa Guardar, o añade un sitio abajo."
+  },
+  "badPattern": {
+    "message": "Introduce un origen como https://ejemplo.com o un comodín como *.ejemplo.com."
+  },
+  "levelRange": {
+    "message": "El nivel debe ser un número entero de 0 a $MAX$.",
+    "placeholders": {
+      "max": {
+        "content": "$1"
+      }
+    }
+  },
+  "errJson": {
+    "message": "JSON no válido"
+  },
+  "errObject": {
+    "message": "Se esperaba un objeto JSON"
+  },
+  "errVersion": {
+    "message": "Versión no compatible: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errBoostEnabled": {
+    "message": "boostEnabled debe ser true o false"
+  },
+  "errBoostMax": {
+    "message": "boostMax no válido: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errDefault": {
+    "message": "defaultVolume no válido: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errSites": {
+    "message": "sites debe ser un objeto"
+  },
+  "errPattern": {
+    "message": "Patrón de sitio no válido: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errVolume": {
+    "message": "Volumen no válido para $PATTERN$: $VALUE$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      },
+      "value": {
+        "content": "$2"
+      }
+    }
+  },
+  "errExcludedList": {
+    "message": "excluded debe ser una lista"
+  },
+  "errExcluded": {
+    "message": "Entrada de excluded no válida: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errQuota": {
+    "message": "Demasiados guardados o sitios guardados, inténtalo de nuevo en un minuto. La sincronización de Chrome admite 512 elementos."
+  },
+  "boostActive": {
+    "message": "$DB$ dB",
+    "placeholders": {
+      "db": {
+        "content": "$1"
+      }
+    }
+  },
+  "boostWaiting": {
+    "message": "haz clic en la página"
+  },
+  "globalHint": {
+    "message": "Boost y sonido valen para todos los sitios."
+  },
+  "boostGlobal": {
+    "message": "La amplificación es un ajuste único para todos los sitios. Cada sitio conserva su propio nivel."
+  },
+  "boostNoMedia": {
+    "message": "sin medios"
+  },
+  "boostStatusTitle": {
+    "message": "Estado de la amplificación: $TEXT$",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "back": {
+    "message": "Atrás"
+  },
+  "otherTabs": {
+    "message": "Otras pestañas"
+  },
+  "playingNow": {
+    "message": "Sonando ahora"
+  },
+  "navAppearance": {
+    "message": "Apariencia"
+  },
+  "heroLookA": {
+    "message": "Tu volumen,"
+  },
+  "heroLookB": {
+    "message": "tu estilo."
+  },
+  "navLanguage": {
+    "message": "Idioma"
+  },
+  "heroLangA": {
+    "message": "Tu idioma,"
+  },
+  "heroLangB": {
+    "message": "tus palabras."
+  },
+  "langH": {
+    "message": "Idioma"
+  },
+  "langAuto": {
+    "message": "Automático (idioma del navegador)"
+  },
+  "langHint": {
+    "message": "Se aplica a la ventana emergente y a los ajustes. El nombre de la extensión y de los atajos sigue el idioma del navegador."
+  },
+  "unmuteOthers": {
+    "message": "Reactivar otras pestañas"
+  },
+  "unmutedOthersMany": {
+    "message": "Se reactivó el sonido de $COUNT$ otras pestañas.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "unmutedOthersOne": {
+    "message": "Se reactivó el sonido de $COUNT$ otra pestaña.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "unmuteScope": {
+    "message": "Reactivar otras pestañas abre"
+  },
+  "unmuteAll": {
+    "message": "Todas las pestañas silenciadas"
+  },
+  "unmuteOurs": {
+    "message": "Solo las pestañas silenciadas desde la extensión"
+  },
+  "unmuteHint": {
+    "message": "Se aplica al botón de la página Otras pestañas. «Solo las pestañas silenciadas desde la extensión» no toca las que silenciaste tú."
+  },
+  "shortcutsH": {
+    "message": "Atajos"
+  },
+  "shortcutNotSet": {
+    "message": "Sin asignar"
+  },
+  "shortcutsChange": {
+    "message": "Cambiar atajos"
+  },
+  "shortcutsHint": {
+    "message": "Chrome guarda las teclas. El botón abre su página de atajos."
+  },
+  "muteSitesH": {
+    "message": "Empezar en silencio"
+  },
+  "muteSitesHint": {
+    "message": "Las pestañas de estos sitios se silencian al cargar la página. Al pasar a otro sitio se reactivan."
+  },
+  "muteSitesAria": {
+    "message": "Origen o comodín que empezar en silencio"
+  },
+  "muteSiteAdd": {
+    "message": "Silenciar sitio"
+  },
+  "menuMute15": {
+    "message": "Silenciar 15 minutos"
+  },
+  "menuMute60": {
+    "message": "Silenciar 1 hora"
+  },
+  "startMuted": {
+    "message": "Empezar siempre en silencio aquí"
+  },
+  "stopStartMuted": {
+    "message": "Dejar de empezar en silencio aquí"
+  },
+  "mutedFor": {
+    "message": "Silenciada. Se reactiva en $MIN$ minutos.",
+    "placeholders": {
+      "min": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiffSites": {
+    "message": "Sitios: $ADDED$ nuevos, $REMOVED$ eliminados, $CHANGED$ cambiados.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "removed": {
+        "content": "$2"
+      },
+      "changed": {
+        "content": "$3"
+      }
+    }
+  },
+  "importDiffLists": {
+    "message": "No tocar: de $A$ a $B$ sitios. Empezar en silencio: de $C$ a $D$ sitios.",
+    "placeholders": {
+      "a": {
+        "content": "$1"
+      },
+      "b": {
+        "content": "$2"
+      },
+      "c": {
+        "content": "$3"
+      },
+      "d": {
+        "content": "$4"
+      }
+    }
+  }
+}

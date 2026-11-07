@@ -1,0 +1,758 @@
+{
+  "extName": {
+    "message": "Volume Lock"
+  },
+  "extDescription": {
+    "message": "Mémorise le volume de chaque site et l’applique automatiquement. Amplification jusqu’à 600 %, égaliseur, mode nuit."
+  },
+  "cmdVolumeUp": {
+    "message": "Augmenter le volume"
+  },
+  "cmdVolumeDown": {
+    "message": "Baisser le volume"
+  },
+  "cmdToggleMute": {
+    "message": "Couper ou rétablir le son de cet onglet"
+  },
+  "cmdSaveSite": {
+    "message": "Enregistrer le volume du site actuel"
+  },
+  "siteOptions": {
+    "message": "Options du site"
+  },
+  "menuReset": {
+    "message": "Recharger l’onglet et réinitialiser l’audio"
+  },
+  "menuDefault": {
+    "message": "Utiliser ce niveau pour tous les sites"
+  },
+  "openSettings": {
+    "message": "Ouvrir les réglages"
+  },
+  "hintLead": {
+    "message": "Réglez-le une fois."
+  },
+  "hintBody": {
+    "message": "Tournez le bouton, puis appuyez sur Enregistrer : ce site démarrera toujours à ce niveau."
+  },
+  "gotIt": {
+    "message": "Compris"
+  },
+  "presets": {
+    "message": "Préréglages"
+  },
+  "boost": {
+    "message": "Boost"
+  },
+  "boostAria": {
+    "message": "Amplifier jusqu’à $MAX$ %",
+    "placeholders": {
+      "max": {
+        "content": "$1"
+      }
+    }
+  },
+  "eqPreset": {
+    "message": "Préréglage de l’égaliseur"
+  },
+  "levelerShort": {
+    "message": "Atténuer le fort"
+  },
+  "levelerTitle": {
+    "message": "Équilibre les passages forts et faibles"
+  },
+  "save": {
+    "message": "Enregistrer"
+  },
+  "unsave": {
+    "message": "Retirer"
+  },
+  "muteTab": {
+    "message": "Couper l’onglet"
+  },
+  "unmuteTab": {
+    "message": "Rétablir l’onglet"
+  },
+  "muteOthers": {
+    "message": "Couper les autres onglets"
+  },
+  "mutedTabs": {
+    "message": "Onglets coupés"
+  },
+  "reloadTab": {
+    "message": "Recharger l’onglet"
+  },
+  "boostHintText": {
+    "message": "Cliquez une fois sur la page pour que Chrome autorise l’amplification ou les effets."
+  },
+  "loudWarn": {
+    "message": "Un volume élevé peut abîmer l’audition et les haut-parleurs. Baissez-le si cela fait mal."
+  },
+  "captureWarn": {
+    "message": "Sur ce site, l’amplification ne fonctionne que par capture d’onglet. Le son se coupe un instant au démarrage et le plein écran peut être perturbé."
+  },
+  "saveFailed": {
+    "message": "Échec de l’enregistrement : $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "defaultNow": {
+    "message": "Les sites sans niveau enregistré démarrent désormais à $LEVEL$ %.",
+    "placeholders": {
+      "level": {
+        "content": "$1"
+      }
+    }
+  },
+  "mutedOthersOne": {
+    "message": "$COUNT$ autre onglet qui diffusait du son a été coupé.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "mutedOthersMany": {
+    "message": "$COUNT$ autres onglets qui diffusaient du son ont été coupés.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "noOthers": {
+    "message": "Aucun autre onglet ne diffuse de son."
+  },
+  "unmute": {
+    "message": "Rétablir"
+  },
+  "mute": {
+    "message": "Couper"
+  },
+  "tabFallback": {
+    "message": "Onglet"
+  },
+  "levelOf": {
+    "message": "Niveau de $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "unsaveUrl": {
+    "message": "Retirer cette URL"
+  },
+  "saveUrl": {
+    "message": "Enregistrer pour cette URL"
+  },
+  "stopIgnoring": {
+    "message": "Ne plus ignorer ce site"
+  },
+  "neverTouchSite": {
+    "message": "Ne jamais toucher à ce site"
+  },
+  "thisPage": {
+    "message": "Cette page"
+  },
+  "pillExcluded": {
+    "message": "exclu"
+  },
+  "pillSaved": {
+    "message": "enregistré"
+  },
+  "pillNotSaved": {
+    "message": "non enregistré"
+  },
+  "pillWildcard": {
+    "message": "site et sous-domaines"
+  },
+  "pillQuiet": {
+    "message": "heures calmes"
+  },
+  "pillDefault": {
+    "message": "par défaut"
+  },
+  "blockedReload": {
+    "message": "Cet onglet ne peut pas encore être contrôlé. Il était probablement ouvert avant l’installation ou la mise à jour de l’extension. Rechargez-le et réessayez."
+  },
+  "blockedBrowser": {
+    "message": "Les extensions ne peuvent pas contrôler les pages du navigateur ni le Web Store."
+  },
+  "knobLabel": {
+    "message": "Volume"
+  },
+  "percentLabel": {
+    "message": "POURCENT"
+  },
+  "noneYet": {
+    "message": "Aucun pour l’instant."
+  },
+  "valueText": {
+    "message": "$VALUE$ pour cent",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "valueTextBoosted": {
+    "message": "$VALUE$ pour cent, amplifié",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Réglages de Volume Lock"
+  },
+  "navAria": {
+    "message": "Sections des réglages"
+  },
+  "navSites": {
+    "message": "Sites"
+  },
+  "navGeneral": {
+    "message": "Général"
+  },
+  "tagLine1": {
+    "message": "Volume par site."
+  },
+  "tagLine2": {
+    "message": "Amplifier. Apaiser."
+  },
+  "heroSites": {
+    "message": "sites"
+  },
+  "heroRemembered": {
+    "message": "mémorisés"
+  },
+  "heroSetOnce": {
+    "message": "Réglez-le une fois."
+  },
+  "heroHearRight": {
+    "message": "Écoutez comme il faut."
+  },
+  "sitesHint": {
+    "message": "Niveaux enregistrés par site. Cliquez sur un niveau pour le modifier."
+  },
+  "filterSites": {
+    "message": "Filtrer les sites"
+  },
+  "colSite": {
+    "message": "Site"
+  },
+  "colType": {
+    "message": "Type"
+  },
+  "colLevel": {
+    "message": "Niveau"
+  },
+  "colDelete": {
+    "message": "Supprimer"
+  },
+  "sitePatternAria": {
+    "message": "Site ou motif avec joker"
+  },
+  "patternPlaceholder": {
+    "message": "https://exemple.fr ou *.exemple.fr"
+  },
+  "newLevelAria": {
+    "message": "Niveau du nouveau site"
+  },
+  "add": {
+    "message": "Ajouter"
+  },
+  "rulesH": {
+    "message": "Règles"
+  },
+  "precedence": {
+    "message": "Priorité : ne jamais toucher > site exact > site et sous-domaines > volume par défaut."
+  },
+  "typeWildcard": {
+    "message": "Site et sous-domaines"
+  },
+  "typeExact": {
+    "message": "Exact"
+  },
+  "wildHintPre": {
+    "message": "Un motif comme"
+  },
+  "wildHintPost": {
+    "message": "couvre le domaine et tous ses sous-domaines. Ajoutez-en un dans le tableau des sites ci-dessus ; un site exact l’emporte toujours."
+  },
+  "neverH": {
+    "message": "Ne jamais toucher"
+  },
+  "neverHint": {
+    "message": "L’extension laisse ces sites tranquilles, quoi qu’il y ait d’autre d’enregistré."
+  },
+  "excludeAria": {
+    "message": "Origine ou joker à exclure"
+  },
+  "exclude": {
+    "message": "Exclure"
+  },
+  "block": {
+    "message": "Bloquer"
+  },
+  "audioH": {
+    "message": "Audio"
+  },
+  "defaultVolume": {
+    "message": "Volume par défaut des sites non enregistrés"
+  },
+  "defaultLevelAria": {
+    "message": "Niveau de volume par défaut"
+  },
+  "allowBoost": {
+    "message": "Autoriser l’amplification"
+  },
+  "boostLimit": {
+    "message": "Limite d’amplification"
+  },
+  "boostExplain": {
+    "message": "L’amplification relève la limite de 100 % à la limite choisie ; un limiteur empêche les pics forts de saturer. Si vous la désactivez, les niveaux supérieurs à 100 % sont conservés mais jouent à 100 %."
+  },
+  "boostNoteOne": {
+    "message": "$COUNT$ niveau enregistré dépasse 100 % et joue à 100 % tant que l’amplification est désactivée. Il est conservé tel quel.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "boostNoteMany": {
+    "message": "$COUNT$ niveaux enregistrés dépassent 100 % et jouent à 100 % tant que l’amplification est désactivée. Ils sont conservés tels quels.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnAbove": {
+    "message": "Avertir au-dessus de"
+  },
+  "warnHint": {
+    "message": "Affiche un avis dans la fenêtre quand le niveau dépasse cette valeur. Il ne vous bloque jamais. De 100 à 600, ou 0 pour aucun avertissement."
+  },
+  "quietHours": {
+    "message": "Heures calmes"
+  },
+  "quietFrom": {
+    "message": "De"
+  },
+  "quietTo": {
+    "message": "à"
+  },
+  "quietHint": {
+    "message": "Pendant ces heures, les sites sans niveau enregistré démarrent à ce niveau au lieu du niveau par défaut. Les sites enregistrés ne changent pas."
+  },
+  "soundH": {
+    "message": "Son"
+  },
+  "leveler": {
+    "message": "Atténuer le fort (nivelleur)"
+  },
+  "levelerAria": {
+    "message": "Nivelleur"
+  },
+  "levelerHint": {
+    "message": "Équilibre les passages forts et faibles, pour que les publicités et les explosions ne ressortent plus."
+  },
+  "mono": {
+    "message": "Mono"
+  },
+  "balance": {
+    "message": "Balance"
+  },
+  "balanceCentre": {
+    "message": "Centre"
+  },
+  "balanceLeft": {
+    "message": "G $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "balanceRight": {
+    "message": "D $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "equalizer": {
+    "message": "Égaliseur"
+  },
+  "eqBandAria": {
+    "message": "EQ $BAND$",
+    "placeholders": {
+      "band": {
+        "content": "$1"
+      }
+    }
+  },
+  "soundHint": {
+    "message": "Les réglages du son s’appliquent à tous les sites que vous n’avez pas exclus et aux médias lus via Web Audio. Les médias protégés (DRM) et ceux d’un autre site sans CORS restent inchangés."
+  },
+  "eqFlat": {
+    "message": "Neutre"
+  },
+  "eqBassboost": {
+    "message": "Graves renforcés"
+  },
+  "eqTrebleboost": {
+    "message": "Aigus renforcés"
+  },
+  "eqVocal": {
+    "message": "Voix"
+  },
+  "eqLoudness": {
+    "message": "Loudness"
+  },
+  "eqCustom": {
+    "message": "Personnalisé"
+  },
+  "backupH": {
+    "message": "Sauvegarde"
+  },
+  "exportBtn": {
+    "message": "Exporter les réglages"
+  },
+  "importBtn": {
+    "message": "Importer les réglages"
+  },
+  "importFileAria": {
+    "message": "Fichier de réglages à importer"
+  },
+  "importAsk": {
+    "message": "Remplacer tous les réglages actuels par ce fichier ?"
+  },
+  "replace": {
+    "message": "Remplacer"
+  },
+  "cancel": {
+    "message": "Annuler"
+  },
+  "deleteAll": {
+    "message": "Supprimer tous les sites enregistrés"
+  },
+  "deleteAllAsk": {
+    "message": "Supprimer tous les sites enregistrés ? Le volume par défaut, l’amplification et la liste « ne jamais toucher » sont conservés."
+  },
+  "deleteAllYes": {
+    "message": "Tout supprimer"
+  },
+  "importFailed": {
+    "message": "Échec de l’importation : $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "appearanceH": {
+    "message": "Apparence"
+  },
+  "theme": {
+    "message": "Thème"
+  },
+  "themeSystem": {
+    "message": "Système"
+  },
+  "themeLight": {
+    "message": "Clair"
+  },
+  "themeDark": {
+    "message": "Sombre"
+  },
+  "popupDesign": {
+    "message": "Style de la fenêtre"
+  },
+  "designHint": {
+    "message": "Aurora Glass suit le thème ci-dessus. Les autres styles apportent leurs propres couleurs."
+  },
+  "remove": {
+    "message": "Retirer"
+  },
+  "removeAria": {
+    "message": "Retirer $PATTERN$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "levelFor": {
+    "message": "Niveau de $PATTERN$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "noMatch": {
+    "message": "Aucun site correspondant."
+  },
+  "noSites": {
+    "message": "Aucun site enregistré pour l’instant. Ouvrez une page, choisissez un niveau dans la fenêtre et appuyez sur Enregistrer, ou ajoutez un site ci-dessous."
+  },
+  "badPattern": {
+    "message": "Saisissez une origine comme https://exemple.fr ou un joker comme *.exemple.fr."
+  },
+  "levelRange": {
+    "message": "Le niveau doit être un nombre entier de 0 à $MAX$.",
+    "placeholders": {
+      "max": {
+        "content": "$1"
+      }
+    }
+  },
+  "errJson": {
+    "message": "JSON non valide"
+  },
+  "errObject": {
+    "message": "Objet JSON attendu"
+  },
+  "errVersion": {
+    "message": "Version non prise en charge : $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errBoostEnabled": {
+    "message": "boostEnabled doit valoir true ou false"
+  },
+  "errBoostMax": {
+    "message": "boostMax non valide : $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errDefault": {
+    "message": "defaultVolume non valide : $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errSites": {
+    "message": "sites doit être un objet"
+  },
+  "errPattern": {
+    "message": "Motif de site non valide : $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errVolume": {
+    "message": "Volume non valide pour $PATTERN$ : $VALUE$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      },
+      "value": {
+        "content": "$2"
+      }
+    }
+  },
+  "errExcludedList": {
+    "message": "excluded doit être une liste"
+  },
+  "errExcluded": {
+    "message": "Entrée excluded non valide : $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errQuota": {
+    "message": "Trop d’enregistrements ou de sites enregistrés, réessayez dans une minute. La synchronisation Chrome accepte 512 éléments."
+  },
+  "boostActive": {
+    "message": "$DB$ dB",
+    "placeholders": {
+      "db": {
+        "content": "$1"
+      }
+    }
+  },
+  "boostWaiting": {
+    "message": "cliquez sur la page"
+  },
+  "globalHint": {
+    "message": "Boost et son valent pour tous les sites."
+  },
+  "boostGlobal": {
+    "message": "L’amplification est un réglage unique pour tous les sites. Chaque site garde son propre niveau."
+  },
+  "boostNoMedia": {
+    "message": "aucun média"
+  },
+  "boostStatusTitle": {
+    "message": "État de l’amplification : $TEXT$",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
+  },
+  "back": {
+    "message": "Retour"
+  },
+  "otherTabs": {
+    "message": "Autres onglets"
+  },
+  "playingNow": {
+    "message": "En cours de lecture"
+  },
+  "navAppearance": {
+    "message": "Apparence"
+  },
+  "heroLookA": {
+    "message": "Votre volume,"
+  },
+  "heroLookB": {
+    "message": "votre style."
+  },
+  "navLanguage": {
+    "message": "Langue"
+  },
+  "heroLangA": {
+    "message": "Votre langue,"
+  },
+  "heroLangB": {
+    "message": "vos mots."
+  },
+  "langH": {
+    "message": "Langue"
+  },
+  "langAuto": {
+    "message": "Automatique (langue du navigateur)"
+  },
+  "langHint": {
+    "message": "S’applique à la fenêtre et aux réglages. Le nom de l’extension et des raccourcis suit la langue du navigateur."
+  },
+  "unmuteOthers": {
+    "message": "Rétablir les autres onglets"
+  },
+  "unmutedOthersMany": {
+    "message": "Le son de $COUNT$ autres onglets a été rétabli.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "unmutedOthersOne": {
+    "message": "Le son de $COUNT$ autre onglet a été rétabli.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "unmuteScope": {
+    "message": "Rétablir les autres onglets rouvre"
+  },
+  "unmuteAll": {
+    "message": "Tous les onglets coupés"
+  },
+  "unmuteOurs": {
+    "message": "Seulement les onglets coupés par l’extension"
+  },
+  "unmuteHint": {
+    "message": "S’applique au bouton de la page Autres onglets. « Seulement les onglets coupés par l’extension » laisse tranquilles ceux que vous avez coupés vous-même."
+  },
+  "shortcutsH": {
+    "message": "Raccourcis"
+  },
+  "shortcutNotSet": {
+    "message": "Non défini"
+  },
+  "shortcutsChange": {
+    "message": "Modifier les raccourcis"
+  },
+  "shortcutsHint": {
+    "message": "Chrome conserve les touches. Le bouton ouvre sa page de raccourcis."
+  },
+  "muteSitesH": {
+    "message": "Démarrer en sourdine"
+  },
+  "muteSitesHint": {
+    "message": "Les onglets de ces sites sont coupés au chargement de la page. En passant à un autre site, le son est rétabli."
+  },
+  "muteSitesAria": {
+    "message": "Origine ou joker à démarrer en sourdine"
+  },
+  "muteSiteAdd": {
+    "message": "Couper le site"
+  },
+  "menuMute15": {
+    "message": "Couper 15 minutes"
+  },
+  "menuMute60": {
+    "message": "Couper 1 heure"
+  },
+  "startMuted": {
+    "message": "Toujours démarrer en sourdine ici"
+  },
+  "stopStartMuted": {
+    "message": "Ne plus démarrer en sourdine ici"
+  },
+  "mutedFor": {
+    "message": "Coupé. Le son revient dans $MIN$ minutes.",
+    "placeholders": {
+      "min": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDiffSites": {
+    "message": "Sites : $ADDED$ nouveaux, $REMOVED$ supprimés, $CHANGED$ modifiés.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "removed": {
+        "content": "$2"
+      },
+      "changed": {
+        "content": "$3"
+      }
+    }
+  },
+  "importDiffLists": {
+    "message": "Ne jamais toucher : de $A$ à $B$ sites. Démarrer en sourdine : de $C$ à $D$ sites.",
+    "placeholders": {
+      "a": {
+        "content": "$1"
+      },
+      "b": {
+        "content": "$2"
+      },
+      "c": {
+        "content": "$3"
+      },
+      "d": {
+        "content": "$4"
+      }
+    }
+  }
+}

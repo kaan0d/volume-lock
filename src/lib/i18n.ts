@@ -1,12 +1,16 @@
 import en from '../../public/_locales/en/messages.json' with { type: 'json' };
 import tr from '../../public/_locales/tr/messages.json' with { type: 'json' };
+import es from '../../public/_locales/es/messages.json' with { type: 'json' };
+import de from '../../public/_locales/de/messages.json' with { type: 'json' };
+import fr from '../../public/_locales/fr/messages.json' with { type: 'json' };
+import ptBR from '../../public/_locales/pt_BR/messages.json' with { type: 'json' };
 
 type Msg = { message: string; placeholders?: Record<string, { content: string }> };
 const EN: Record<string, Msg> = en;
-const CATALOGS: Record<string, Record<string, Msg>> = { en: EN, tr };
+const CATALOGS: Record<string, Record<string, Msg>> = { en: EN, tr, es, de, fr, 'pt-BR': ptBR };
 
 /** Languages the user can pick (each named in itself); 'auto' follows the browser. */
-export const LANGS: [code: string, name: string][] = [['en', 'English'], ['tr', 'Türkçe']];
+export const LANGS: [code: string, name: string][] = [['en', 'English'], ['de', 'Deutsch'], ['es', 'Español'], ['fr', 'Français'], ['pt-BR', 'Português (Brasil)'], ['tr', 'Türkçe']];
 let lang = 'auto';
 
 /** Reads the language choice (chrome.i18n cannot be overridden, so a picked language uses the bundled catalogs). Await it before the first t(). */
