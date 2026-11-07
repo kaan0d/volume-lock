@@ -89,7 +89,7 @@
     "message": "Loud levels can hurt your hearing and damage speakers. Turn it down if it hurts."
   },
   "captureWarn": {
-    "message": "Boost on this site works only through tab capture, and it may break fullscreen."
+    "message": "Boost on this site works only through tab capture. The sound cuts for a moment when it starts, and fullscreen may break."
   },
   "saveFailed": {
     "message": "Save failed: $ERROR$",
@@ -679,5 +679,20 @@
   },
   "unmuteHint": {
     "message": "Applies to the button on the Other tabs page. \"Only tabs muted from the extension\" leaves tabs you muted yourself alone."
+  },
+  "shortcutsH": {
+    "message": "Shortcuts"
+  },
+  "shortcutNotSet": {
+    "message": "Not set"
+  },
+  "shortcutsChange": {
+    "message": "Change shortcuts"
+  },
+  "shortcutsHint": {
+    "message": "Chrome keeps the keys. The button opens its shortcuts page."
+  },
+  "switchToTab": {
+    "message": "Go to this tab"
   }
 }

@@ -78,3 +78,4 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 .others-list .btn { min-width: 84px; }
+.others-list span[role="link"] { cursor: pointer; } .others-list span[role="link"]:hover, .others-list span[role="link"]:focus-visible { color: var(--text); text-decoration: underline; }

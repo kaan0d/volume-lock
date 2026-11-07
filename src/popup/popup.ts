@@ -314,6 +314,11 @@ async function paintOthers() {
       icon.addEventListener('error', () => (icon.hidden = true));
       const name = Object.assign(document.createElement('span'), { textContent: t.title || t.url || tr('tabFallback') });
       name.title = name.textContent!;
+      name.tabIndex = 0;
+      name.setAttribute('role', 'link');
+      const go = () => void chrome.tabs.update(t.id!, { active: true }).then(() => chrome.windows.update(t.windowId, { focused: true }));
+      name.addEventListener('click', go);
+      name.addEventListener('keydown', (e) => e.key === 'Enter' && go());
       const range = Object.assign(document.createElement('input'), { type: 'range', min: '0', max: String(maxVolume(settings.boostEnabled, settings.boostMax)), step: '5', value: String(levels[i]?.volume ?? 100) });
       range.setAttribute('aria-label', tr('levelOf', name.textContent!));
       range.addEventListener('input', () => void chrome.tabs.sendMessage(t.id!, { type: 'set-volume', volume: range.valueAsNumber } satisfies SetVolume).catch(() => {}));

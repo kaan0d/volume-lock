@@ -89,7 +89,7 @@
     "message": "Yüksek seviyeler işitmenize zarar verebilir ve hoparlörleri bozabilir. Rahatsız ediyorsa kısın."
   },
   "captureWarn": {
-    "message": "Bu sitede güçlendirme yalnızca sekme yakalama ile çalışır ve tam ekranı bozabilir."
+    "message": "Bu sitede güçlendirme yalnızca sekme yakalama ile çalışır. Başlarken ses bir an kesilir ve tam ekran bozulabilir."
   },
   "saveFailed": {
     "message": "Kaydedilemedi: $ERROR$",
@@ -679,5 +679,20 @@
   },
   "unmuteHint": {
     "message": "Diğer sekmeler sayfasındaki düğme için geçerli. \"Yalnızca eklentiden sessize alınanlar\" seçeneği kendi elinizle sessize aldığınız sekmelere dokunmaz."
+  },
+  "shortcutsH": {
+    "message": "Kısayollar"
+  },
+  "shortcutNotSet": {
+    "message": "Atanmamış"
+  },
+  "shortcutsChange": {
+    "message": "Kısayolları değiştir"
+  },
+  "shortcutsHint": {
+    "message": "Tuşları Chrome saklar. Düğme Chrome'un kısayol sayfasını açar."
+  },
+  "switchToTab": {
+    "message": "Bu sekmeye git"
   }
 }

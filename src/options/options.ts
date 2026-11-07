@@ -326,6 +326,16 @@ for (const [code, name] of [['auto', t('langAuto')], ...LANGS]) {
   langList.append(b);
 }
 
+// ---------- shortcuts ----------
+
+$('shortcutsBtn').addEventListener('click', () => void chrome.tabs.create({ url: 'chrome://extensions/shortcuts' }));
+async function paintShortcuts() {
+  const cmds = await chrome.commands.getAll();
+  $('shortcutList').replaceChildren(
+    ...cmds.filter((c) => c.description).map((c) => el('li', {}, el('span', { textContent: c.description ?? c.name }), el('kbd', { textContent: c.shortcut || t('shortcutNotSet') }))),
+  );
+}
+
 // ---------- boot ----------
 
 function render() {
@@ -349,4 +359,5 @@ void (async () => {
   settings = await storage.loadSettings();
   await paintLocal();
   render();
+  void paintShortcuts();
 })();
