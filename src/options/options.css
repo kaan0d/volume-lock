@@ -46,7 +46,7 @@ body::after { /* paper grain */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 .hidden { display: none !important; }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.sr { position: absolute; left: 0; top: 0; /* pinned inside its box: the static position put it 1px past the table while the entrance animation ran, which flashed a scrollbar */ width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* ---------- layout ---------- */
@@ -126,7 +126,7 @@ input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent);
 .lang input { width: 20px; height: 20px; accent-color: var(--accent); }
 
 /* table */
-.table-wrap { overflow-x: auto; border-top: 1px solid var(--text); }
+.table-wrap { position: relative; overflow-x: auto; border-top: 1px solid var(--text); }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 12px 14px 12px 0; border-bottom: 1px solid var(--glass-border); }
 tbody tr { transition: background var(--dur-fast); }
