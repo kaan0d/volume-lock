@@ -16,6 +16,20 @@
 @font-face { font-family: "Barlow"; font-weight: 600; font-display: swap; src: url("./fonts/barlow-latin-600-normal.woff2") format("woff2"); }
 @font-face { font-family: "Barlow"; font-weight: 700; font-display: swap; src: url("./fonts/barlow-latin-700-normal.woff2") format("woff2"); }
 @font-face { font-family: "Barlow Condensed"; font-weight: 600; font-display: swap; src: url("./fonts/barlow-condensed-latin-600-normal.woff2") format("woff2"); }
+/* latin-ext: Turkish Ğ İ ı Ş ş and friends, which the latin files lack (the browser falls back per glyph, with ugly gaps) */
+@font-face { font-family: "Space Grotesk"; font-weight: 300 700; font-display: swap; src: url("./fonts/space-grotesk-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Fraunces"; font-weight: 100 900; font-display: swap; src: url("./fonts/fraunces-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Jost"; font-weight: 100 900; font-display: swap; src: url("./fonts/jost-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Cormorant Garamond"; font-weight: 300 700; font-display: swap; src: url("./fonts/cormorant-garamond-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "JetBrains Mono"; font-weight: 100 800; font-display: swap; src: url("./fonts/jetbrains-mono-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Manrope"; font-weight: 200 800; font-display: swap; src: url("./fonts/manrope-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Archivo"; font-weight: 100 900; font-display: swap; src: url("./fonts/archivo-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "DM Sans"; font-weight: 100 1000; font-display: swap; src: url("./fonts/dm-sans-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Nunito"; font-weight: 200 1000; font-display: swap; src: url("./fonts/nunito-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Plus Jakarta Sans"; font-weight: 200 800; font-display: swap; src: url("./fonts/plus-jakarta-sans-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Barlow"; font-weight: 600; font-display: swap; src: url("./fonts/barlow-latin-ext-600-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Barlow"; font-weight: 700; font-display: swap; src: url("./fonts/barlow-latin-ext-700-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Barlow Condensed"; font-weight: 600; font-display: swap; src: url("./fonts/barlow-condensed-latin-ext-600-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
 
 /* ---------- shared ---------- */
 .knob-lin, .knob-wall { display: none; }

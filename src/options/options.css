@@ -3,6 +3,9 @@
 @font-face { font-family: "Fraunces"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("../ui/fonts/fraunces-latin-wght-normal.woff2") format("woff2"); }
 @font-face { font-family: "Manrope"; font-weight: 200 800; font-display: swap; src: url("../ui/fonts/manrope-latin-wght-normal.woff2") format("woff2"); }
 @font-face { font-family: "JetBrains Mono"; font-weight: 100 800; font-display: swap; src: url("../ui/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2"); }
+@font-face { font-family: "Fraunces"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("../ui/fonts/fraunces-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "Manrope"; font-weight: 200 800; font-display: swap; src: url("../ui/fonts/manrope-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
+@font-face { font-family: "JetBrains Mono"; font-weight: 100 800; font-display: swap; src: url("../ui/fonts/jetbrains-mono-latin-ext-wght-normal.woff2") format("woff2"); unicode-range: U+0100-02BA; }
 
 :root, :root[data-theme="dark"] {
   --bg: oklch(0.165 0.012 265);
@@ -112,7 +115,7 @@ input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent);
 .field:hover { background: var(--glass-strong); }
 .field:focus-visible { outline: none; border-bottom-color: var(--accent); box-shadow: 0 2px 0 0 var(--accent); }
 .toolbar .field { width: 100%; max-width: 360px; }
-.field.num { width: 92px; font-family: var(--f-mono); }
+.field.num { width: 92px; padding-right: 6px; font-variant-numeric: tabular-nums; } /* Manrope digits: the mono zero has a dot inside and looked cut at 15px */
 .field.grow { flex: 1 1 240px; min-width: 0; }
 .row-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
 
