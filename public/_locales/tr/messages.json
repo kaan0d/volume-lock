@@ -594,27 +594,32 @@
   "errQuota": {
     "message": "Çok fazla kayıt veya kayıtlı site var, bir dakika sonra tekrar deneyin. Chrome eşitlemesi en fazla 512 öğeye izin verir."
   },
-  "boostReady": {
-    "message": "Güçlendirme açık. %100 üstü seviyeler yükseltilir."
-  },
   "boostActive": {
-    "message": "$DB$ dB güçlendiriliyor (×$GAIN$)",
+    "message": "$DB$ dB",
     "placeholders": {
       "db": {
         "content": "$1"
-      },
-      "gain": {
-        "content": "$2"
       }
     }
   },
   "boostWaiting": {
-    "message": "Güçlendirme açık, sayfaya bir tıklama bekliyor."
+    "message": "sayfaya tıklayın"
   },
   "globalHint": {
     "message": "Güçlendirme ve ses ayarları tüm sitelerde geçerlidir."
   },
   "boostGlobal": {
     "message": "Güçlendirme tüm siteler için tek ayardır. Her site kendi seviyesini korur."
+  },
+  "boostNoMedia": {
+    "message": "medya yok"
+  },
+  "boostStatusTitle": {
+    "message": "Güçlendirme durumu: $TEXT$",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
   }
 }

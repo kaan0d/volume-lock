@@ -594,27 +594,32 @@
   "errQuota": {
     "message": "Too many saves or saved sites, try again in a minute. Chrome sync allows 512 items."
   },
-  "boostReady": {
-    "message": "Boost is on. Levels above 100% are amplified."
-  },
   "boostActive": {
-    "message": "Boosting $DB$ dB (×$GAIN$)",
+    "message": "$DB$ dB",
     "placeholders": {
       "db": {
         "content": "$1"
-      },
-      "gain": {
-        "content": "$2"
       }
     }
   },
   "boostWaiting": {
-    "message": "Boost is on, waiting for a click on the page."
+    "message": "click the page"
   },
   "globalHint": {
     "message": "Boost and sound settings apply to every site."
   },
   "boostGlobal": {
     "message": "Boost is one setting for all sites. Each site still keeps its own level."
+  },
+  "boostNoMedia": {
+    "message": "no media"
+  },
+  "boostStatusTitle": {
+    "message": "Boost status: $TEXT$",
+    "placeholders": {
+      "text": {
+        "content": "$1"
+      }
+    }
   }
 }

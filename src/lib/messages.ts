@@ -4,7 +4,7 @@ export type SetVolume = { type: 'set-volume'; volume: number };
 export type GetState = { type: 'get-state' };
 /** `idle`: boost or effects are wanted but the page audio is not routed yet (Chrome waits for a click). */
 /** `needsCapture`: media here can only be boosted through tab capture. */
-export type StateReply = { volume: number; idle?: boolean; needsCapture?: boolean };
+export type StateReply = { volume: number; idle?: boolean; needsCapture?: boolean; media?: boolean };
 
 export type Message = SetVolume | GetState;
 

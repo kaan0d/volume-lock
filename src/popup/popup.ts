@@ -45,14 +45,16 @@ function sendLive(v: number) {
 }
 
 /** Re-asks the page whether boost/effects are routed; shows the click hint if not. */
-async function recheckIdle() {
+async function recheckIdle(wait = 250) {
   if (!reachable || tabId === undefined) return;
-  await new Promise((r) => setTimeout(r, 250));
+  await new Promise((r) => setTimeout(r, wait));
   const state = await chrome.tabs.sendMessage<GetState, StateReply>(tabId, { type: 'get-state' }, { frameId: 0 }).catch(() => null);
   if (state) showState(state);
 }
 
 let lastState: StateReply | null = null;
+// media can start after the popup opened, so the boost status follows the page while boost is on
+setInterval(() => settings.boostEnabled && void recheckIdle(0), 2000);
 
 function showState(state: StateReply) {
   lastState = state;
@@ -123,10 +125,11 @@ function paintChips() {
 /** Says in words whether boost is doing something right now. */
 function paintBoost() {
   const el = $('boostStatus');
-  el.hidden = !settings.boostEnabled || !reachable || excluded();
-  if (el.hidden) return;
+  const on = settings.boostEnabled && reachable && !excluded();
   const gain = volume / 100;
-  el.textContent = lastState?.idle ? tr('boostWaiting') : volume > 100 ? tr('boostActive', [`+${(20 * Math.log10(gain)).toFixed(1)}`, gain.toFixed(1)]) : tr('boostReady');
+  const text = !on ? '' : lastState?.idle ? tr('boostWaiting') : lastState && !lastState.media ? tr('boostNoMedia') : volume > 100 ? tr('boostActive', `+${(20 * Math.log10(gain)).toFixed(1)}`) : '';
+  el.textContent = text ? `${tr('boost')} · ${text}` : tr('boost'); // the label doubles as the status, so it costs no height
+  el.title = text ? tr('boostStatusTitle', [text]) : '';
 }
 
 function paintSave() {

@@ -43,14 +43,12 @@
         <button class="chip" type="button" data-preset="25" data-testid="preset-25">25</button>
         <button class="chip" type="button" data-preset="50" data-testid="preset-50">50</button>
         <button class="chip" type="button" data-preset="100" data-testid="preset-100">100</button>
-        <span class="boost" data-i18n="boost">Boost</span>
+        <span id="boostStatus" class="boost" data-testid="boost-status" role="status" data-i18n="boost">Boost</span>
         <label class="switch">
           <input id="boost" type="checkbox" role="switch" data-testid="boost-switch" aria-label="Boost up to 200%">
           <span class="track" aria-hidden="true"></span>
         </label>
       </div>
-
-      <p id="boostStatus" class="boost-status" data-testid="boost-status" role="status" hidden></p>
 
       <div class="row sound">
         <select id="eqSel" class="field" aria-label="Equalizer preset" data-i18n-aria="eqPreset" data-testid="eq-select"></select>

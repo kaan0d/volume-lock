@@ -89,7 +89,7 @@ function state(): StateReply {
   // this world sees the real element volume, which equals the page's own value when we leave it alone
   const needsRoute = !captured && ((level ?? 0) > 100 || effects().fx !== null);
   const els = (probeNow() as { els: { routed: boolean }[] } | undefined)?.els ?? [];
-  return { volume: level ?? Math.round((first?.volume ?? 1) * 100), idle: (needsRoute && els.some((e) => !e.routed)) || undefined, needsCapture: needsCapture || undefined };
+  return { volume: level ?? Math.round((first?.volume ?? 1) * 100), idle: (needsRoute && els.some((e) => !e.routed)) || undefined, media: els.length > 0 || captured, needsCapture: needsCapture || undefined };
 }
 
 chrome.runtime.onMessage.addListener((msg: Message | CaptureState, _sender, reply) => {

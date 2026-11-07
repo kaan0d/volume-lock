@@ -30,7 +30,7 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
 @keyframes pop { from { opacity: 0; transform: scale(.92); } }
 
 /* controls */
-.controls { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+.controls { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
 .controls.is-off { opacity: .6; }
 .knob-host { display: grid; place-items: center; min-height: 240px; width: 100%; --knob-size: 240px; }
 .app:has(#hint:not([hidden])) .knob-host { --knob-size: 170px; min-height: 170px; } /* keeps the first run under Chrome's 600px popup limit */
@@ -40,7 +40,7 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
 .two > .btn { flex: 1; }
 .two .btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 
-.boost-status, .global-hint { margin: 0; text-align: center; font-size: 12px; color: var(--text-muted); }
+.global-hint { margin: 0; text-align: center; font-size: 12px; color: var(--text-muted); }
 .boost { margin-left: auto; font-size: 13px; color: var(--text-muted); }
 
 /* buttons */
