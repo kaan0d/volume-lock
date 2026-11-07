@@ -327,7 +327,8 @@
 [data-design="spectrum"] .knob-wall { display: flex; align-items: flex-end; gap: 5px; position: absolute; left: 18px; right: 18px; bottom: 18px; height: 150px; }
 [data-design="spectrum"] .knob-wall i {
   flex: 1; border-radius: 3px; height: calc(max(var(--b), var(--l, 0)) * 100%); transition: height 80ms linear;
-  background: color-mix(in srgb, var(--accent) calc(clamp(0, (var(--v) - var(--p)) * 1000, 1) * 100%), #3a2a3a);
+  --f: calc(clamp(0, (var(--v) - var(--p)) * 24 + 0.5, 1) * 100%);
+  background: linear-gradient(90deg, var(--accent) var(--f), #3a2a3a var(--f));
 }
 [data-design="spectrum"] .knob::after { content: ""; position: absolute; inset: 84px auto 18px auto; left: calc(18px + var(--v) * (100% - 36px)); width: 2px; border-radius: 0; box-shadow: none; background: #fff; opacity: 0.85; pointer-events: none; }
 
