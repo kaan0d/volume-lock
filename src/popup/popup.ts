@@ -235,14 +235,28 @@ muteBtn.addEventListener('click', async () => {
 $('muteOthersBtn').addEventListener('click', async () => {
   const others = (await chrome.tabs.query({ audible: true })).filter((t) => t.id !== undefined && t.id !== tabId);
   await Promise.all(others.map((t) => chrome.tabs.update(t.id!, { muted: true })));
-  notice(others.length ? tr(others.length > 1 ? 'mutedOthersMany' : 'mutedOthersOne', others.length) : tr('noOthers'));
+  const msg = $('othersNotice');
+  msg.textContent = others.length ? tr(others.length > 1 ? 'mutedOthersMany' : 'mutedOthersOne', others.length) : tr('noOthers');
+  msg.hidden = false;
 });
+
+// the other-tabs page replaces the popup content; its own result text goes away with it
+function showOthers(open: boolean) {
+  $('othersView').hidden = !open;
+  document.querySelector<HTMLElement>('.app')!.dataset.view = open ? 'others' : '';
+  $('othersNotice').hidden = true;
+  void paintOthers();
+  void paintMuted();
+  (open ? $('othersBack') : $('othersBtn')).focus();
+}
+$('othersBtn').addEventListener('click', () => showOthers(true));
+$('othersBack').addEventListener('click', () => showOthers(false));
 
 // muted tabs: listed with an unmute button each, hidden when none
 const mutedList = $('mutedList');
 async function paintMuted() {
   const tabs = (await chrome.tabs.query({ muted: true })).filter((t) => t.id !== undefined);
-  mutedList.hidden = !tabs.length;
+  $('mutedBox').hidden = !tabs.length;
   mutedList.replaceChildren(
     ...tabs.map((t) => {
       const name = document.createElement('span');
@@ -265,7 +279,9 @@ async function paintOthers() {
   const tabs = (await chrome.tabs.query({ audible: true })).filter((t) => t.id !== undefined && t.id !== tabId);
   const levels = await Promise.all(tabs.map((t) => chrome.tabs.sendMessage<GetState, StateReply>(t.id!, { type: 'get-state' }, { frameId: 0 }).catch(() => null)));
   others.hidden = !tabs.length;
+  $('othersEmpty').hidden = tabs.length > 0;
   $('othersCount').textContent = String(tabs.length);
+  $('othersBtn').textContent = tabs.length ? `${tr('otherTabs')} (${tabs.length})` : tr('otherTabs');
   $('othersList').replaceChildren(
     ...tabs.map((t, i) => {
       const icon = Object.assign(document.createElement('img'), { alt: '', src: t.favIconUrl ?? '' });
@@ -315,7 +331,11 @@ $('menuBtn').addEventListener('click', (e) => {
   toggleMenu(!!menu.hidden);
 });
 document.addEventListener('click', (e) => !menu.contains(e.target as Node) && toggleMenu(false));
-document.addEventListener('keydown', (e) => e.key === 'Escape' && !menu.hidden && (toggleMenu(false), $('menuBtn').focus()));
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!menu.hidden) (toggleMenu(false), $('menuBtn').focus());
+  else if (!$('othersView').hidden) showOthers(false);
+});
 
 $('menuExclude').addEventListener('click', async () => {
   toggleMenu(false);

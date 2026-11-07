@@ -56,12 +56,17 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
 .hint p { margin: 0; font-size: 13px; line-height: 1.4; flex: 1; }
 .blocked { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); padding: var(--space-6) var(--space-5); text-align: center; color: var(--text-muted); }
 .blocked-text { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text); }
-.muted-list { list-style: none; margin: 0; padding: 0; width: 100%; max-height: 152px; overflow-y: auto; scrollbar-gutter: stable both-edges; /* reserved on both sides so the rows stay centered and never shift */ display: flex; flex-direction: column; gap: var(--space-1); }
+.muted-list { list-style: none; margin: 0; padding: 0; width: 100%; max-height: 200px; overflow-y: auto; scrollbar-gutter: stable both-edges; /* reserved on both sides so the rows stay centered and never shift */ display: flex; flex-direction: column; gap: var(--space-1); }
 .muted-list li { display: flex; align-items: center; gap: var(--space-2); }
 .muted-list span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--text-muted); }
+.app[data-view=others] > :not(#othersView) { display: none; }
+.others-view { display: flex; flex-direction: column; gap: var(--space-3); }
+.sub-top { display: flex; align-items: center; gap: var(--space-2); }
+.sub-top h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.sub-empty { margin: 0; text-align: center; font-size: 13px; color: var(--text-muted); }
 .others { width: 100%; }
-.others summary { cursor: pointer; font-size: 13px; color: var(--text-muted); }
-.others-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; max-height: 152px; overflow-y: auto; display: flex; flex-direction: column; gap: var(--space-2); }
+.others h3 { margin: 0 0 var(--space-2); font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.others-list { list-style: none; margin: 0; padding: 0; max-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: var(--space-2); }
 .others-list li { display: flex; align-items: center; gap: var(--space-2); }
 .others-list img { width: 16px; height: 16px; border-radius: 4px; flex: none; }
 .others-list span { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--text-muted); }
@@ -72,3 +77,4 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+.others-list .btn { min-width: 84px; }

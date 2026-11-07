@@ -76,9 +76,6 @@
   "muteOthers": {
     "message": "Mute other tabs"
   },
-  "othersPlaying": {
-    "message": "Other tabs playing"
-  },
   "mutedTabs": {
     "message": "Muted tabs"
   },
@@ -621,5 +618,14 @@
         "content": "$1"
       }
     }
+  },
+  "back": {
+    "message": "Back"
+  },
+  "otherTabs": {
+    "message": "Other tabs"
+  },
+  "playingNow": {
+    "message": "Playing now"
   }
 }

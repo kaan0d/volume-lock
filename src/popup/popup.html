@@ -61,15 +61,28 @@
 
       <div class="row two">
         <button id="muteBtn" class="btn" type="button" aria-pressed="false" data-testid="mute-tab" data-i18n="muteTab">Mute tab</button>
-        <button id="muteOthersBtn" class="btn" type="button" data-testid="mute-others" data-i18n="muteOthers">Mute other tabs</button>
+        <button id="othersBtn" class="btn" type="button" data-testid="others-open" data-i18n="otherTabs">Other tabs</button>
       </div>
+    </section>
 
-      <details id="others" class="others" data-testid="others" hidden>
-        <summary><span data-i18n="othersPlaying">Other tabs playing</span> (<span id="othersCount">0</span>)</summary>
+    <section id="othersView" class="others-view" data-testid="others-view" aria-labelledby="othersTitle" hidden>
+      <header class="sub-top">
+        <button id="othersBack" class="icon-btn" type="button" aria-label="Back" data-i18n-aria="back" data-testid="others-back">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <h2 id="othersTitle" data-i18n="otherTabs">Other tabs</h2>
+      </header>
+      <button id="muteOthersBtn" class="btn" type="button" data-testid="mute-others" data-i18n="muteOthers">Mute other tabs</button>
+      <div id="others" class="others" data-testid="others" hidden>
+        <h3><span data-i18n="playingNow">Playing now</span> (<span id="othersCount">0</span>)</h3>
         <ul id="othersList" class="others-list" data-testid="others-list"></ul>
-      </details>
-
-      <ul id="mutedList" class="muted-list" aria-label="Muted tabs" data-i18n-aria="mutedTabs" data-testid="muted-list" hidden></ul>
+      </div>
+      <p id="othersEmpty" class="sub-empty" data-i18n="noOthers">No other tab is playing audio.</p>
+      <div id="mutedBox" class="others" hidden>
+        <h3 data-i18n="mutedTabs">Muted tabs</h3>
+        <ul id="mutedList" class="muted-list" aria-label="Muted tabs" data-i18n-aria="mutedTabs" data-testid="muted-list"></ul>
+      </div>
+      <p id="othersNotice" class="notice" role="status" aria-live="polite" data-testid="others-notice" hidden></p>
     </section>
 
     <section id="blocked" class="blocked glass" data-testid="unreachable" hidden>

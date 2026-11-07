@@ -76,9 +76,6 @@
   "muteOthers": {
     "message": "Diğer sekmeleri sessize al"
   },
-  "othersPlaying": {
-    "message": "Ses çalan diğer sekmeler"
-  },
   "mutedTabs": {
     "message": "Sessize alınan sekmeler"
   },
@@ -621,5 +618,14 @@
         "content": "$1"
       }
     }
+  },
+  "back": {
+    "message": "Geri"
+  },
+  "otherTabs": {
+    "message": "Diğer sekmeler"
+  },
+  "playingNow": {
+    "message": "Şu an çalan"
   }
 }
