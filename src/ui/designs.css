@@ -356,7 +356,7 @@
 [data-design="pill"] .knob-n { font: 800 25cqi/1 "Plus Jakarta Sans", sans-serif; letter-spacing: -0.05em; }
 [data-design="pill"] .knob-pct { font-size: 30px; margin-left: 4px; letter-spacing: 0; }
 [data-design="pill"] .knob-lin { left: 22px; right: 22px; bottom: 22px; height: 64px; border-radius: 32px; background: #e8ecf8; overflow: hidden; }
-[data-design="pill"] .knob-lin-fill { inset: 0 auto 0 0; width: calc(32px + var(--v) * (100% - 64px)); background: var(--k-accent); border-radius: 32px; }
+[data-design="pill"] .knob-lin-fill { inset: 6px auto 6px 6px; width: calc(52px + var(--v) * (100% - 64px)); background: var(--k-accent); border-radius: 32px; }
 [data-design="pill"] .knob-lin-thumb { left: calc(6px + var(--v) * (100% - 64px)); top: 6px; width: 52px; height: 52px; border-radius: 50%; background: #fff; box-shadow: 0 4px 12px rgb(18 23 43 / 0.3); }
 
 /* ---------- boost colour per design (the light-theme default mixes in blue and clashes with every palette) ---------- */
