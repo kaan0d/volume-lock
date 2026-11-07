@@ -32,7 +32,7 @@ const patternOf = (id: string) => {
 
 // ---------- nav ----------
 
-const SECTIONS = ['sites', 'general'];
+const SECTIONS = ['sites', 'general', 'appearance'];
 function route() {
   const s = SECTIONS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'sites';
   for (const id of SECTIONS) {
@@ -41,6 +41,7 @@ function route() {
     if (id === s) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   }
+  if (s === 'appearance') queueMicrotask(paintPreviews); // twelve popups load only when this page is open (microtask: the grid is built later in this module)
 }
 addEventListener('hashchange', route);
 route();
@@ -268,21 +269,42 @@ async function paintLocal() {
 
 // ---------- appearance ----------
 
-$<HTMLSelectElement>('themeSel').addEventListener('change', (e) => void setTheme((e.target as HTMLSelectElement).value as 'system' | 'light' | 'dark'));
+$<HTMLSelectElement>('themeSel').addEventListener('change', (e) => void setTheme((e.target as HTMLSelectElement).value as 'system' | 'light' | 'dark').then(paintPreviews));
 
 const vizToggle = $<HTMLInputElement>('vizToggle');
 vizToggle.addEventListener('change', () => void chrome.storage.local.set({ visualizer: vizToggle.checked }));
 
 const designGrid = $('designGrid');
 for (const d of DESIGNS) {
-  const b = document.createElement('button');
-  b.type = 'button';
+  const b = document.createElement('div');
   b.className = 'design';
   b.dataset.design = d.id;
   b.setAttribute('role', 'radio');
-  b.innerHTML = `<span class="swatch" style="--bg:${d.swatch[0]};--ac:${d.swatch[1]}"><i></i><i></i></span><span class="nm">${d.name}</span>`;
+  b.setAttribute('aria-label', d.name);
+  // the real popup in this design, scaled down (a preview page that sends nothing and reads no tab)
+  b.innerHTML = `<span class="shot"><iframe tabindex="-1" aria-hidden="true" loading="lazy" title=""></iframe></span><span class="nm">${d.name}</span>`;
   b.addEventListener('click', () => void setDesign(d.id).then(paintDesigns));
+  b.addEventListener('keydown', (e) => {
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (e.key === ' ' || e.key === 'Enter') (e.preventDefault(), b.click());
+    else if (step) {
+      e.preventDefault();
+      const all = [...designGrid.children] as HTMLElement[];
+      const next = all[(all.indexOf(b) + step + all.length) % all.length];
+      next.click();
+      next.focus();
+    }
+  });
   designGrid.append(b);
+}
+/** Previews follow the theme (Aurora Glass does); the others keep their own colors. */
+function paintPreviews() {
+  const theme = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+  for (const b of designGrid.children as Iterable<HTMLElement>) {
+    const f = b.querySelector('iframe')!;
+    const src = `../popup/popup.html?preview=${b.dataset.design}&theme=${theme}`;
+    if (f.getAttribute('src') !== src) f.setAttribute('src', src);
+  }
 }
 async function paintDesigns() {
   const now = await getDesign();

@@ -627,5 +627,14 @@
   },
   "playingNow": {
     "message": "Playing now"
+  },
+  "navAppearance": {
+    "message": "Appearance"
+  },
+  "heroLookA": {
+    "message": "Your volume,"
+  },
+  "heroLookB": {
+    "message": "your look."
   }
 }

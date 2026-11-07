@@ -627,5 +627,14 @@
   },
   "playingNow": {
     "message": "Şu an çalan"
+  },
+  "navAppearance": {
+    "message": "Görünüm"
+  },
+  "heroLookA": {
+    "message": "Senin sesin,"
+  },
+  "heroLookB": {
+    "message": "senin görünümün."
   }
 }

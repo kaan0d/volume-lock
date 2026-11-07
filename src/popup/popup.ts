@@ -5,7 +5,7 @@ import * as storage from '../lib/storage';
 import '../ui/tokens.css';
 import '../ui/base.css';
 import './popup.css';
-import { initTheme } from '../ui/theme';
+import { initTheme, isPreview } from '../ui/theme';
 import { createKnob } from '../ui/knob';
 import '../ui/designs.css';
 import { connectAudio } from './capture';
@@ -383,6 +383,14 @@ async function findTab(): Promise<chrome.tabs.Tab | undefined> {
 }
 
 void (async () => {
+  if (isPreview) {
+    // a picture of the popup for the settings page: a sample saved site, nothing is read or sent
+    settings = { ...emptySettings(), sites: { 'https://example.com': 65 } };
+    origin = 'https://example.com';
+    reachable = true;
+    volume = 65;
+    return paint();
+  }
   settings = await storage.loadSettings();
   [quiet, warnAbove] = await Promise.all([storage.loadQuiet(), storage.loadWarnAbove()]);
   const tab = await findTab();
