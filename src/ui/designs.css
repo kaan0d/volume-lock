@@ -90,6 +90,7 @@
 [data-design="rams"] .site-origin { font: 600 15px "Barlow Condensed", sans-serif; letter-spacing: 0.14em; text-transform: uppercase; }
 [data-design="rams"] .pill { background: none; border: 0; color: #b8470d; font-family: "Barlow Condensed", sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
 [data-design="rams"] .knob-ring { display: none; }
+[data-design="rams"] .knob:focus-visible::after { inset: -4px; }
 [data-design="rams"] .knob-press { inset: 0; }
 [data-design="rams"] .knob-body { background: #f5f4ef; border: 1.5px solid #222; box-shadow: none; backdrop-filter: none; }
 [data-design="rams"] .knob-body::before {
@@ -97,7 +98,7 @@
   mask: radial-gradient(circle closest-side, transparent 80%, #000 81%, #000 99%, transparent 100%), conic-gradient(from 137deg, transparent 0 86deg, #000 86deg);
   mask-composite: intersect;
 }
-[data-design="rams"] .knob-dot { top: 12%; width: 1.4%; height: 38%; aspect-ratio: auto; border-radius: 2px; background: #f26a1b; box-shadow: none; }
+[data-design="rams"] .knob-dot { top: 26%; width: 1.4%; height: 24%; aspect-ratio: auto; border-radius: 2px; background: #f26a1b; box-shadow: none; }
 [data-design="rams"] .knob-dial::after { content: ""; position: absolute; left: 50%; top: 50%; width: 7%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: #222; }
 [data-design="rams"] .knob-num { align-items: flex-end; padding-bottom: 20%; }
 [data-design="rams"] .knob-n { font-size: 11cqi; font-weight: 700; }
