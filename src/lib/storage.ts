@@ -78,6 +78,11 @@ export const loadQuiet = async () => cleanQuiet((await chrome.storage.local.get(
 export const loadWarnAbove = async () => cleanWarnAbove((await chrome.storage.local.get('warnAbove')).warnAbove);
 export const setQuiet = (q: Quiet) => chrome.storage.local.set({ quiet: q });
 export const setWarnAbove = (n: number) => chrome.storage.local.set({ warnAbove: n });
+
+/** What "Unmute other tabs" opens: every muted tab (default) or only the ones the extension muted. */
+export type UnmuteScope = 'all' | 'ours';
+export const loadUnmuteScope = async (): Promise<UnmuteScope> => ((await chrome.storage.local.get('unmuteScope')).unmuteScope === 'ours' ? 'ours' : 'all');
+export const setUnmuteScope = (v: UnmuteScope) => chrome.storage.local.set({ unmuteScope: v });
 /** The quiet level while quiet hours apply right now, else null. */
 export const quietLevel = (q: Quiet) => (quietActive(q, new Date()) ? q.level : null);
 /** Calls cb when the quiet or warn setting changes. */

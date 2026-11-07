@@ -474,12 +474,6 @@
   "themeDark": {
     "message": "Dark"
   },
-  "vizLabel": {
-    "message": "Live level ring in the popup"
-  },
-  "vizHint": {
-    "message": "Shows the sound of the tab as moving bars. It captures the tab, so the sound cuts for a moment when the popup opens."
-  },
   "popupDesign": {
     "message": "Popup design"
   },
@@ -673,5 +667,17 @@
         "content": "$1"
       }
     }
+  },
+  "unmuteScope": {
+    "message": "Unmute other tabs opens"
+  },
+  "unmuteAll": {
+    "message": "Every muted tab"
+  },
+  "unmuteOurs": {
+    "message": "Only tabs muted here"
+  },
+  "unmuteHint": {
+    "message": "Applies to the button on the Other tabs page. \"Only tabs muted here\" leaves tabs you muted yourself alone."
   }
 }

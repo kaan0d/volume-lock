@@ -8,7 +8,7 @@ import './popup.css';
 import { initTheme, isPreview } from '../ui/theme';
 import { createKnob } from '../ui/knob';
 import '../ui/designs.css';
-import { connectAudio } from './capture';
+import { startCapture } from './capture';
 import { applyI18n, initLang, presetName, t as tr } from '../lib/i18n';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -236,16 +236,26 @@ muteBtn.addEventListener('click', async () => {
 const otherTabs = async (info: chrome.tabs.QueryInfo) => (await chrome.tabs.query(info)).filter((t) => t.id !== undefined && t.id !== tabId);
 /** One button both ways: "Unmute other tabs" once every playing tab is muted and some tab is muted, else "Mute other tabs". */
 async function othersMode(): Promise<'mute' | 'unmute'> {
-  const [playing, muted] = await Promise.all([otherTabs({ audible: true }), otherTabs({ muted: true })]);
+  const [playing, muted] = await Promise.all([otherTabs({ audible: true }), mutedToOpen()]);
   return muted.length > 0 && playing.every((t) => t.mutedInfo?.muted) ? 'unmute' : 'mute';
+}
+/** Tabs the Unmute button opens: every muted tab, or (setting) only those this button muted, remembered in session storage. */
+async function mutedToOpen() {
+  const muted = await otherTabs({ muted: true });
+  if ((await storage.loadUnmuteScope()) === 'all') return muted;
+  const ours = ((await chrome.storage.session.get('mutedByUs')).mutedByUs as number[] | undefined) ?? [];
+  return muted.filter((t) => ours.includes(t.id!));
 }
 async function paintMuteOthers() {
   $('muteOthersBtn').textContent = tr((await othersMode()) === 'unmute' ? 'unmuteOthers' : 'muteOthers');
 }
 $('muteOthersBtn').addEventListener('click', async () => {
   const unmute = (await othersMode()) === 'unmute';
-  const others = await otherTabs(unmute ? { muted: true } : { audible: true });
+  const others = unmute ? await mutedToOpen() : await otherTabs({ audible: true });
   await Promise.all(others.map((t) => chrome.tabs.update(t.id!, { muted: !unmute })));
+  const ours = ((await chrome.storage.session.get('mutedByUs')).mutedByUs as number[] | undefined) ?? [];
+  const ids = others.map((t) => t.id!);
+  await chrome.storage.session.set({ mutedByUs: unmute ? ours.filter((i) => !ids.includes(i)) : [...new Set([...ours, ...ids])] });
   const msg = $('othersNotice');
   const key = unmute ? ['unmutedOthersMany', 'unmutedOthersOne'] : ['mutedOthersMany', 'mutedOthersOne'];
   msg.textContent = others.length ? tr(key[others.length > 1 ? 0 : 1], others.length) : tr('noOthers');
@@ -430,10 +440,9 @@ void (async () => {
   }
   paint();
   void paintOthers();
-  // The level ring needs tab capture, which cuts the tab's audio for a moment when it starts: opt-in (settings), off by default.
-  const viz = new URLSearchParams(location.search).has('vizTest') || (await chrome.storage.local.get('visualizer')).visualizer === true;
+  // Media that only tab capture can boost: capture it once the level is above 100 (the warning in the popup says so).
   if (reachable) {
-    if (viz) connectAudio(tabId!, (levels) => (levels.length ? knob.setLevels(levels) : knob.setIdle()));
+    if ((lastState as StateReply | null)?.needsCapture && volume > 100) void startCapture(tabId!);
   } else showBlocked();
   void firstRun();
   storage.onLocalChanged(() => void Promise.all([storage.loadQuiet(), storage.loadWarnAbove()]).then(([q, w]) => ([quiet, warnAbove] = [q, w], paint())));

@@ -258,6 +258,7 @@ const quietIds = ['quietOn', 'quietFrom', 'quietTo', 'quietLevel'];
 const saveQuiet = () =>
   void storage.setQuiet(cleanQuiet({ on: input('quietOn').checked, from: input('quietFrom').value, to: input('quietTo').value, level: input('quietLevel').valueAsNumber }));
 for (const id of quietIds) input(id).addEventListener('change', saveQuiet);
+$<HTMLSelectElement>('unmuteScope').addEventListener('change', (e) => void storage.setUnmuteScope((e.target as HTMLSelectElement).value as 'all' | 'ours'));
 input('warnAbove').addEventListener('change', () => void storage.setWarnAbove(cleanWarnAbove(input('warnAbove').valueAsNumber)).then(paintLocal));
 async function paintLocal() {
   const q = await storage.loadQuiet();
@@ -272,8 +273,6 @@ async function paintLocal() {
 
 $<HTMLSelectElement>('themeSel').addEventListener('change', (e) => void setTheme((e.target as HTMLSelectElement).value as 'system' | 'light' | 'dark').then(paintPreviews));
 
-const vizToggle = $<HTMLInputElement>('vizToggle');
-vizToggle.addEventListener('change', () => void chrome.storage.local.set({ visualizer: vizToggle.checked }));
 
 const designGrid = $('designGrid');
 for (const d of DESIGNS) {
@@ -341,7 +340,7 @@ void (async () => {
   await initTheme();
   $<HTMLSelectElement>('themeSel').value = await getTheme();
   await paintDesigns();
-  vizToggle.checked = (await chrome.storage.local.get('visualizer')).visualizer === true;
+  $<HTMLSelectElement>('unmuteScope').value = await storage.loadUnmuteScope();
   // listening first: a change made while the settings load must not be lost
   storage.onSettingsChanged((s) => {
     settings = s;

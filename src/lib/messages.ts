@@ -27,24 +27,22 @@ export type ResetTab = { type: 'reset-tab'; tabId: number };
 /** background -> offscreen: stop the tab's capture (tab closed or changed origin). */
 export type CaptureStop = { type: 'capture-stop'; tabId: number };
 
-// ---------- visualizer ----------
+// ---------- capture fallback ----------
 
-/** popup -> background: make sure the offscreen document exists; replies once it is ready. */
-export type VizStart = { type: 'viz-start'; tabId?: number };
+/** popup -> background: a tab with media only capture can boost is open; make sure the offscreen document exists. */
+export type CaptureOpen = { type: 'capture-open'; tabId?: number };
 /**
- * false: no offscreen document. `attach`: the tab is already captured, join it instead of capturing.
+ * false: nothing to do (the tab does not need capture). `attach`: the tab is already captured, nothing to start.
  * `gain`: start the capture as an override (tab output replaced by the stream at this gain, survives the popup).
- * `gen`: counts viz-starts; a stop from an older one can't close the document a newer one uses.
+ * `gen`: counts opens; a close from an older one can't close the document a newer one uses.
  */
-export type VizStartReply = false | { attach: boolean; gain?: number; gen: number };
+export type CaptureOpenReply = false | { attach: boolean; gain?: number; gen: number };
 /** offscreen -> background: a capture ended; `remaining` 0 closes the document. Also popup -> background when no port was opened. */
-export type VizStopped = { type: 'viz-stopped'; tabId?: number; remaining?: number; gen?: number };
+export type CaptureClosed = { type: 'capture-closed'; tabId?: number; remaining?: number; gen?: number };
 /** Port name for popup <-> offscreen. */
-export const VIZ_PORT = 'viz';
+export const CAPTURE_PORT = 'capture';
 /**
- * popup -> offscreen, first port message: capture this stream id, `oscillator` (test-only synthetic
- * source), or `attach` to a running capture of `tabId`. With `gain` the capture is an override.
+ * popup -> offscreen, first port message: capture this stream id, or `oscillator` (test-only synthetic
+ * source), as an override at `gain`. The offscreen document answers 'started'.
  */
-export type VizCapture = ({ streamId: string } | { oscillator: true } | { attach: true }) & { tabId?: number; gain?: number; gen?: number };
-/** offscreen -> popup, ~30 fps: one level per bar, 0..255. */
-export type VizLevels = number[];
+export type CaptureRequest = ({ streamId: string } | { oscillator: true }) & { tabId?: number; gain?: number; gen?: number };

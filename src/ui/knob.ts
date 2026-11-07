@@ -1,4 +1,4 @@
-// Rotary volume knob with a 24-bar visualizer ring.
+// Rotary volume knob with a ring of 24 static ticks.
 import './knob.css';
 import { t } from '../lib/i18n';
 
@@ -14,8 +14,6 @@ type KnobOptions = {
 export type Knob = {
   setValue(v: number, animate?: boolean): void;
   setMax(max: number): void;
-  setLevels(levels: number[]): void;
-  setIdle(): void;
   setDisabled(d: boolean): void;
   refresh(): void;
   destroy(): void;
@@ -88,7 +86,7 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   const cols = Array.from({ length: BARS }, (_, i) => {
     const c = document.createElement('i');
     c.style.setProperty('--p', String((i + 0.5) / BARS));
-    c.style.setProperty('--b', String(0.18 + 0.4 * Math.abs(Math.sin(i * 0.7)))); // resting profile when no audio is captured
+    c.style.setProperty('--b', String(0.18 + 0.4 * Math.abs(Math.sin(i * 0.7)))); // fixed profile of the wall bars
     wall.append(c);
     return c;
   });
@@ -147,23 +145,14 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   }
   readDesign();
 
-  // ---------- levels ----------
-  const target = new Float32Array(BARS);
-  const level = new Float32Array(BARS);
-  let barsDirty = true;
-
-  function drawBars() {
-    if (wallOn) {
-      cols.forEach((c, i) => c.style.setProperty('--l', (level[i] / 255).toFixed(3)));
-    }
-    for (let i = 0; i < BARS; i++) {
-      const [x, y] = polar((i * 360) / BARS, BAR_IN + BAR_MIN + (level[i] / 255) * (BAR_MAX - BAR_MIN));
-      bars[i].setAttribute('x2', x.toFixed(2));
-      bars[i].setAttribute('y2', y.toFixed(2));
-    }
+  // ---------- ticks: drawn once, short and still ----------
+  for (let i = 0; i < BARS; i++) {
+    const [x, y] = polar((i * 360) / BARS, BAR_IN + BAR_MIN);
+    bars[i].setAttribute('x2', x.toFixed(2));
+    bars[i].setAttribute('y2', y.toFixed(2));
   }
 
-  // ---------- animation loop: value spring + bar smoothing, sleeps when settled ----------
+  // ---------- animation loop: value spring, sleeps when settled ----------
   let raf = 0;
   let last = 0;
   function frame(now: number) {
@@ -180,22 +169,6 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
         velocity = 0;
       } else busy = true;
       drawValue();
-    }
-    if (barsDirty) {
-      barsDirty = false;
-      const instant = reduced();
-      const k = instant ? 1 : 1 - Math.exp(-dt * 18); // attack
-      const r = instant ? 1 : 1 - Math.exp(-dt * 7); // release
-      for (let i = 0; i < BARS; i++) {
-        const d = target[i] - level[i];
-        if (Math.abs(d) < 0.5) level[i] = target[i];
-        else {
-          level[i] += d * (d > 0 ? k : r);
-          barsDirty = true;
-        }
-      }
-      drawBars();
-      busy ||= barsDirty;
     }
     if (busy) schedule();
     else last = 0;
@@ -313,12 +286,9 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
 
   // ---------- init ----------
   show(false);
-  drawBars();
   const onDesign = () => {
     readDesign();
     show(false);
-    barsDirty = true;
-    schedule();
   };
   window.addEventListener('designchange', onDesign);
 
@@ -332,17 +302,6 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
       max = m;
       value = clamp(value, 0, max);
       show(false);
-    },
-    setLevels(levels) {
-      if (reduced()) return; // static ring
-      for (let i = 0; i < BARS; i++) target[i] = clamp(levels[i] ?? 0, 0, 255);
-      barsDirty = true;
-      schedule();
-    },
-    setIdle() {
-      target.fill(0);
-      barsDirty = true;
-      schedule();
     },
     setDisabled(d) {
       disabled = d;

@@ -474,12 +474,6 @@
   "themeDark": {
     "message": "Koyu"
   },
-  "vizLabel": {
-    "message": "Açılır pencerede canlı seviye halkası"
-  },
-  "vizHint": {
-    "message": "Sekmenin sesini hareketli çubuklar olarak gösterir. Sekmeyi yakaladığı için pencere açılırken ses bir an kesilir."
-  },
   "popupDesign": {
     "message": "Açılır pencere tasarımı"
   },
@@ -673,5 +667,17 @@
         "content": "$1"
       }
     }
+  },
+  "unmuteScope": {
+    "message": "Diğer sekmeleri aç düğmesi"
+  },
+  "unmuteAll": {
+    "message": "Sessize alınan her sekme"
+  },
+  "unmuteOurs": {
+    "message": "Yalnızca burada sessize alınanlar"
+  },
+  "unmuteHint": {
+    "message": "Diğer sekmeler sayfasındaki düğme için geçerli. \"Yalnızca burada sessize alınanlar\" seçeneği kendi elinizle sessize aldığınız sekmelere dokunmaz."
   }
 }

@@ -11,9 +11,9 @@ import type {
   ResetTab,
   SetVolume,
   StateReply,
-  VizStart,
-  VizStartReply,
-  VizStopped,
+  CaptureOpen,
+  CaptureOpenReply,
+  CaptureClosed,
 } from './lib/messages';
 import * as storage from './lib/storage';
 
@@ -101,7 +101,7 @@ chrome.commands.onCommand.addListener((name) => void enqueue(name));
 // exposed so Playwright can trigger commands (it cannot press extension shortcuts)
 (globalThis as unknown as { svsCommands: { run: typeof enqueue } }).svsCommands = { run: enqueue };
 
-// ---------- offscreen document: visualizer and capture fallback ----------
+// ---------- offscreen document: capture fallback ----------
 
 const OFFSCREEN = 'offscreen/offscreen.html';
 
@@ -117,7 +117,7 @@ const createOffscreen = () =>
   chrome.offscreen.createDocument({
     url: OFFSCREEN,
     reasons: [chrome.offscreen.Reason.USER_MEDIA],
-    justification: 'Plays captured tab audio back, with gain when boosting media the page itself cannot, and measures its levels for the popup visualizer.',
+    justification: 'Plays captured tab audio back, with gain when boosting media the page itself cannot.',
   });
 
 /** Tab id -> origin, in session storage so it survives a service worker restart. */
@@ -142,20 +142,20 @@ async function setCaptured(tabId: number, origin: string | null) {
  * A captured tab is joined, not captured again. Otherwise a fresh document ends any leftover capture,
  * so getMediaStreamId cannot fail on it, unless override captures of other tabs must keep running.
  */
-async function vizStart(tabId: number | undefined): Promise<VizStartReply> {
+async function openCapture(tabId: number | undefined): Promise<CaptureOpenReply> {
   const gen = (((await chrome.storage.session.get('gen')).gen as number | undefined) ?? 0) + 1;
   await chrome.storage.session.set({ gen });
   if (!(await hasOffscreen())) await closeOffscreen(); // forget captures of a document that is gone
   else if (tabId !== undefined && (await getTabs('captured'))[tabId]) return { attach: true, gen };
+  if (tabId === undefined || !(await getTabs('needy'))[tabId]) return false; // nothing here that only capture can boost
   if (!Object.keys(await getTabs('captured')).length) {
     await closeOffscreen();
     await createOffscreen();
   }
-  if (tabId === undefined || !(await getTabs('needy'))[tabId]) return { attach: false, gen };
   return { attach: false, gain: gainFor((await getState(tabId))?.volume ?? null), gen };
 }
 
-async function vizStopped({ tabId, remaining, gen }: VizStopped) {
+async function closeCapture({ tabId, remaining, gen }: CaptureClosed) {
   if (tabId !== undefined) await setCaptured(tabId, null);
   if (gen !== undefined && gen !== (await chrome.storage.session.get('gen')).gen) return; // a newer start owns the document
   if (remaining === 0 || (remaining === undefined && !Object.keys(await getTabs('captured')).length)) await closeOffscreen();
@@ -171,7 +171,7 @@ async function forgetTab(tabId: number, origin: string | null) {
   const captured = (await getTabs('captured'))[tabId];
   if (captured && captured !== origin) {
     const stop: CaptureStop = { type: 'capture-stop', tabId };
-    const stopped = await chrome.runtime.sendMessage<CaptureStop, boolean>(stop).catch(() => false); // then viz-stopped follows
+    const stopped = await chrome.runtime.sendMessage<CaptureStop, boolean>(stop).catch(() => false); // then capture-closed follows
     if (!stopped) await setCaptured(tabId, null);
   }
 }
@@ -196,16 +196,16 @@ const serial = <T>(job: () => Promise<T>): Promise<T> => {
   return run;
 };
 
-type CaptureMsg = VizStart | VizStopped | CaptureStarted | NeedsCapture | LevelChanged | ResetTab;
+type CaptureMsg = CaptureOpen | CaptureClosed | CaptureStarted | NeedsCapture | LevelChanged | ResetTab;
 
 chrome.runtime.onMessage.addListener((msg: CaptureMsg, sender, reply) => {
   const tabId = sender.tab?.id;
   switch (msg?.type) {
-    case 'viz-start':
-      serial(() => vizStart(msg.tabId)).then(reply, () => reply(false));
+    case 'capture-open':
+      serial(() => openCapture(msg.tabId)).then(reply, () => reply(false));
       return true;
-    case 'viz-stopped':
-      void serial(() => vizStopped(msg));
+    case 'capture-closed':
+      void serial(() => closeCapture(msg));
       break;
     case 'capture-started':
       void serial(async () => setCaptured(msg.tabId, originOf((await chrome.tabs.get(msg.tabId).catch(() => null))?.url) ?? ''));

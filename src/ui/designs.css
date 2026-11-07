@@ -340,7 +340,7 @@
 [data-design="spectrum"] .knob-pct { font-size: 22px; color: #b99aa6; margin-left: 2px; }
 [data-design="spectrum"] .knob-wall { display: flex; align-items: flex-end; gap: 5px; position: absolute; left: 18px; right: 18px; bottom: 18px; height: 150px; }
 [data-design="spectrum"] .knob-wall i {
-  flex: 1; border-radius: 3px; height: calc(max(var(--b), var(--l, 0)) * 100%); transition: height 80ms linear;
+  flex: 1; border-radius: 3px; height: calc(var(--b) * 100%); transition: height 80ms linear;
   --f: calc(clamp(0, (var(--v) - var(--p)) * 24 + 0.5, 1) * 100%);
   background: linear-gradient(90deg, var(--accent) var(--f), #3a2a3a var(--f));
 }
