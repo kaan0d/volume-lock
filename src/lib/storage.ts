@@ -1,5 +1,6 @@
 // The only file that touches chrome.*; one sync key per site keeps every item far below the 8 KB cap.
 import { cleanBoostMax, cleanFx, cleanQuiet, cleanWarnAbove, clampVolume, emptySettings, quietActive, type Fx, type Quiet, type Settings } from './rules';
+import { t } from './i18n';
 
 const SITE = 'site:';
 const sync = () => chrome.storage.sync;
@@ -71,7 +72,7 @@ export async function migrateLegacy(): Promise<void> {
 /** Message for the UI: Chrome's raw sync quota errors become plain language. */
 export function friendly(e: unknown): string {
   const m = e instanceof Error ? e.message : String(e);
-  return /quota|kMaxItems|MAX_/i.test(m) ? 'Too many saves or saved sites, try again in a minute. Chrome sync allows 512 items.' : m;
+  return /quota|kMaxItems|MAX_/i.test(m) ? t('errQuota') : m;
 }
 
 // Device-local: these never sync.

@@ -4,6 +4,7 @@ import * as storage from '../lib/storage';
 import { exportSettings, parseImport } from '../lib/transfer';
 import { getDesign, getTheme, initTheme, setDesign, setTheme } from '../ui/theme';
 import { DESIGNS } from '../ui/designs';
+import { applyI18n, presetName, t } from '../lib/i18n';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const input = (id: string) => $<HTMLInputElement>(id);
@@ -17,9 +18,12 @@ function el(tag: string, props: Record<string, unknown> = {}, ...kids: Node[]): 
   return e;
 }
 
+applyI18n();
+document.querySelectorAll<HTMLElement>('.list').forEach((l) => (l.dataset.empty = t('noneYet')));
+
 let settings: Settings = emptySettings();
 const max = () => maxVolume(settings.boostEnabled, settings.boostMax);
-const BAD_PATTERN = 'Enter an origin like https://example.com or a wildcard like *.example.com.';
+const BAD_PATTERN = t('badPattern');
 
 // ---------- nav ----------
 
@@ -60,8 +64,8 @@ function levelInput(label: string, value: number, onCommit: (v: number) => void)
 }
 
 function removeBtn(pattern: string, onDelete: () => void) {
-  const b = el('button', { type: 'button', className: 'del', title: 'Remove', textContent: '×' });
-  b.setAttribute('aria-label', `Remove ${pattern}`);
+  const b = el('button', { type: 'button', className: 'del', title: t('remove'), textContent: '×' });
+  b.setAttribute('aria-label', t('removeAria', pattern));
   b.addEventListener('click', onDelete);
   return b;
 }
@@ -82,15 +86,13 @@ function renderSites() {
       el(
         'tr', {},
         el('td', { className: 'site', textContent: displayOrigin(p), title: p }),
-        el('td', { className: 'type', textContent: isWildcard(p) ? 'Site and subdomains' : 'Exact' }),
-        el('td', {}, levelInput(`Level for ${p}`, v, (n) => storage.saveSite(p, n))),
+        el('td', { className: 'type', textContent: t(isWildcard(p) ? 'typeWildcard' : 'typeExact') }),
+        el('td', {}, levelInput(t('levelFor', p), v, (n) => storage.saveSite(p, n))),
         el('td', {}, removeBtn(p, () => storage.removeSite(p))),
       ),
     ),
   );
-  $('emptyState').textContent = all.length
-    ? 'No matching sites.'
-    : 'No sites saved yet. Open a page, set a level in the popup and press Save, or add a site below.';
+  $('emptyState').textContent = t(all.length ? 'noMatch' : 'noSites');
   $('emptyState').classList.toggle('hidden', shown.length > 0);
 }
 input('search').addEventListener('input', renderSites);
@@ -100,13 +102,13 @@ $('addForm').addEventListener('submit', async (e) => {
   const pattern = input('addPattern').value.trim().toLowerCase();
   const level = input('addLevel').valueAsNumber;
   if (!isValidPattern(pattern)) return show('addError', BAD_PATTERN);
-  if (!Number.isInteger(level) || level < 0 || level > max()) return show('addError', `Level must be a whole number from 0 to ${max()}.`);
+  if (!Number.isInteger(level) || level < 0 || level > max()) return show('addError', t('levelRange', max()));
   show('addError', '');
   try {
     await storage.saveSite(pattern, level);
     input('addPattern').value = '';
   } catch (err) {
-    show('addError', `Save failed: ${storage.friendly(err)}`);
+    show('addError', t('saveFailed', storage.friendly(err)));
   }
 });
 
@@ -157,7 +159,7 @@ function renderAudio() {
   input('defaultLevel').disabled = settings.defaultVolume === null;
   if (document.activeElement !== input('defaultLevel') && settings.defaultVolume !== null) input('defaultLevel').value = String(settings.defaultVolume);
   const over = Object.values(settings.sites).filter((v) => v > 100).length + ((settings.defaultVolume ?? 0) > 100 ? 1 : 0);
-  show('boostNote', !settings.boostEnabled && over ? `${over} stored level${over > 1 ? 's are' : ' is'} above 100% and play at 100% while boost is off. They are kept as they are.` : '');
+  show('boostNote', !settings.boostEnabled && over ? t(over > 1 ? 'boostNoteMany' : 'boostNoteOne', over) : '');
 }
 
 const saveDefault = () => {
@@ -172,12 +174,12 @@ $<HTMLSelectElement>('boostMax').addEventListener('change', (e) => storage.setBo
 // ---------- sound ----------
 
 const eqSelect = $<HTMLSelectElement>('eqPreset');
-eqSelect.replaceChildren(...[...Object.keys(EQ_PRESETS), 'Custom'].map((n) => el('option', { value: n, textContent: n })));
+eqSelect.replaceChildren(...[...Object.keys(EQ_PRESETS), 'Custom'].map((n) => el('option', { value: n, textContent: presetName(n) })));
 const bandLabel = (f: number) => (f >= 1000 ? (f / 1000) + ' kHz' : f + ' Hz');
 const dB = (v: number) => (v > 0 ? '+' : '') + v + ' dB';
 const eqRows = EQ_BANDS.map((f) => {
   const slider = el('input', { type: 'range', min: String(-EQ_LIMIT), max: String(EQ_LIMIT), step: '1', value: '0' }) as HTMLInputElement;
-  slider.setAttribute('aria-label', 'EQ ' + bandLabel(f));
+  slider.setAttribute('aria-label', t('eqBandAria', bandLabel(f)));
   const out = el('output', {});
   slider.addEventListener('input', () => (out.textContent = dB(slider.valueAsNumber)));
   slider.addEventListener('change', () => storage.setFx({ ...settings.fx, eq: eqRows.map((r) => r.slider.valueAsNumber) }));
@@ -190,7 +192,7 @@ eqSelect.addEventListener('change', () => {
 });
 input('fxLeveler').addEventListener('change', () => storage.setFx({ ...settings.fx, leveler: input('fxLeveler').checked }));
 input('fxMono').addEventListener('change', () => storage.setFx({ ...settings.fx, mono: input('fxMono').checked }));
-const balanceText = (v: number) => (v === 0 ? 'Centre' : v < 0 ? 'L ' + -v : 'R ' + v);
+const balanceText = (v: number) => (v === 0 ? t('balanceCentre') : v < 0 ? t('balanceLeft', -v) : t('balanceRight', v));
 input('fxBalance').addEventListener('input', () => ($('fxBalanceOut').textContent = balanceText(input('fxBalance').valueAsNumber)));
 input('fxBalance').addEventListener('change', () => storage.setFx({ ...settings.fx, balance: input('fxBalance').valueAsNumber }));
 
@@ -237,7 +239,7 @@ let imported: Settings | null = null;
 const showImport = inlineConfirm('importBtn', 'importConfirm', 'importYes', 'importNo', async () => {
   const s = imported;
   imported = null;
-  if (s) await storage.replaceSettings(s).catch((e: Error) => show('backupError', `Import failed: ${storage.friendly(e)}`));
+  if (s) await storage.replaceSettings(s).catch((e: Error) => show('backupError', t('importFailed', storage.friendly(e))));
 });
 // the confirm row only appears once a valid file was picked
 $('importBtn').addEventListener('click', () => input('importFile').click());
@@ -252,7 +254,7 @@ input('importFile').addEventListener('change', async () => {
     showImport(true);
   } catch (e) {
     imported = null;
-    show('backupError', `Import failed: ${storage.friendly(e)}`);
+    show('backupError', t('importFailed', storage.friendly(e)));
   }
 });
 

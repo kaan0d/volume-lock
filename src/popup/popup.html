@@ -16,35 +16,35 @@
         <span id="sourcePill" class="pill" data-testid="source-pill"></span>
       </div>
       <div class="menu-wrap">
-        <button id="menuBtn" class="icon-btn" type="button" aria-label="Site options" aria-haspopup="menu" aria-expanded="false" data-testid="site-menu-btn">
+        <button id="menuBtn" class="icon-btn" type="button" aria-label="Site options" data-i18n-aria="siteOptions" aria-haspopup="menu" aria-expanded="false" data-testid="site-menu-btn">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
         </button>
         <div id="menu" class="menu" role="menu" hidden>
           <button id="menuExclude" type="button" role="menuitem" data-testid="menu-exclude"></button>
           <button id="menuUrl" type="button" role="menuitem" data-testid="menu-url"></button>
           <button id="menuAutoplay" type="button" role="menuitem" data-testid="menu-autoplay"></button>
-          <button id="menuReset" type="button" role="menuitem" data-testid="menu-reset">Reload tab and reset audio</button>
-          <button id="menuDefault" type="button" role="menuitem" data-testid="menu-default">Use level for all sites</button>
+          <button id="menuReset" type="button" role="menuitem" data-testid="menu-reset" data-i18n="menuReset">Reload tab and reset audio</button>
+          <button id="menuDefault" type="button" role="menuitem" data-testid="menu-default" data-i18n="menuDefault">Use level for all sites</button>
         </div>
       </div>
-      <button id="gearBtn" class="icon-btn" type="button" aria-label="Open settings" data-testid="gear">
+      <button id="gearBtn" class="icon-btn" type="button" aria-label="Open settings" data-i18n-aria="openSettings" data-testid="gear">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
       </button>
     </header>
 
     <section id="hint" class="hint glass" data-testid="first-run-hint" hidden>
-      <p><strong>Set it once.</strong> Turn the knob, then press Save: this site will always start at that level.</p>
-      <button id="hintClose" class="btn" type="button" data-testid="hint-close">Got it</button>
+      <p><strong data-i18n="hintLead">Set it once.</strong> <span data-i18n="hintBody">Turn the knob, then press Save: this site will always start at that level.</span></p>
+      <button id="hintClose" class="btn" type="button" data-testid="hint-close" data-i18n="gotIt">Got it</button>
     </section>
 
     <section id="controls" class="controls">
       <div id="knobHost" class="knob-host" data-testid="knob"></div>
 
-      <div class="row chips" role="group" aria-label="Presets">
+      <div class="row chips" role="group" aria-label="Presets" data-i18n-aria="presets">
         <button class="chip" type="button" data-preset="25" data-testid="preset-25">25</button>
         <button class="chip" type="button" data-preset="50" data-testid="preset-50">50</button>
         <button class="chip" type="button" data-preset="100" data-testid="preset-100">100</button>
-        <span class="boost">Boost</span>
+        <span class="boost" data-i18n="boost">Boost</span>
         <label class="switch">
           <input id="boost" type="checkbox" role="switch" data-testid="boost-switch" aria-label="Boost up to 200%">
           <span class="track" aria-hidden="true"></span>
@@ -52,34 +52,34 @@
       </div>
 
       <div class="row sound">
-        <select id="eqSel" class="field" aria-label="Equalizer preset" data-testid="eq-select"></select>
-        <button id="nightBtn" class="chip" type="button" aria-pressed="false" data-testid="night-btn" title="Evens out loud and quiet parts">Quiet loud parts</button>
+        <select id="eqSel" class="field" aria-label="Equalizer preset" data-i18n-aria="eqPreset" data-testid="eq-select"></select>
+        <button id="nightBtn" class="chip" type="button" aria-pressed="false" data-testid="night-btn" title="Evens out loud and quiet parts" data-i18n-title="levelerTitle" data-i18n="levelerShort">Quiet loud parts</button>
       </div>
 
-      <button id="saveBtn" class="btn btn-primary save" type="button" aria-pressed="false" data-testid="save-btn">Save</button>
+      <button id="saveBtn" class="btn btn-primary save" type="button" aria-pressed="false" data-testid="save-btn" data-i18n="save">Save</button>
 
       <div class="row two">
-        <button id="muteBtn" class="btn" type="button" aria-pressed="false" data-testid="mute-tab">Mute tab</button>
-        <button id="muteOthersBtn" class="btn" type="button" data-testid="mute-others">Mute other tabs</button>
+        <button id="muteBtn" class="btn" type="button" aria-pressed="false" data-testid="mute-tab" data-i18n="muteTab">Mute tab</button>
+        <button id="muteOthersBtn" class="btn" type="button" data-testid="mute-others" data-i18n="muteOthers">Mute other tabs</button>
       </div>
 
       <details id="others" class="others" data-testid="others" hidden>
-        <summary>Other tabs playing (<span id="othersCount">0</span>)</summary>
+        <summary><span data-i18n="othersPlaying">Other tabs playing</span> (<span id="othersCount">0</span>)</summary>
         <ul id="othersList" class="others-list" data-testid="others-list"></ul>
       </details>
 
-      <ul id="mutedList" class="muted-list" aria-label="Muted tabs" data-testid="muted-list" hidden></ul>
+      <ul id="mutedList" class="muted-list" aria-label="Muted tabs" data-i18n-aria="mutedTabs" data-testid="muted-list" hidden></ul>
     </section>
 
     <section id="blocked" class="blocked glass" data-testid="unreachable" hidden>
       <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4zM22 9l-6 6M16 9l6 6"/></svg>
       <p id="blockedText" class="blocked-text"></p>
-      <button id="reloadBtn" class="btn btn-primary" type="button" data-testid="reload-btn" hidden>Reload tab</button>
+      <button id="reloadBtn" class="btn btn-primary" type="button" data-testid="reload-btn" data-i18n="reloadTab" hidden>Reload tab</button>
     </section>
 
-    <p id="boostHint" class="notice" data-testid="boost-hint" hidden>Click the page once so Chrome allows boost or effects.</p>
-    <p id="loudWarn" class="notice warn" data-testid="loud-warning" hidden>Loud levels can hurt your hearing and damage speakers. Turn it down if it hurts.</p>
-    <p id="captureWarn" class="notice warn" data-testid="capture-warning" hidden>Boost on this site works only through tab capture, and it may break fullscreen.</p>
+    <p id="boostHint" class="notice" data-testid="boost-hint" data-i18n="boostHintText" hidden>Click the page once so Chrome allows boost or effects.</p>
+    <p id="loudWarn" class="notice warn" data-testid="loud-warning" data-i18n="loudWarn" hidden>Loud levels can hurt your hearing and damage speakers. Turn it down if it hurts.</p>
+    <p id="captureWarn" class="notice warn" data-testid="capture-warning" data-i18n="captureWarn" hidden>Boost on this site works only through tab capture, and it may break fullscreen.</p>
     <p id="notice" class="notice" role="status" aria-live="polite" data-testid="notice" hidden></p>
   </main>
   <script type="module" src="./popup.ts"></script>

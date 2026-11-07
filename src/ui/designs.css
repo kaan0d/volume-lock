@@ -131,7 +131,7 @@
 [data-design="noir"] .knob-n { font: 500 34cqi "Cormorant Garamond", serif; color: #f4ead3; }
 [data-design="noir"] .knob-pct { display: none; }
 [data-design="noir"] .knob-n { translate: 0 -7cqi; }
-[data-design="noir"] .knob-num::after { content: "PERCENT"; position: absolute; top: 71%; font-size: 3.4cqi; letter-spacing: 0.4em; color: #8f8467; }
+[data-design="noir"] .knob-num::after { content: attr(data-unit); position: absolute; top: 71%; font-size: 3.4cqi; letter-spacing: 0.4em; color: #8f8467; }
 
 /* ---------- 05 Phosphor Terminal ---------- */
 :root[data-design="phosphor"] {
@@ -352,7 +352,7 @@
 [data-design="pill"] .pill { background: #e3eaff; border: 0; color: #2f55e6; font-weight: 600; padding: 4px 12px; }
 [data-design="pill"] .site-origin { font-weight: 800; font-size: 15px; }
 [data-design="pill"] .knob { --drag-pad: 64; background: #fff; border-radius: 32px; box-shadow: 0 10px 30px rgb(18 23 43 / 0.08); }
-[data-design="pill"] .knob::before { content: "Volume"; position: absolute; left: 22px; top: 22px; font-size: 13px; font-weight: 600; color: #6b7391; }
+[data-design="pill"] .knob::before { content: attr(data-label); position: absolute; left: 22px; top: 22px; font-size: 13px; font-weight: 600; color: #6b7391; }
 [data-design="pill"] .knob-num { align-items: center; padding: 0 22px 64px; }
 [data-design="pill"] .knob-n { font: 800 25cqi/1 "Plus Jakarta Sans", sans-serif; letter-spacing: -0.05em; }
 [data-design="pill"] .knob-pct { font-size: 30px; margin-left: 4px; letter-spacing: 0; }

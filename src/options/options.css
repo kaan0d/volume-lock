@@ -137,7 +137,7 @@ th:last-child, td:last-child { width: 56px; text-align: right; padding-right: 0;
 .empty { padding: 36px 0; font: italic 400 24px/1.3 var(--f-serif); color: var(--text-muted); max-width: 30ch; }
 
 .list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--text); }
-.list:empty::before { content: "None yet."; display: block; padding: 14px 0; color: var(--text-muted); font: italic 400 18px var(--f-serif); border-bottom: 1px solid var(--glass-border); }
+.list:empty::before { content: attr(data-empty); display: block; padding: 14px 0; color: var(--text-muted); font: italic 400 18px var(--f-serif); border-bottom: 1px solid var(--glass-border); }
 .list li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 0; border-bottom: 1px solid var(--glass-border); overflow-wrap: anywhere; font-weight: 600; }
 .list li span { font-family: var(--f-mono); font-size: 13px; }
 

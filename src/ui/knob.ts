@@ -1,5 +1,6 @@
 // Rotary volume knob with a 24-bar visualizer ring.
 import './knob.css';
+import { t } from '../lib/i18n';
 
 type KnobOptions = {
   value: number;
@@ -50,7 +51,7 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   root.className = 'knob';
   root.tabIndex = 0;
   root.setAttribute('role', 'slider');
-  root.setAttribute('aria-label', opts.label ?? 'Volume');
+  root.setAttribute('aria-label', (root.dataset.label = opts.label ?? t('knobLabel'))); // data-label feeds the Pill design's CSS caption
   root.setAttribute('aria-valuemin', '0');
 
   const [sx, sy] = polar(START, TRACK_R);
@@ -77,6 +78,7 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
   const dial = press.querySelector<HTMLElement>('.knob-dial')!;
   const num = press.querySelector<HTMLElement>('.knob-n')!;
   const numBox = press.querySelector<HTMLElement>('.knob-num')!;
+  numBox.dataset.unit = t('percentLabel'); // caption of the Noir design
   // Extra parts for the non-rotary designs (hidden unless designs.css shows them).
   const lin = document.createElement('div');
   lin.className = 'knob-lin';
@@ -121,7 +123,7 @@ export function createKnob(host: HTMLElement, opts: KnobOptions): Knob {
     press.dataset.max = String(max); // scale labels in the dial designs
     numBox.dataset.mid = String(max / 2);
     root.setAttribute('aria-valuenow', String(value));
-    root.setAttribute('aria-valuetext', `${value} percent${value > 100 ? ', boosted' : ''}`);
+    root.setAttribute('aria-valuetext', t(value > 100 ? 'valueTextBoosted' : 'valueText', value));
     const boost = max > 100;
     root.classList.toggle('is-boost', boost);
     const [x1, y1] = polar(angleOf(100), TRACK_R - 8);

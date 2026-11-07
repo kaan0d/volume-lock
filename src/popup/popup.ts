@@ -9,6 +9,7 @@ import { initTheme } from '../ui/theme';
 import { createKnob } from '../ui/knob';
 import '../ui/designs.css';
 import { connectAudio } from './capture';
+import { applyI18n, presetName, t as tr } from '../lib/i18n';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -21,6 +22,7 @@ let warnAbove = 150;
 let quiet = emptyQuiet();
 
 void initTheme();
+applyI18n();
 
 const notice = (text: string, warn = false) => {
   const el = $('notice');
@@ -55,6 +57,9 @@ function showState(state: StateReply) {
   $('captureWarn').hidden = !state.needsCapture;
 }
 
+// tag -> message key; the tag itself stays English because CSS and tests key on it
+const PILL: Record<string, string> = { excluded: 'pillExcluded', saved: 'pillSaved', 'not saved': 'pillNotSaved', wildcard: 'pillWildcard', quiet: 'pillQuiet', default: 'pillDefault' };
+
 const knob = createKnob($('knobHost'), {
   value: 100,
   max: 100,
@@ -69,7 +74,7 @@ const knob = createKnob($('knobHost'), {
     // a saved site follows the knob: the new level is stored once the move settles
     const key = covering();
     void recheckIdle();
-    if (key !== null && reachable && settings.sites[key] !== v) storage.saveSite(key, v).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
+    if (key !== null && reachable && settings.sites[key] !== v) storage.saveSite(key, v).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
   },
 });
 
@@ -85,7 +90,7 @@ for (const b of document.querySelectorAll<HTMLElement>('[data-preset]')) {
 }
 
 $<HTMLInputElement>('boost').addEventListener('change', (e) => {
-  void storage.setBoostEnabled((e.target as HTMLInputElement).checked).catch((err: Error) => notice(`Save failed: ${storage.friendly(err)}`, true));
+  void storage.setBoostEnabled((e.target as HTMLInputElement).checked).catch((err: Error) => notice(tr('saveFailed', storage.friendly(err)), true));
 });
 
 // ---------- paint ----------
@@ -116,20 +121,20 @@ function paintSave() {
   $('loudWarn').hidden = !(warnAbove > 0 && volume > warnAbove);
   const s = saved();
   const btn = $<HTMLButtonElement>('saveBtn');
-  btn.textContent = s ? 'Unsave' : 'Save';
+  btn.textContent = tr(s ? 'unsave' : 'save');
   btn.setAttribute('aria-pressed', String(s));
   btn.classList.toggle('is-saved', s);
   btn.disabled = !reachable || excluded();
 }
 
 const eqSel = $<HTMLSelectElement>('eqSel');
-eqSel.replaceChildren(...[...Object.keys(EQ_PRESETS), 'Custom'].map((n) => Object.assign(document.createElement('option'), { value: n, textContent: n })));
+eqSel.replaceChildren(...[...Object.keys(EQ_PRESETS), 'Custom'].map((n) => Object.assign(document.createElement('option'), { value: n, textContent: presetName(n) })));
 eqSel.addEventListener('change', () => {
   const eq = EQ_PRESETS[eqSel.value];
-  if (eq) void storage.setFx({ ...settings.fx, eq }).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
+  if (eq) void storage.setFx({ ...settings.fx, eq }).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
 });
 $('nightBtn').addEventListener('click', () => {
-  void storage.setFx({ ...settings.fx, leveler: !settings.fx.leveler }).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
+  void storage.setFx({ ...settings.fx, leveler: !settings.fx.leveler }).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
 });
 
 function paintSound() {
@@ -143,25 +148,25 @@ function paintSound() {
 const autoplayBlocked = () => origin !== null && inList(settings.autoplayBlock, origin);
 
 function paintMenu() {
-  $('menuAutoplay').textContent = autoplayBlocked() ? 'Allow autoplay here' : 'Block autoplay here';
+  $('menuAutoplay').textContent = tr(autoplayBlocked() ? 'allowAutoplay' : 'blockAutoplay');
   ($('menuAutoplay') as HTMLButtonElement).disabled = !origin;
-  $('menuUrl').textContent = urlSaved() ? 'Unsave this URL' : 'Save for this URL';
+  $('menuUrl').textContent = tr(urlSaved() ? 'unsaveUrl' : 'saveUrl');
   ($('menuUrl') as HTMLButtonElement).disabled = !origin || !reachable || origin === domainKey(); // same key as the main button
   const ex = origin !== null && settings.excluded.includes(origin);
-  $('menuExclude').textContent = ex ? 'Stop ignoring this site' : 'Never touch this site';
+  $('menuExclude').textContent = tr(ex ? 'stopIgnoring' : 'neverTouchSite');
   ($('menuExclude') as HTMLButtonElement).disabled = !origin;
   ($('menuDefault') as HTMLButtonElement).disabled = !reachable;
 }
 
 function paint() {
-  $('siteOrigin').textContent = origin ? displayOrigin(origin) : 'This page';
+  $('siteOrigin').textContent = origin ? displayOrigin(origin) : tr('thisPage');
   let tag = '';
   if (origin) {
     const r = resolveVolume(settings, origin, storage.quietLevel(quiet));
     tag = isExcluded(settings, origin) ? 'excluded' : r ? (r.source === 'exact' ? 'saved' : r.source) : 'not saved';
   }
   const pill = $('sourcePill');
-  pill.textContent = tag === 'wildcard' ? 'site and subdomains' : tag === 'quiet' ? 'quiet hours' : tag;
+  pill.textContent = tag && tr(PILL[tag]);
   pill.hidden = !tag;
   pill.dataset.source = tag.replace(' ', '-'); // tag, not the shown text: CSS keys on 'wildcard'
 
@@ -170,7 +175,7 @@ function paint() {
   knob.setValue(volume);
   knob.setDisabled(!reachable || excluded());
   $<HTMLInputElement>('boost').checked = settings.boostEnabled;
-  $<HTMLInputElement>('boost').setAttribute('aria-label', `Boost up to ${settings.boostMax}%`);
+  $<HTMLInputElement>('boost').setAttribute('aria-label', tr('boostAria', settings.boostMax));
   $('controls').classList.toggle('is-off', !reachable || excluded());
   for (const el of $('controls').querySelectorAll<HTMLButtonElement | HTMLInputElement>('[data-preset], #boost')) el.disabled = !reachable || excluded();
   paintSave();
@@ -183,8 +188,8 @@ function showBlocked() {
   $('blocked').hidden = false;
   const reloadable = origin !== null && tabId !== undefined;
   $('blockedText').textContent = reloadable
-    ? "This tab can't be controlled yet. It was probably open before the extension was installed or updated. Reload it and try again."
-    : "Browser pages and the web store can't be controlled by extensions.";
+    ? tr('blockedReload')
+    : tr('blockedBrowser');
   $('reloadBtn').hidden = !reloadable;
 }
 
@@ -198,13 +203,13 @@ $('saveBtn').addEventListener('click', async () => {
     else await storage.saveSite(key, volume);
     notice('');
   } catch (e) {
-    notice(`Save failed: ${storage.friendly(e)}`, true);
+    notice(tr('saveFailed', storage.friendly(e)), true);
   }
 });
 
 const muteBtn = $('muteBtn');
 const paintMute = (muted: boolean) => {
-  muteBtn.textContent = muted ? 'Unmute tab' : 'Mute tab';
+  muteBtn.textContent = tr(muted ? 'unmuteTab' : 'muteTab');
   muteBtn.setAttribute('aria-pressed', String(muted));
 };
 muteBtn.addEventListener('click', async () => {
@@ -216,7 +221,7 @@ muteBtn.addEventListener('click', async () => {
 $('muteOthersBtn').addEventListener('click', async () => {
   const others = (await chrome.tabs.query({ audible: true })).filter((t) => t.id !== undefined && t.id !== tabId);
   await Promise.all(others.map((t) => chrome.tabs.update(t.id!, { muted: true })));
-  notice(others.length ? `Muted ${others.length} other tab${others.length > 1 ? 's' : ''} that were playing audio.` : 'No other tab is playing audio.');
+  notice(others.length ? tr(others.length > 1 ? 'mutedOthersMany' : 'mutedOthersOne', others.length) : tr('noOthers'));
 });
 
 // muted tabs: listed with an unmute button each, hidden when none
@@ -227,12 +232,12 @@ async function paintMuted() {
   mutedList.replaceChildren(
     ...tabs.map((t) => {
       const name = document.createElement('span');
-      name.textContent = t.title || t.url || 'Tab';
+      name.textContent = t.title || t.url || tr('tabFallback');
       name.title = name.textContent;
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn';
-      btn.textContent = 'Unmute';
+      btn.textContent = tr('unmute');
       btn.addEventListener('click', () => void chrome.tabs.update(t.id!, { muted: false }));
       const li = document.createElement('li');
       li.append(name, btn);
@@ -252,12 +257,12 @@ async function paintOthers() {
       const icon = Object.assign(document.createElement('img'), { alt: '', src: t.favIconUrl ?? '' });
       icon.hidden = !t.favIconUrl;
       icon.addEventListener('error', () => (icon.hidden = true));
-      const name = Object.assign(document.createElement('span'), { textContent: t.title || t.url || 'Tab' });
+      const name = Object.assign(document.createElement('span'), { textContent: t.title || t.url || tr('tabFallback') });
       name.title = name.textContent!;
       const range = Object.assign(document.createElement('input'), { type: 'range', min: '0', max: String(maxVolume(settings.boostEnabled, settings.boostMax)), step: '5', value: String(levels[i]?.volume ?? 100) });
-      range.setAttribute('aria-label', `Level of ${name.textContent}`);
+      range.setAttribute('aria-label', tr('levelOf', name.textContent!));
       range.addEventListener('input', () => void chrome.tabs.sendMessage(t.id!, { type: 'set-volume', volume: range.valueAsNumber } satisfies SetVolume).catch(() => {}));
-      const btn = Object.assign(document.createElement('button'), { type: 'button', className: 'btn', textContent: t.mutedInfo?.muted ? 'Unmute' : 'Mute' });
+      const btn = Object.assign(document.createElement('button'), { type: 'button', className: 'btn', textContent: tr(t.mutedInfo?.muted ? 'unmute' : 'mute') });
       btn.addEventListener('click', () => void chrome.tabs.update(t.id!, { muted: !t.mutedInfo?.muted }));
       const li = document.createElement('li');
       li.append(icon, name, range, btn);
@@ -302,18 +307,18 @@ $('menuExclude').addEventListener('click', async () => {
   toggleMenu(false);
   if (!origin) return;
   const list = settings.excluded.includes(origin) ? settings.excluded.filter((x) => x !== origin) : [...settings.excluded, origin];
-  await storage.setExcluded(list).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
+  await storage.setExcluded(list).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
 });
 $('menuAutoplay').addEventListener('click', async () => {
   toggleMenu(false);
   if (!origin) return;
   const list = autoplayBlocked() ? settings.autoplayBlock.filter((p) => !covers(p, origin!)) : [...settings.autoplayBlock, domainKey()!];
-  await storage.setAutoplayBlock(list).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
+  await storage.setAutoplayBlock(list).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
 });
 $('menuDefault').addEventListener('click', async () => {
   toggleMenu(false);
-  await storage.setDefaultVolume(volume).catch((e: Error) => notice(`Save failed: ${storage.friendly(e)}`, true));
-  notice(`Sites without a saved level now start at ${volume}%.`);
+  await storage.setDefaultVolume(volume).catch((e: Error) => notice(tr('saveFailed', storage.friendly(e)), true));
+  notice(tr('defaultNow', volume));
 });
 $('menuUrl').addEventListener('click', async () => {
   toggleMenu(false);
@@ -327,7 +332,7 @@ $('menuUrl').addEventListener('click', async () => {
     const r = resolveVolume({ ...settings, sites }, origin, storage.quietLevel(quiet));
     if (r) setVolume(r.volume);
   } catch (e) {
-    notice(`Save failed: ${storage.friendly(e)}`, true);
+    notice(tr('saveFailed', storage.friendly(e)), true);
   }
 });
 
