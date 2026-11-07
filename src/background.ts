@@ -35,14 +35,14 @@ function badgeColor(source: Resolved['source'] | null, muted: boolean): string {
   return '#5f6368';
 }
 
-/** Badge from storage: the level for saved (exact or wildcard) sites, empty otherwise. A muted tab with no level shows "×". */
+/** Badge from storage: the level for saved (exact or wildcard) sites, empty otherwise. A muted tab with no level shows "X" (capital: the × sign sits at x-height, so it looks low next to digits). */
 async function refreshBadge(tab: chrome.tabs.Tab) {
   if (tab.id === undefined) return;
   const origin = originOf(tab.url);
   const r = origin && resolveVolume(await storage.loadSettings(), origin);
   const muted = !!tab.mutedInfo?.muted;
   const level = r && r.source !== 'default' ? String(r.volume) : '';
-  await setBadge(tab.id, level || (muted ? '×' : ''), badgeColor(r ? r.source : null, muted));
+  await setBadge(tab.id, level || (muted ? 'X' : ''), badgeColor(r ? r.source : null, muted));
 }
 
 const refreshAll = async () => (await chrome.tabs.query({})).forEach(refreshBadge);
