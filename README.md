@@ -23,7 +23,7 @@ Chrome Web Store: [Volume Lock](https://chromewebstore.google.com/detail/volume-
 - **Other tabs:** list of the other audible tabs with their own volume and mute.
 - **Loud-level warning:** warns when the output level gets loud; quiet hours cap the level during a set time window.
 - **Capture warning:** the popup says when a tab is boosted through tab capture.
-- **Designs and languages:** 12 designs; English and Turkish.
+- **Designs and languages:** 12 designs with live previews in settings; English and Turkish, followed from the browser or picked in settings.
 - **Private:** no network requests; audio is analyzed in memory and never recorded.
 
 ## Install

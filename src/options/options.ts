@@ -4,7 +4,7 @@ import * as storage from '../lib/storage';
 import { exportSettings, parseImport } from '../lib/transfer';
 import { getDesign, getTheme, initTheme, setDesign, setTheme } from '../ui/theme';
 import { DESIGNS } from '../ui/designs';
-import { applyI18n, presetName, t } from '../lib/i18n';
+import { applyI18n, getLang, initLang, LANGS, presetName, setLang, t } from '../lib/i18n';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 const input = (id: string) => $<HTMLInputElement>(id);
@@ -18,6 +18,7 @@ function el(tag: string, props: Record<string, unknown> = {}, ...kids: Node[]): 
   return e;
 }
 
+await initLang();
 applyI18n();
 document.querySelectorAll<HTMLElement>('.list').forEach((l) => (l.dataset.empty = t('noneYet')));
 
@@ -32,7 +33,7 @@ const patternOf = (id: string) => {
 
 // ---------- nav ----------
 
-const SECTIONS = ['sites', 'general', 'appearance'];
+const SECTIONS = ['sites', 'general', 'appearance', 'language'];
 function route() {
   const s = SECTIONS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'sites';
   for (const id of SECTIONS) {
@@ -315,6 +316,17 @@ async function paintDesigns() {
   }
 }
 
+// ---------- language ----------
+
+const langList = $('langList');
+for (const [code, name] of [['auto', t('langAuto')], ...LANGS]) {
+  const b = el('label', { className: 'lang' }) as HTMLLabelElement;
+  const r = Object.assign(document.createElement('input'), { type: 'radio', name: 'lang', value: code, checked: getLang() === code });
+  r.addEventListener('change', () => void setLang(code).then(() => location.reload())); // every string is built in script, so a fresh page is the simple way
+  b.append(r, el('span', { textContent: name, ...(code === 'auto' ? {} : { lang: code }) }));
+  langList.append(b);
+}
+
 // ---------- boot ----------
 
 function render() {
@@ -330,11 +342,12 @@ void (async () => {
   $<HTMLSelectElement>('themeSel').value = await getTheme();
   await paintDesigns();
   vizToggle.checked = (await chrome.storage.local.get('visualizer')).visualizer === true;
-  settings = await storage.loadSettings();
-  await paintLocal();
-  render();
+  // listening first: a change made while the settings load must not be lost
   storage.onSettingsChanged((s) => {
     settings = s;
     render();
   });
+  settings = await storage.loadSettings();
+  await paintLocal();
+  render();
 })();

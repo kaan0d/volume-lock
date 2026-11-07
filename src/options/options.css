@@ -119,6 +119,12 @@ input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent);
 .field.grow { flex: 1 1 240px; min-width: 0; }
 .row-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
 
+/* language */
+.lang-list { display: flex; flex-direction: column; gap: 4px; }
+.lang { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 12px; border-bottom: 1px solid var(--glass-border); font: 600 16px var(--f-ui); cursor: pointer; }
+.lang:hover { background: var(--glass); }
+.lang input { width: 20px; height: 20px; accent-color: var(--accent); }
+
 /* table */
 .table-wrap { overflow-x: auto; border-top: 1px solid var(--text); }
 table { width: 100%; border-collapse: collapse; }

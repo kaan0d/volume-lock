@@ -9,7 +9,7 @@ import { initTheme, isPreview } from '../ui/theme';
 import { createKnob } from '../ui/knob';
 import '../ui/designs.css';
 import { connectAudio } from './capture';
-import { applyI18n, presetName, t as tr } from '../lib/i18n';
+import { applyI18n, initLang, presetName, t as tr } from '../lib/i18n';
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -22,6 +22,7 @@ let warnAbove = 150;
 let quiet = emptyQuiet();
 
 void initTheme();
+await initLang(); // a language picked in settings
 applyI18n();
 
 const notice = (text: string, warn = false) => {
