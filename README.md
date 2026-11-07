@@ -1,6 +1,6 @@
 # Volume Lock
 
-Chromium extension (Manifest V3, TypeScript) that remembers the volume of each site, with boost up to 600%, an equalizer and a night mode. Works in Chrome, Edge and Brave.
+Chromium extension (Manifest V3, TypeScript) that remembers the volume of each site, with boost up to 600%, an equalizer and a night mode. Works in Chrome, Edge and Brave; a Firefox build exists without the tab-capture fallback.
 
 Chrome Web Store: [Volume Lock](https://chromewebstore.google.com/detail/volume-lock/hfpdohjhnfgkhnangkecmkhochllhifb). Edge and Brave: install from this GitHub repo (see Install).
 
@@ -17,13 +17,15 @@ Chrome Web Store: [Volume Lock](https://chromewebstore.google.com/detail/volume-
 - **Per-site volume:** a rotary knob sets the level; Save stores it for the domain (or one URL) and it applies before media plays.
 - **Boost:** up to 200, 300, 400 or 600%, with a limiter against clipping. The popup shows the live gain (for example +6.0 dB) while boosting.
 - **Sound:** five-band equalizer, night mode (leveler), mono and balance.
-- **Mute:** mute the current tab or all other audible tabs.
-- **Shortcuts:** `Alt+Shift+Up/Down` volume, `Alt+Shift+M` mute, `Alt+Shift+S` save. Rebind at `chrome://extensions/shortcuts`.
+- **Mute:** mute the current tab or all other audible tabs, and unmute them again with the same button (settings: every muted tab, or only the ones the extension muted). Timed mute for 15 minutes or an hour, and sites that start muted.
+- **Shortcuts:** `Alt+Shift+Up/Down` volume, `Alt+Shift+M` mute, `Alt+Shift+S` save. Settings lists them and opens the browser's shortcut page.
 - **Reset tab:** site menu item that ends tab capture and reloads the tab, restoring fullscreen and the page's own audio path.
-- **Other tabs:** list of the other audible tabs with their own volume and mute.
+- **Other tabs:** list of the other audible tabs with their own volume and mute; a tab's name switches to it.
+- **Per-tab level:** a level set in the popup without saving stays with that tab across reloads.
 - **Loud-level warning:** warns when the output level gets loud; quiet hours cap the level during a set time window.
 - **Capture warning:** the popup says when a tab is boosted through tab capture.
-- **Designs and languages:** 12 designs with live previews in settings; English and Turkish, followed from the browser or picked in settings.
+- **Backup:** export and import as JSON; the import says how many sites it adds, removes and changes before it replaces anything.
+- **Designs and languages:** 12 designs with live previews in settings; English, German, Spanish, French, Brazilian Portuguese and Turkish, followed from the browser or picked in settings.
 - **Private:** no network requests; audio is analyzed in memory and never recorded.
 
 ## Install
@@ -36,11 +38,13 @@ npm run build
 npm run zip     # development/webstore/volume-lock-<version>.zip
 ```
 
+Firefox (128 or later): `npm run zip:firefox` builds `dist-firefox/` and a zip without tab capture, so media that only capture can boost is left alone. Firefox asks for site access separately: allow it for all sites on the add-on's permissions tab. It is not tested in a real Firefox yet.
+
 Open `chrome://extensions`, `edge://extensions` or `brave://extensions`, turn on Developer mode, choose Load unpacked and select `dist/`. Rebind shortcuts on the `shortcuts` page of the same scheme.
 
 ## Limits
 
-- Cross-origin media without CORS and DRM media are boosted through tab capture, which starts when the popup is opened on that tab. Use Reset tab if fullscreen breaks.
+- Cross-origin media without CORS and DRM media are boosted through tab capture, which starts when the popup is opened on that tab above 100%. Use Reset tab if fullscreen breaks.
 - Tabs open during install or update need a reload.
 - Nothing works on browser-internal pages (`chrome://`, `edge://`, `brave://`) or the extension stores.
 - The styled dropdown needs Chromium 135 or later; older versions show the native list.
@@ -54,7 +58,7 @@ src/ui                     knob, 12 designs, shared styles
 src/lib                    settings, rules, storage, i18n
 src/background.ts          tab capture, shortcuts, offscreen audio
 src/content.ts, inject.ts  page-side audio graph
-store/                     Chrome Web Store images (1280x800 screenshots, promo tiles)
+store/<lang>/                Chrome Web Store images per language (1280x800 screenshots, promo tiles)
 screenshots/               images used in this README
 ```
 
