@@ -130,6 +130,7 @@
 [data-design="noir"] .knob-dot { top: 0; width: 8%; translate: -50% -50%; box-shadow: 0 0 0 5px var(--bg), 0 0 0 6px #c9a45a; }
 [data-design="noir"] .knob-n { font: 500 34cqi "Cormorant Garamond", serif; color: #f4ead3; }
 [data-design="noir"] .knob-pct { display: none; }
+[data-design="noir"] .knob-n { translate: 0 -7cqi; }
 [data-design="noir"] .knob-num::after { content: "PERCENT"; position: absolute; top: 71%; font-size: 3.4cqi; letter-spacing: 0.4em; color: #8f8467; }
 
 /* ---------- 05 Phosphor Terminal ---------- */
