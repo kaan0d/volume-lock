@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Volume Lock",
+  "default_locale": "en",
+  "name": "__MSG_extName__",
   "version": "1.0.1",
-  "description": "Remembers a volume level per site and applies it automatically. Boost to 600%, equalizer, night mode.",
+  "description": "__MSG_extDescription__",
   "permissions": ["storage", "tabs", "scripting", "tabCapture", "offscreen"],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js" },
@@ -36,19 +37,19 @@
   "commands": {
     "volume-up": {
       "suggested_key": { "default": "Alt+Shift+Up" },
-      "description": "Volume up"
+      "description": "__MSG_cmdVolumeUp__"
     },
     "volume-down": {
       "suggested_key": { "default": "Alt+Shift+Down" },
-      "description": "Volume down"
+      "description": "__MSG_cmdVolumeDown__"
     },
     "toggle-mute": {
       "suggested_key": { "default": "Alt+Shift+M" },
-      "description": "Mute or unmute this tab"
+      "description": "__MSG_cmdToggleMute__"
     },
     "save-site": {
       "suggested_key": { "default": "Alt+Shift+S" },
-      "description": "Save volume for the current site"
+      "description": "__MSG_cmdSaveSite__"
     }
   }
 }

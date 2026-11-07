@@ -1,0 +1,615 @@
+{
+  "extName": {
+    "message": "Volume Lock"
+  },
+  "extDescription": {
+    "message": "Her site için bir ses seviyesini hatırlar ve otomatik uygular. %600'e kadar güçlendirme, ekolayzır, gece modu."
+  },
+  "cmdVolumeUp": {
+    "message": "Sesi artır"
+  },
+  "cmdVolumeDown": {
+    "message": "Sesi azalt"
+  },
+  "cmdToggleMute": {
+    "message": "Bu sekmeyi sessize al veya sesini aç"
+  },
+  "cmdSaveSite": {
+    "message": "Geçerli site için sesi kaydet"
+  },
+  "siteOptions": {
+    "message": "Site seçenekleri"
+  },
+  "menuReset": {
+    "message": "Sekmeyi yenile ve sesi sıfırla"
+  },
+  "menuDefault": {
+    "message": "Seviyeyi tüm sitelerde kullan"
+  },
+  "openSettings": {
+    "message": "Ayarları aç"
+  },
+  "hintLead": {
+    "message": "Bir kez ayarlayın."
+  },
+  "hintBody": {
+    "message": "Düğmeyi çevirin, sonra Kaydet'e basın: bu site hep bu seviyede açılır."
+  },
+  "gotIt": {
+    "message": "Anladım"
+  },
+  "presets": {
+    "message": "Ön ayarlar"
+  },
+  "boost": {
+    "message": "Güçlendirme"
+  },
+  "boostAria": {
+    "message": "%$MAX$ değerine kadar güçlendir",
+    "placeholders": {
+      "max": {
+        "content": "$1"
+      }
+    }
+  },
+  "eqPreset": {
+    "message": "Ekolayzır ön ayarı"
+  },
+  "levelerShort": {
+    "message": "Yüksek sesleri kıs"
+  },
+  "levelerTitle": {
+    "message": "Yüksek ve alçak sesleri dengeler"
+  },
+  "save": {
+    "message": "Kaydet"
+  },
+  "unsave": {
+    "message": "Kaydı kaldır"
+  },
+  "muteTab": {
+    "message": "Sekmeyi sessize al"
+  },
+  "unmuteTab": {
+    "message": "Sekme sesini aç"
+  },
+  "muteOthers": {
+    "message": "Diğer sekmeleri sessize al"
+  },
+  "othersPlaying": {
+    "message": "Ses çalan diğer sekmeler"
+  },
+  "mutedTabs": {
+    "message": "Sessize alınan sekmeler"
+  },
+  "reloadTab": {
+    "message": "Sekmeyi yenile"
+  },
+  "boostHintText": {
+    "message": "Chrome'un güçlendirme veya efektlere izin vermesi için sayfaya bir kez tıklayın."
+  },
+  "loudWarn": {
+    "message": "Yüksek seviyeler işitmenize zarar verebilir ve hoparlörleri bozabilir. Rahatsız ediyorsa kısın."
+  },
+  "captureWarn": {
+    "message": "Bu sitede güçlendirme yalnızca sekme yakalama ile çalışır ve tam ekranı bozabilir."
+  },
+  "saveFailed": {
+    "message": "Kaydedilemedi: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "defaultNow": {
+    "message": "Kayıtlı seviyesi olmayan siteler artık %$LEVEL$ ile başlar.",
+    "placeholders": {
+      "level": {
+        "content": "$1"
+      }
+    }
+  },
+  "mutedOthersOne": {
+    "message": "Ses çalan $COUNT$ diğer sekme sessize alındı.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "mutedOthersMany": {
+    "message": "Ses çalan $COUNT$ diğer sekme sessize alındı.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "noOthers": {
+    "message": "Ses çalan başka sekme yok."
+  },
+  "unmute": {
+    "message": "Sesi aç"
+  },
+  "mute": {
+    "message": "Sessize al"
+  },
+  "tabFallback": {
+    "message": "Sekme"
+  },
+  "levelOf": {
+    "message": "$NAME$ seviyesi",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "allowAutoplay": {
+    "message": "Burada otomatik oynatmaya izin ver"
+  },
+  "blockAutoplay": {
+    "message": "Burada otomatik oynatmayı engelle"
+  },
+  "unsaveUrl": {
+    "message": "Bu adresin kaydını kaldır"
+  },
+  "saveUrl": {
+    "message": "Bu adres için kaydet"
+  },
+  "stopIgnoring": {
+    "message": "Bu siteyi yok saymayı bırak"
+  },
+  "neverTouchSite": {
+    "message": "Bu siteye hiç dokunma"
+  },
+  "thisPage": {
+    "message": "Bu sayfa"
+  },
+  "pillExcluded": {
+    "message": "hariç tutuldu"
+  },
+  "pillSaved": {
+    "message": "kayıtlı"
+  },
+  "pillNotSaved": {
+    "message": "kayıtlı değil"
+  },
+  "pillWildcard": {
+    "message": "site ve alt alan adları"
+  },
+  "pillQuiet": {
+    "message": "sessiz saatler"
+  },
+  "pillDefault": {
+    "message": "varsayılan"
+  },
+  "blockedReload": {
+    "message": "Bu sekme henüz denetlenemiyor. Büyük olasılıkla eklenti yüklenmeden veya güncellenmeden önce açılmıştı. Yenileyip tekrar deneyin."
+  },
+  "blockedBrowser": {
+    "message": "Tarayıcı sayfaları ve web mağazası eklentilerle denetlenemez."
+  },
+  "knobLabel": {
+    "message": "Ses"
+  },
+  "percentLabel": {
+    "message": "YÜZDE"
+  },
+  "noneYet": {
+    "message": "Henüz yok."
+  },
+  "valueText": {
+    "message": "yüzde $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "valueTextBoosted": {
+    "message": "yüzde $VALUE$, güçlendirilmiş",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Volume Lock ayarları"
+  },
+  "navAria": {
+    "message": "Ayar bölümleri"
+  },
+  "navSites": {
+    "message": "Siteler"
+  },
+  "navGeneral": {
+    "message": "Genel"
+  },
+  "tagLine1": {
+    "message": "Siteye özel ses."
+  },
+  "tagLine2": {
+    "message": "Güçlendirme. Sakinlik."
+  },
+  "heroSites": {
+    "message": "site"
+  },
+  "heroRemembered": {
+    "message": "kayıtlı"
+  },
+  "heroSetOnce": {
+    "message": "Bir kez ayarla."
+  },
+  "heroHearRight": {
+    "message": "Doğru duy."
+  },
+  "sitesHint": {
+    "message": "Siteye göre kaydedilen seviyeler. Düzenlemek için bir seviyeye tıklayın."
+  },
+  "filterSites": {
+    "message": "Siteleri filtrele"
+  },
+  "colSite": {
+    "message": "Site"
+  },
+  "colType": {
+    "message": "Tür"
+  },
+  "colLevel": {
+    "message": "Seviye"
+  },
+  "colDelete": {
+    "message": "Sil"
+  },
+  "sitePatternAria": {
+    "message": "Site veya joker karakterli desen"
+  },
+  "patternPlaceholder": {
+    "message": "https://example.com veya *.example.com"
+  },
+  "newLevelAria": {
+    "message": "Yeni site için seviye"
+  },
+  "add": {
+    "message": "Ekle"
+  },
+  "rulesH": {
+    "message": "Kurallar"
+  },
+  "precedence": {
+    "message": "Öncelik: hiç dokunma > tam eşleşen site > site ve alt alan adları > varsayılan ses."
+  },
+  "typeWildcard": {
+    "message": "Site ve alt alan adları"
+  },
+  "typeExact": {
+    "message": "Tam eşleşme"
+  },
+  "wildHintPre": {
+    "message": "Örneğin"
+  },
+  "wildHintPost": {
+    "message": "gibi bir desen alan adını ve tüm alt alan adlarını kapsar. Yukarıdaki Siteler tablosundan ekleyin; tam eşleşen site her zaman önceliklidir."
+  },
+  "neverH": {
+    "message": "Hiç dokunma"
+  },
+  "neverHint": {
+    "message": "Eklenti, başka ne kayıtlı olursa olsun bu sitelere dokunmaz."
+  },
+  "excludeAria": {
+    "message": "Hariç tutulacak kaynak veya joker karakterli desen"
+  },
+  "exclude": {
+    "message": "Hariç tut"
+  },
+  "autoplayH": {
+    "message": "Otomatik oynatmayı engelle"
+  },
+  "autoplayHint": {
+    "message": "Bu sitelerde, siz tıklamadan veya tuşa basmadan başlayan medya duraklatılır."
+  },
+  "autoplayAria": {
+    "message": "Otomatik oynatmanın engelleneceği kaynak veya desen"
+  },
+  "block": {
+    "message": "Engelle"
+  },
+  "audioH": {
+    "message": "Ses"
+  },
+  "defaultVolume": {
+    "message": "Kayıtsız siteler için varsayılan ses"
+  },
+  "defaultLevelAria": {
+    "message": "Varsayılan ses seviyesi"
+  },
+  "allowBoost": {
+    "message": "Güçlendirmeye izin ver"
+  },
+  "boostLimit": {
+    "message": "Güçlendirme sınırı"
+  },
+  "boostExplain": {
+    "message": "Güçlendirme, sınırı %100'den güçlendirme sınırına çıkarır; bir sınırlayıcı yüksek tepelerin bozulmasını önler. Kapatırsanız %100 üzerindeki seviyeler saklanır ama %100'de çalar."
+  },
+  "boostNoteOne": {
+    "message": "%100 üzerindeki $COUNT$ kayıtlı seviye, güçlendirme kapalıyken %100'de çalar. Olduğu gibi saklanır.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "boostNoteMany": {
+    "message": "%100 üzerindeki $COUNT$ kayıtlı seviye, güçlendirme kapalıyken %100'de çalar. Olduğu gibi saklanır.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnAbove": {
+    "message": "Şunun üzerinde uyar"
+  },
+  "warnHint": {
+    "message": "Seviye bunun üzerine çıkınca açılır pencerede uyarı gösterir; hiçbir zaman engellemez. 100 ile 600 arası, uyarı istemiyorsanız 0."
+  },
+  "quietHours": {
+    "message": "Sessiz saatler"
+  },
+  "quietFrom": {
+    "message": "Başlangıç"
+  },
+  "quietTo": {
+    "message": "bitiş"
+  },
+  "quietHint": {
+    "message": "Bu saatlerde, kayıtlı seviyesi olmayan siteler varsayılan yerine bu seviyede başlar. Kayıtlı siteler değişmez."
+  },
+  "soundH": {
+    "message": "Ses efektleri"
+  },
+  "leveler": {
+    "message": "Yüksek sesleri kıs (dengeleyici)"
+  },
+  "levelerAria": {
+    "message": "Dengeleyici"
+  },
+  "levelerHint": {
+    "message": "Yüksek ve alçak bölümleri dengeler; reklamlar ve patlamalar öne fırlamaz."
+  },
+  "mono": {
+    "message": "Mono"
+  },
+  "balance": {
+    "message": "Denge"
+  },
+  "balanceCentre": {
+    "message": "Orta"
+  },
+  "balanceLeft": {
+    "message": "Sol $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "balanceRight": {
+    "message": "Sağ $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "equalizer": {
+    "message": "Ekolayzır"
+  },
+  "eqBandAria": {
+    "message": "Ekolayzır $BAND$",
+    "placeholders": {
+      "band": {
+        "content": "$1"
+      }
+    }
+  },
+  "soundHint": {
+    "message": "Ses ayarları hariç tutmadığınız her siteye ve Web Audio ile çalınan medyaya uygulanır. Korumalı (DRM) medya ve CORS olmadan başka bir siteden gelen medya değişmeden kalır."
+  },
+  "eqFlat": {
+    "message": "Düz"
+  },
+  "eqBassboost": {
+    "message": "Bas güçlendirme"
+  },
+  "eqTrebleboost": {
+    "message": "Tiz güçlendirme"
+  },
+  "eqVocal": {
+    "message": "Vokal"
+  },
+  "eqLoudness": {
+    "message": "Loudness"
+  },
+  "eqCustom": {
+    "message": "Özel"
+  },
+  "backupH": {
+    "message": "Yedek"
+  },
+  "exportBtn": {
+    "message": "Ayarları dışa aktar"
+  },
+  "importBtn": {
+    "message": "Ayarları içe aktar"
+  },
+  "importFileAria": {
+    "message": "İçe aktarılacak ayar dosyası"
+  },
+  "importAsk": {
+    "message": "Tüm mevcut ayarlar bu dosyayla değiştirilsin mi?"
+  },
+  "replace": {
+    "message": "Değiştir"
+  },
+  "cancel": {
+    "message": "İptal"
+  },
+  "deleteAll": {
+    "message": "Kayıtlı tüm siteleri sil"
+  },
+  "deleteAllAsk": {
+    "message": "Kayıtlı tüm siteler silinsin mi? Varsayılan, güçlendirme ve hiç dokunulmayanlar listesi kalır."
+  },
+  "deleteAllYes": {
+    "message": "Tümünü sil"
+  },
+  "importFailed": {
+    "message": "İçe aktarılamadı: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "appearanceH": {
+    "message": "Görünüm"
+  },
+  "theme": {
+    "message": "Tema"
+  },
+  "themeSystem": {
+    "message": "Sistem"
+  },
+  "themeLight": {
+    "message": "Açık"
+  },
+  "themeDark": {
+    "message": "Koyu"
+  },
+  "vizLabel": {
+    "message": "Açılır pencerede canlı seviye halkası"
+  },
+  "vizHint": {
+    "message": "Sekmenin sesini hareketli çubuklar olarak gösterir. Sekmeyi yakaladığı için pencere açılırken ses bir an kesilir."
+  },
+  "popupDesign": {
+    "message": "Açılır pencere tasarımı"
+  },
+  "designHint": {
+    "message": "Aurora Glass yukarıdaki temayı izler. Diğer tasarımlar kendi renklerini getirir."
+  },
+  "remove": {
+    "message": "Kaldır"
+  },
+  "removeAria": {
+    "message": "$PATTERN$ kaldır",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "levelFor": {
+    "message": "$PATTERN$ için seviye",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      }
+    }
+  },
+  "noMatch": {
+    "message": "Eşleşen site yok."
+  },
+  "noSites": {
+    "message": "Henüz kayıtlı site yok. Bir sayfa açın, açılır pencerede seviye ayarlayıp Kaydet'e basın ya da aşağıdan site ekleyin."
+  },
+  "badPattern": {
+    "message": "https://example.com gibi bir kaynak veya *.example.com gibi bir desen girin."
+  },
+  "levelRange": {
+    "message": "Seviye 0 ile $MAX$ arasında bir tam sayı olmalı.",
+    "placeholders": {
+      "max": {
+        "content": "$1"
+      }
+    }
+  },
+  "errJson": {
+    "message": "Geçerli JSON değil"
+  },
+  "errObject": {
+    "message": "Bir JSON nesnesi bekleniyordu"
+  },
+  "errVersion": {
+    "message": "Desteklenmeyen sürüm: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errBoostEnabled": {
+    "message": "boostEnabled true veya false olmalı"
+  },
+  "errBoostMax": {
+    "message": "Geçersiz boostMax: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errAutoplay": {
+    "message": "autoplayBlock bir site listesi olmalı"
+  },
+  "errDefault": {
+    "message": "Geçersiz defaultVolume: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errSites": {
+    "message": "sites bir nesne olmalı"
+  },
+  "errPattern": {
+    "message": "Geçersiz site deseni: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errVolume": {
+    "message": "$PATTERN$ için geçersiz ses: $VALUE$",
+    "placeholders": {
+      "pattern": {
+        "content": "$1"
+      },
+      "value": {
+        "content": "$2"
+      }
+    }
+  },
+  "errExcludedList": {
+    "message": "excluded bir liste olmalı"
+  },
+  "errExcluded": {
+    "message": "Geçersiz hariç tutma girdisi: $VALUE$",
+    "placeholders": {
+      "value": {
+        "content": "$1"
+      }
+    }
+  },
+  "errQuota": {
+    "message": "Çok fazla kayıt veya kayıtlı site var, bir dakika sonra tekrar deneyin. Chrome eşitlemesi en fazla 512 öğeye izin verir."
+  }
+}
