@@ -385,10 +385,11 @@ async function findTab(): Promise<chrome.tabs.Tab | undefined> {
 void (async () => {
   if (isPreview) {
     // a picture of the popup for the settings page: a sample saved site, nothing is read or sent
-    settings = { ...emptySettings(), sites: { 'https://example.com': 65 } };
+    const q = new URLSearchParams(location.search);
+    volume = Number(q.get('level')) || 65; // ?level=150&boost&unsaved shows a boosted, unsaved sample (store images)
+    settings = { ...emptySettings(), boostEnabled: q.has('boost'), sites: q.has('unsaved') ? {} : { 'https://example.com': volume } };
     origin = 'https://example.com';
     reachable = true;
-    volume = 65;
     return paint();
   }
   settings = await storage.loadSettings();
