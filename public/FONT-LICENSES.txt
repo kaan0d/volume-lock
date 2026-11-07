@@ -1,9 +1,24 @@
-Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) Inter-Italic[opsz,wght].ttf: Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
+Fonts bundled with Volume Lock
+==============================
 
-This Font Software is licensed under the SIL Open Font License, Version 1.1.
-This license is copied below, and is also available with a FAQ at:
-http://scripts.sil.org/OFL
+The popup and the settings page ship these typefaces (woff2 subsets, unmodified apart from
+subsetting). Each family is licensed under the SIL Open Font License, Version 1.1, printed below.
+Copyright holders are "The <Family> Project Authors" as named in each family's upstream repository;
+see the project page of the family for the full list of authors.
 
+  Archivo: The Archivo Project Authors
+  Barlow and Barlow Condensed: The Barlow Project Authors
+  Cormorant Garamond: The Cormorant Project Authors
+  DM Sans: The DM Sans Project Authors
+  Fraunces: The Fraunces Project Authors
+  Inter: The Inter Project Authors
+  JetBrains Mono: The JetBrains Mono Project Authors
+  Jost: The Jost Project Authors
+  Manrope: The Manrope Project Authors
+  Nunito: The Nunito Project Authors
+  Orbitron: The Orbitron Project Authors
+  Plus Jakarta Sans: The Plus Jakarta Sans Project Authors
+  Space Grotesk: The Space Grotesk Project Authors
 
 -----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007

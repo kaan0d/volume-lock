@@ -61,3 +61,5 @@ screenshots/               images used in this README
 ## License
 
 Source-available, not open source. You can read, build, run and modify it for personal use, and fork it to propose changes. Uploading it (modified or not) to the Chrome Web Store or any other store, redistributing it as "Volume Lock", and commercial use are not allowed without permission. See [LICENSE.md](LICENSE.md).
+
+Bundled fonts are under the SIL Open Font License, see [public/FONT-LICENSES.txt](public/FONT-LICENSES.txt).
