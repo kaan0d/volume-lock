@@ -8,9 +8,12 @@ Volume Lock remembers your preferred volume for each website and applies it when
 
 <table>
   <tr>
-    <td><img src="screenshots/popup-dark.png" width="200" alt="Popup, dark theme"></td>
-    <td><img src="screenshots/popup-light.png" width="200" alt="Popup, light theme with boost"></td>
-    <td><img src="screenshots/options.png" width="320" alt="Options page, Sites"></td>
+    <td><img src="store/en/screenshot-1-remember.jpg" width="400" alt="Set the volume once"></td>
+    <td><img src="store/en/screenshot-2-boost.jpg" width="400" alt="Boost up to 600%"></td>
+  </tr>
+  <tr>
+    <td><img src="store/en/screenshot-3-other-tabs.jpg" width="400" alt="Control other tabs"></td>
+    <td><img src="store/en/screenshot-4-designs.jpg" width="400" alt="12 designs"></td>
   </tr>
 </table>
 
@@ -63,7 +66,6 @@ src/lib                    settings, rules, storage, i18n
 src/background.ts          tab capture, shortcuts, offscreen audio
 src/content.ts, inject.ts  page-side audio graph
 store/<lang>/              Chrome Web Store images per language
-screenshots/               images used in this README
 ```
 
 ## License
