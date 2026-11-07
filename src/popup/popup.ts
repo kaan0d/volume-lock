@@ -1,5 +1,5 @@
 import { displayOrigin, originOf } from '../lib/origin';
-import { clampVolume, coveringKey, covers, EQ_PRESETS, emptySettings, inList, isExcluded, maxVolume, presetOf, resolveVolume, type Settings } from '../lib/rules';
+import { clampVolume, coveringKey, covers, EQ_PRESETS, emptyQuiet, emptySettings, inList, isExcluded, maxVolume, presetOf, resolveVolume, type Settings } from '../lib/rules';
 import type { GetState, ResetTab, SetVolume, StateReply } from '../lib/messages';
 import * as storage from '../lib/storage';
 import '../ui/tokens.css';
@@ -17,6 +17,8 @@ let tabId: number | undefined;
 let origin: string | null = null;
 let reachable = false;
 let volume = 100;
+let warnAbove = 150;
+let quiet = emptyQuiet();
 
 void initTheme();
 
@@ -45,7 +47,12 @@ async function recheckIdle() {
   if (!reachable || tabId === undefined) return;
   await new Promise((r) => setTimeout(r, 250));
   const state = await chrome.tabs.sendMessage<GetState, StateReply>(tabId, { type: 'get-state' }, { frameId: 0 }).catch(() => null);
-  if (state) $('boostHint').hidden = !state.idle;
+  if (state) showState(state);
+}
+
+function showState(state: StateReply) {
+  $('boostHint').hidden = !state.idle;
+  $('captureWarn').hidden = !state.needsCapture;
 }
 
 const knob = createKnob($('knobHost'), {
@@ -106,6 +113,7 @@ function paintChips() {
 
 function paintSave() {
   paintChips();
+  $('loudWarn').hidden = !(warnAbove > 0 && volume > warnAbove);
   const s = saved();
   const btn = $<HTMLButtonElement>('saveBtn');
   btn.textContent = s ? 'Unsave' : 'Save';
@@ -149,11 +157,11 @@ function paint() {
   $('siteOrigin').textContent = origin ? displayOrigin(origin) : 'This page';
   let tag = '';
   if (origin) {
-    const r = resolveVolume(settings, origin);
+    const r = resolveVolume(settings, origin, storage.quietLevel(quiet));
     tag = isExcluded(settings, origin) ? 'excluded' : r ? (r.source === 'exact' ? 'saved' : r.source) : 'not saved';
   }
   const pill = $('sourcePill');
-  pill.textContent = tag === 'wildcard' ? 'site and subdomains' : tag;
+  pill.textContent = tag === 'wildcard' ? 'site and subdomains' : tag === 'quiet' ? 'quiet hours' : tag;
   pill.hidden = !tag;
   pill.dataset.source = tag.replace(' ', '-'); // tag, not the shown text: CSS keys on 'wildcard'
 
@@ -232,12 +240,38 @@ async function paintMuted() {
     }),
   );
 }
+// other tabs playing: a live level slider and a mute button each, hidden when none
+const others = $<HTMLDetailsElement>('others');
+async function paintOthers() {
+  const tabs = (await chrome.tabs.query({ audible: true })).filter((t) => t.id !== undefined && t.id !== tabId);
+  const levels = await Promise.all(tabs.map((t) => chrome.tabs.sendMessage<GetState, StateReply>(t.id!, { type: 'get-state' }, { frameId: 0 }).catch(() => null)));
+  others.hidden = !tabs.length;
+  $('othersCount').textContent = String(tabs.length);
+  $('othersList').replaceChildren(
+    ...tabs.map((t, i) => {
+      const icon = Object.assign(document.createElement('img'), { alt: '', src: t.favIconUrl ?? '' });
+      icon.hidden = !t.favIconUrl;
+      icon.addEventListener('error', () => (icon.hidden = true));
+      const name = Object.assign(document.createElement('span'), { textContent: t.title || t.url || 'Tab' });
+      name.title = name.textContent!;
+      const range = Object.assign(document.createElement('input'), { type: 'range', min: '0', max: String(maxVolume(settings.boostEnabled, settings.boostMax)), step: '5', value: String(levels[i]?.volume ?? 100) });
+      range.setAttribute('aria-label', `Level of ${name.textContent}`);
+      range.addEventListener('input', () => void chrome.tabs.sendMessage(t.id!, { type: 'set-volume', volume: range.valueAsNumber } satisfies SetVolume).catch(() => {}));
+      const btn = Object.assign(document.createElement('button'), { type: 'button', className: 'btn', textContent: t.mutedInfo?.muted ? 'Unmute' : 'Mute' });
+      btn.addEventListener('click', () => void chrome.tabs.update(t.id!, { muted: !t.mutedInfo?.muted }));
+      const li = document.createElement('li');
+      li.append(icon, name, range, btn);
+      return li;
+    }),
+  );
+}
 chrome.tabs.onUpdated.addListener((id, info) => {
+  if (info.audible !== undefined || info.mutedInfo) void paintOthers();
   if (!info.mutedInfo) return;
   void paintMuted();
   if (id === tabId) paintMute(info.mutedInfo.muted);
 });
-chrome.tabs.onRemoved.addListener(() => void paintMuted());
+chrome.tabs.onRemoved.addListener(() => (void paintMuted(), void paintOthers()));
 void paintMuted();
 
 $('version').textContent = `v${chrome.runtime.getManifest().version}`;
@@ -290,7 +324,7 @@ $('menuUrl').addEventListener('click', async () => {
     await storage.removeSite(origin);
     // the page falls back to the domain level; keep the knob in step with it
     const { [origin]: _, ...sites } = settings.sites;
-    const r = resolveVolume({ ...settings, sites }, origin);
+    const r = resolveVolume({ ...settings, sites }, origin, storage.quietLevel(quiet));
     if (r) setVolume(r.volume);
   } catch (e) {
     notice(`Save failed: ${storage.friendly(e)}`, true);
@@ -317,6 +351,7 @@ async function findTab(): Promise<chrome.tabs.Tab | undefined> {
 
 void (async () => {
   settings = await storage.loadSettings();
+  [quiet, warnAbove] = await Promise.all([storage.loadQuiet(), storage.loadWarnAbove()]);
   const tab = await findTab();
   tabId = tab?.id;
   origin = originOf(tab?.url);
@@ -333,16 +368,18 @@ void (async () => {
     if (state) {
       reachable = true;
       volume = state.volume;
-      $('boostHint').hidden = !state.idle;
+      showState(state);
     }
   }
   paint();
+  void paintOthers();
   // The level ring needs tab capture, which cuts the tab's audio for a moment when it starts: opt-in (settings), off by default.
   const viz = new URLSearchParams(location.search).has('vizTest') || (await chrome.storage.local.get('visualizer')).visualizer === true;
   if (reachable) {
     if (viz) connectAudio(tabId!, (levels) => (levels.length ? knob.setLevels(levels) : knob.setIdle()));
   } else showBlocked();
   void firstRun();
+  storage.onLocalChanged(() => void Promise.all([storage.loadQuiet(), storage.loadWarnAbove()]).then(([q, w]) => ([quiet, warnAbove] = [q, w], paint())));
   storage.onSettingsChanged((s) => {
     settings = s;
     paint();

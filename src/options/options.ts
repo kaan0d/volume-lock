@@ -1,4 +1,4 @@
-import { clampVolume, emptySettings, EQ_BANDS, EQ_LIMIT, EQ_PRESETS, isValidPattern, isWildcard, maxVolume, presetOf, type Settings } from '../lib/rules';
+import { cleanQuiet, cleanWarnAbove, clampVolume, emptySettings, EQ_BANDS, EQ_LIMIT, EQ_PRESETS, isValidPattern, isWildcard, maxVolume, presetOf, type Settings } from '../lib/rules';
 import { displayOrigin } from '../lib/origin';
 import * as storage from '../lib/storage';
 import { exportSettings, parseImport } from '../lib/transfer';
@@ -256,6 +256,22 @@ input('importFile').addEventListener('change', async () => {
   }
 });
 
+// ---------- warn and quiet hours (device-local) ----------
+
+const quietIds = ['quietOn', 'quietFrom', 'quietTo', 'quietLevel'];
+const saveQuiet = () =>
+  void storage.setQuiet(cleanQuiet({ on: input('quietOn').checked, from: input('quietFrom').value, to: input('quietTo').value, level: input('quietLevel').valueAsNumber }));
+for (const id of quietIds) input(id).addEventListener('change', saveQuiet);
+input('warnAbove').addEventListener('change', () => void storage.setWarnAbove(cleanWarnAbove(input('warnAbove').valueAsNumber)).then(paintLocal));
+async function paintLocal() {
+  const q = await storage.loadQuiet();
+  input('quietOn').checked = q.on;
+  input('quietFrom').value = q.from;
+  input('quietTo').value = q.to;
+  input('quietLevel').value = String(q.level);
+  input('warnAbove').value = String(await storage.loadWarnAbove());
+}
+
 // ---------- appearance ----------
 
 $<HTMLSelectElement>('themeSel').addEventListener('change', (e) => void setTheme((e.target as HTMLSelectElement).value as 'system' | 'light' | 'dark'));
@@ -299,6 +315,7 @@ void (async () => {
   await paintDesigns();
   vizToggle.checked = (await chrome.storage.local.get('visualizer')).visualizer === true;
   settings = await storage.loadSettings();
+  await paintLocal();
   render();
   storage.onSettingsChanged((s) => {
     settings = s;

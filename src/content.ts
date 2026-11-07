@@ -2,8 +2,8 @@
 // the MAIN-world script (inject.ts), which applies it. Also answers the popup and reports media
 // only tab capture can boost.
 import { originOf } from './lib/origin';
-import { clampVolume, emptySettings, fxActive, inList, isExcluded, resolveVolume } from './lib/rules';
-import { loadSettings, onSettingsChanged } from './lib/storage';
+import { clampVolume, emptyQuiet, emptySettings, fxActive, inList, isExcluded, msToQuietChange, resolveVolume } from './lib/rules';
+import { loadQuiet, loadSettings, onLocalChanged, onSettingsChanged, quietLevel } from './lib/storage';
 import type { CaptureState, LevelChanged, LevelReply, Message, NeedsCapture, StateReply } from './lib/messages';
 
 // Iframes follow the tab's site, so an embedded player matches the page around it.
@@ -11,6 +11,9 @@ const ancestors = location.ancestorOrigins;
 const siteOrigin = originOf(ancestors?.length ? ancestors[ancestors.length - 1] : location.href);
 
 let settings = emptySettings();
+let quiet = emptyQuiet();
+let quietTimer = 0;
+let needsCapture = false; // MAIN found media only tab capture can boost
 let preview: number | null = null; // set-volume override until reload or settings change
 let level: number | null = null; // percent; null = leave media alone
 let captured = false; // tab capture applies the boost, so in-page stays at 100 or below
@@ -39,6 +42,7 @@ window.addEventListener(key + ':up', (e) => {
     window.removeEventListener('svs:hello', sendKey);
     push();
   }
+  if (msg.needsCapture) needsCapture = true;
   if (msg.needsCapture) void chrome.runtime.sendMessage({ type: 'needs-capture' } satisfies NeedsCapture).catch(() => {});
   if (msg.probe) probeReply = msg.probe;
 });
@@ -71,7 +75,10 @@ async function reportLevel() {
 
 function update(sync = false) {
   resolved = true;
-  level = preview ?? (siteOrigin ? (resolveVolume(settings, siteOrigin)?.volume ?? null) : null);
+  // re-resolve when quiet hours start or end
+  clearTimeout(quietTimer);
+  if (quiet.on) quietTimer = window.setTimeout(() => update(), msToQuietChange(quiet, new Date()));
+  level = preview ?? (siteOrigin ? (resolveVolume(settings, siteOrigin, quietLevel(quiet))?.volume ?? null) : null);
   push(sync);
   void reportLevel();
 }
@@ -82,7 +89,7 @@ function state(): StateReply {
   // this world sees the real element volume, which equals the page's own value when we leave it alone
   const needsRoute = !captured && ((level ?? 0) > 100 || effects().fx !== null);
   const els = (probeNow() as { els: { routed: boolean }[] } | undefined)?.els ?? [];
-  return { volume: level ?? Math.round((first?.volume ?? 1) * 100), idle: (needsRoute && els.some((e) => !e.routed)) || undefined };
+  return { volume: level ?? Math.round((first?.volume ?? 1) * 100), idle: (needsRoute && els.some((e) => !e.routed)) || undefined, needsCapture: needsCapture || undefined };
 }
 
 chrome.runtime.onMessage.addListener((msg: Message | CaptureState, _sender, reply) => {
@@ -102,9 +109,10 @@ onSettingsChanged((s) => {
   preview = null;
   update();
 });
+onLocalChanged(() => void loadQuiet().then((q) => ((quiet = q), update())));
 // Always answer, even when storage fails: an explicit "no level" lets MAIN pass through at once
 // instead of holding the page silent until its 1.5 s fallback.
-void loadSettings()
-  .then((s) => void (settings = s))
+void Promise.all([loadSettings(), loadQuiet()])
+  .then(([s, q]) => void ((settings = s), (quiet = q)))
   .catch(() => {})
   .finally(update);

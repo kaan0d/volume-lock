@@ -23,7 +23,7 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
   background: var(--glass-strong); border: 1px solid var(--glass-border); color: var(--text-muted);
   transition: background var(--dur-med) var(--ease-out), color var(--dur-med) var(--ease-out);
 }
-.pill[data-source="saved"], .pill[data-source="wildcard"] { color: var(--accent); border-color: var(--accent); }
+.pill[data-source="saved"], .pill[data-source="wildcard"], .pill[data-source="quiet"] { color: var(--accent); border-color: var(--accent); }
 .pill[data-source="excluded"] { color: var(--danger); border-color: var(--danger); }
 .menu-wrap { position: relative; }
 .menu { position: absolute; right: 0; top: 44px; z-index: 10; min-width: 220px; }
@@ -58,6 +58,13 @@ body:has(#blocked:not([hidden])) { min-height: 0; } /* nothing to keep room for 
 .muted-list { list-style: none; margin: 0; padding: 0; width: 100%; max-height: 152px; overflow-y: auto; scrollbar-gutter: stable both-edges; /* reserved on both sides so the rows stay centered and never shift */ display: flex; flex-direction: column; gap: var(--space-1); }
 .muted-list li { display: flex; align-items: center; gap: var(--space-2); }
 .muted-list span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--text-muted); }
+.others { width: 100%; }
+.others summary { cursor: pointer; font-size: 13px; color: var(--text-muted); }
+.others-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; max-height: 152px; overflow-y: auto; display: flex; flex-direction: column; gap: var(--space-2); }
+.others-list li { display: flex; align-items: center; gap: var(--space-2); }
+.others-list img { width: 16px; height: 16px; border-radius: 4px; flex: none; }
+.others-list span { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: var(--text-muted); }
+.others-list input { flex: 0 0 90px; width: 90px; min-width: 0; accent-color: var(--accent); }
 .notice { margin: 0; text-align: center; font-size: 13px; font-weight: 600; color: var(--text); }
 .notice.warn { color: var(--danger); }
 

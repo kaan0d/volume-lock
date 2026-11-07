@@ -25,7 +25,7 @@ export interface Settings {
   fx: Fx;
 }
 
-export type Resolved = { volume: number; source: 'exact' | 'wildcard' | 'default' };
+export type Resolved = { volume: number; source: 'exact' | 'wildcard' | 'default' | 'quiet' };
 
 export const BOOST_CHOICES = [200, 300, 400, 600];
 /** Centre frequencies (Hz) of the five EQ bands: low shelf, three peaks, high shelf. */
@@ -97,10 +97,40 @@ export function coveringKey(s: Settings, origin: string): string | null {
   return best;
 }
 
-export function resolveVolume(s: Settings, origin: string): Resolved | null {
+/** Hours when sites without a saved level use `level` instead of the default. Times are "HH:MM"; `to` before `from` crosses midnight. */
+export interface Quiet { on: boolean; from: string; to: string; level: number }
+export const emptyQuiet = (): Quiet => ({ on: false, from: '22:00', to: '07:00', level: 30 });
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+export function cleanQuiet(x: unknown): Quiet {
+  const d = emptyQuiet();
+  if (!x || typeof x !== 'object') return d;
+  const o = x as Record<string, unknown>;
+  const time = (v: unknown, dflt: string) => (typeof v === 'string' && TIME.test(v) ? v : dflt);
+  return { on: o.on === true, from: time(o.from, d.from), to: time(o.to, d.to), level: typeof o.level === 'number' && Number.isFinite(o.level) ? Math.min(600, Math.max(0, Math.round(o.level))) : d.level };
+}
+/** Loud-level warning threshold: 100..600, or 0 for off. */
+export const cleanWarnAbove = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? (v === 0 ? 0 : Math.min(600, Math.max(100, Math.round(v)))) : 150);
+const minutes = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
+const nowMin = (now: Date) => now.getHours() * 60 + now.getMinutes();
+export function quietActive(q: Quiet, now: Date): boolean {
+  if (!q.on) return false;
+  const [a, b, n] = [minutes(q.from), minutes(q.to), nowMin(now)];
+  if (a === b) return false; // empty window
+  return a < b ? n >= a && n < b : n >= a || n < b;
+}
+/** Milliseconds until the window next opens or closes. */
+export function msToQuietChange(q: Quiet, now: Date): number {
+  const n = nowMin(now);
+  const wait = [q.from, q.to].map((t) => (minutes(t) - n + 1440) % 1440 || 1440);
+  return Math.min(...wait) * 60000 - now.getSeconds() * 1000 - now.getMilliseconds();
+}
+
+/** `quiet`: level for the unsaved sites right now (null outside quiet hours); it beats the default. */
+export function resolveVolume(s: Settings, origin: string, quiet: number | null = null): Resolved | null {
   if (isExcluded(s, origin)) return null;
   const done = (volume: number, source: Resolved['source']): Resolved => ({ volume: clampVolume(volume, s.boostEnabled, s.boostMax), source });
   const key = coveringKey(s, origin);
   if (key !== null) return done(s.sites[key], key === origin ? 'exact' : 'wildcard');
+  if (quiet !== null) return done(quiet, 'quiet');
   return s.defaultVolume === null ? null : done(s.defaultVolume, 'default');
 }

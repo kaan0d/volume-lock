@@ -87,6 +87,17 @@
           <p id="boostNote" class="hint warn hidden"></p>
         </div>
 
+        <div class="card">
+          <div class="line"><label for="warnAbove">Warn above</label><input id="warnAbove" class="field num" type="number" min="0" max="600" step="10"> %</div>
+          <p class="hint">Shows a notice in the popup when the level goes above this. It never stops you. 100 to 600, or 0 for no warning.</p>
+        </div>
+        <div class="card">
+          <label class="line"><input id="quietOn" type="checkbox" aria-label="Quiet hours"> Quiet hours</label>
+          <div class="line"><label for="quietFrom">From</label><input id="quietFrom" class="field" type="time"><label for="quietTo">to</label><input id="quietTo" class="field" type="time"></div>
+          <div class="line"><label for="quietLevel">Level</label><input id="quietLevel" class="field num" type="number" min="0" max="600"> %</div>
+          <p class="hint">During these hours, sites without a saved level start at this level instead of the default. Saved sites are not changed.</p>
+        </div>
+
         <hr class="rule">
         <h2 id="h-fx">Sound</h2>
         <div class="card">
