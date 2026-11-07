@@ -675,9 +675,9 @@
     "message": "Sessize alınan her sekme"
   },
   "unmuteOurs": {
-    "message": "Yalnızca burada sessize alınanlar"
+    "message": "Yalnızca eklentiden sessize alınanlar"
   },
   "unmuteHint": {
-    "message": "Diğer sekmeler sayfasındaki düğme için geçerli. \"Yalnızca burada sessize alınanlar\" seçeneği kendi elinizle sessize aldığınız sekmelere dokunmaz."
+    "message": "Diğer sekmeler sayfasındaki düğme için geçerli. \"Yalnızca eklentiden sessize alınanlar\" seçeneği kendi elinizle sessize aldığınız sekmelere dokunmaz."
   }
 }

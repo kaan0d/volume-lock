@@ -675,9 +675,9 @@
     "message": "Every muted tab"
   },
   "unmuteOurs": {
-    "message": "Only tabs muted here"
+    "message": "Only tabs muted from the extension"
   },
   "unmuteHint": {
-    "message": "Applies to the button on the Other tabs page. \"Only tabs muted here\" leaves tabs you muted yourself alone."
+    "message": "Applies to the button on the Other tabs page. \"Only tabs muted from the extension\" leaves tabs you muted yourself alone."
   }
 }
