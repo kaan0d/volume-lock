@@ -8,6 +8,9 @@ export type StateReply = { volume: number; idle?: boolean; needsCapture?: boolea
 
 export type Message = SetVolume | GetState;
 
+/** content (top frame) -> background: remember this tab's own level across reloads (`volume` null forgets it); without `volume` it only asks. Replies with the stored level. */
+export type TabLevel = { type: 'tab-level'; volume?: number | null };
+export type TabLevelReply = { volume: number | null };
 /** Alarm name prefix of a timed mute; the tab id follows. */
 export const UNMUTE_ALARM = 'unmute:';
 

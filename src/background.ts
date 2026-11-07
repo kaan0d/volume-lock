@@ -11,6 +11,8 @@ import type {
   NeedsCapture,
   ResetTab,
   SetVolume,
+  TabLevel,
+  TabLevelReply,
   StateReply,
   CaptureOpen,
   CaptureOpenReply,
@@ -220,7 +222,18 @@ const serial = <T>(job: () => Promise<T>): Promise<T> => {
   return run;
 };
 
-type CaptureMsg = CaptureOpen | CaptureClosed | CaptureStarted | NeedsCapture | LevelChanged | ResetTab;
+/** Levels set in a tab's popup, kept per tab while its site stays the same. */
+type TabLevels = Record<string, { origin: string; volume: number }>;
+async function tabLevel(tabId: number, origin: string | null, volume?: number | null): Promise<TabLevelReply> {
+  const all = ((await chrome.storage.session.get('tabLevels')).tabLevels as TabLevels | undefined) ?? {};
+  if (volume === undefined) return { volume: origin && all[tabId]?.origin === origin ? all[tabId].volume : null };
+  if (volume === null || !origin) delete all[tabId];
+  else all[tabId] = { origin, volume };
+  await chrome.storage.session.set({ tabLevels: all });
+  return { volume };
+}
+
+type CaptureMsg = CaptureOpen | CaptureClosed | CaptureStarted | NeedsCapture | LevelChanged | ResetTab | TabLevel;
 
 chrome.runtime.onMessage.addListener((msg: CaptureMsg, sender, reply) => {
   const tabId = sender.tab?.id;
@@ -240,8 +253,12 @@ chrome.runtime.onMessage.addListener((msg: CaptureMsg, sender, reply) => {
       break;
     }
     case 'reset-tab':
-      void serial(() => forgetTab(msg.tabId, null));
+      void serial(async () => (await forgetTab(msg.tabId, null), void (await tabLevel(msg.tabId, null, null))));
       break;
+    case 'tab-level':
+      if (tabId === undefined) return;
+      serial(() => tabLevel(tabId, originOf(sender.tab?.url), msg.volume)).then(reply, () => reply({ volume: null }));
+      return true;
     case 'level':
       if (tabId === undefined) return;
       serial(() => levelChanged(tabId, msg.volume)).then(reply, () => reply({ captured: false }));
@@ -249,7 +266,7 @@ chrome.runtime.onMessage.addListener((msg: CaptureMsg, sender, reply) => {
   }
 });
 
-chrome.tabs.onRemoved.addListener((tabId) => void serial(() => forgetTab(tabId, null)));
+chrome.tabs.onRemoved.addListener((tabId) => void serial(async () => (await forgetTab(tabId, null), void (await tabLevel(tabId, null, null)))));
 chrome.tabs.onUpdated.addListener((tabId, info) => {
   if (info.url) void serial(() => forgetTab(tabId, originOf(info.url)));
 });

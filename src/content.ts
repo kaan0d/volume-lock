@@ -4,7 +4,7 @@
 import { originOf } from './lib/origin';
 import { clampVolume, emptyQuiet, emptySettings, fxActive, isExcluded, msToQuietChange, resolveVolume } from './lib/rules';
 import { loadQuiet, loadSettings, onLocalChanged, onSettingsChanged, quietLevel } from './lib/storage';
-import type { CaptureState, LevelChanged, LevelReply, Message, NeedsCapture, StateReply } from './lib/messages';
+import type { CaptureState, LevelChanged, LevelReply, Message, NeedsCapture, StateReply, TabLevel, TabLevelReply } from './lib/messages';
 
 // Iframes follow the tab's site, so an embedded player matches the page around it.
 const ancestors = location.ancestorOrigins;
@@ -96,6 +96,7 @@ chrome.runtime.onMessage.addListener((msg: Message | CaptureState, _sender, repl
   if (msg.type === 'set-volume') {
     preview = clampVolume(msg.volume, settings.boostEnabled, settings.boostMax);
     update(true);
+    if (window === window.top) void chrome.runtime.sendMessage({ type: 'tab-level', volume: preview } satisfies TabLevel).catch(() => {});
   } else if (msg.type === 'get-state' && window === window.top) {
     reply(state()); // only the top frame answers, so the reply is the page's
   } else if (msg.type === 'capture-state') {
@@ -106,13 +107,20 @@ chrome.runtime.onMessage.addListener((msg: Message | CaptureState, _sender, repl
 
 onSettingsChanged((s) => {
   settings = s;
+  if (preview !== null && window === window.top) void chrome.runtime.sendMessage({ type: 'tab-level', volume: null } satisfies TabLevel).catch(() => {}); // a saved change replaces the tab's own level
   preview = null;
   update();
 });
 onLocalChanged(() => void loadQuiet().then((q) => ((quiet = q), update())));
 // Always answer, even when storage fails: an explicit "no level" lets MAIN pass through at once
 // instead of holding the page silent until its 1.5 s fallback.
-void Promise.all([loadSettings(), loadQuiet()])
-  .then(([s, q]) => void ((settings = s), (quiet = q)))
+// The tab's own level (set in the popup, not saved) survives a reload; a slow or missing answer must not hold the page silent.
+const ownLevel = () =>
+  Promise.race([
+    chrome.runtime.sendMessage<TabLevel, TabLevelReply>({ type: 'tab-level' }).then((r) => r?.volume ?? null),
+    new Promise<null>((r) => setTimeout(() => r(null), 400)),
+  ]).catch(() => null);
+void Promise.all([loadSettings(), loadQuiet(), window === window.top ? ownLevel() : null])
+  .then(([s, q, own]) => void ((settings = s), (quiet = q), own !== null && (preview = clampVolume(own, s.boostEnabled, s.boostMax))))
   .catch(() => {})
   .finally(update);
